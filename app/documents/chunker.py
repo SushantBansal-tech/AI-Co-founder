@@ -1,7 +1,7 @@
 import re
 import uuid
 
-from app.documents.models import DocumentChunk, ParsedDocument
+from documents.models import DocumentChunk, ParsedDocument
 
 
 def clean_text(text: str) -> str:
