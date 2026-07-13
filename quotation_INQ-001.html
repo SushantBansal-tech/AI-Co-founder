@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quotation QT-2026-435B</title>
+  
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: Arial, sans-serif; font-size: 12px;
+             color: #2c2c2c; padding: 30px; background: #fff; }
+      /* Header */
+      .header { display: flex; justify-content: space-between;
+                align-items: flex-start; border-bottom: 3px solid #1a3c6e;
+                padding-bottom: 14px; margin-bottom: 18px; }
+      .company-block h1 { font-size: 20px; color: #1a3c6e; }
+      .company-block p { font-size: 11px; color: #555; line-height: 1.6; }
+      .quotation-badge { text-align: right; }
+      .quotation-badge h2 { font-size: 26px; color: #1a3c6e;
+                            letter-spacing: 2px; }
+      .quotation-badge p { font-size: 11px; color: #555; }
+      /* Approval banner */
+      .approval-banner { background: #fff8e1; border-left: 4px solid #f59e0b;
+                         padding: 10px 14px; margin-bottom: 14px;
+                         border-radius: 4px; }
+      .approval-banner strong { color: #b45309; }
+      /* Meta grid */
+      .meta-grid { display: grid; grid-template-columns: 1fr 1fr;
+                   gap: 14px; margin-bottom: 18px; }
+      .meta-box { border: 1px solid #d1d9e6; border-radius: 6px; padding: 10px; }
+      .meta-box h4 { font-size: 10px; text-transform: uppercase;
+                     color: #1a3c6e; letter-spacing: 1px;
+                     margin-bottom: 6px; border-bottom: 1px solid #d1d9e6;
+                     padding-bottom: 4px; }
+      .meta-box p { line-height: 1.7; color: #333; }
+      /* Line items table */
+      table.items { width: 100%; border-collapse: collapse; margin: 18px 0; }
+      table.items thead tr { background: #1a3c6e; color: white; }
+      table.items th { padding: 8px 6px; text-align: left;
+                       font-size: 10px; letter-spacing: 0.5px; }
+      table.items td { padding: 8px 6px; border-bottom: 1px solid #e5e9f0; }
+      table.items tbody tr:nth-child(even) { background: #f7f9fc; }
+      .text-right { text-align: right; }
+      /* Totals */
+      .totals-table { width: 320px; margin-left: auto;
+                      border-collapse: collapse; margin-top: 6px; }
+      .totals-table td { padding: 5px 8px; }
+      .totals-table .subtotal td { color: #444; }
+      .totals-table .gst-row td { color: #444; }
+      .totals-table .grand-total td { background: #1a3c6e; color: white;
+                                       font-weight: bold; font-size: 13px;
+                                       padding: 8px; }
+      /* Terms sections */
+      .terms-grid { display: grid; grid-template-columns: 1fr 1fr;
+                    gap: 14px; margin-top: 18px; }
+      .terms-box { border: 1px solid #d1d9e6; border-radius: 6px; padding: 10px; }
+      .terms-box h4 { font-size: 10px; text-transform: uppercase;
+                      color: #1a3c6e; letter-spacing: 1px;
+                      margin-bottom: 8px; }
+      .terms-box p, .terms-box li { line-height: 1.7; color: #444; }
+      .terms-box ol { padding-left: 16px; }
+      .terms-box li { margin-bottom: 4px; font-size: 11px; }
+      /* Footer */
+      .footer { border-top: 2px solid #1a3c6e; margin-top: 24px;
+                padding-top: 12px; display: flex;
+                justify-content: space-between; align-items: flex-end; }
+      .signature-block { text-align: right; }
+      .signature-line { border-top: 1px solid #333; width: 180px;
+                        margin-top: 40px; padding-top: 4px;
+                        font-size: 11px; color: #555; }
+    </style>
+    
+</head>
+<body>
+
+  <!-- ── HEADER ─────────────────────────────────────────── -->
+  <div class="header">
+    <div class="company-block">
+      <h1>IndusSteel Trading Pvt. Ltd.</h1>
+      <p>Plot 14, Industrial Area Phase II, Ludhiana - 141003, Punjab<br>
+         GSTIN: 03AABCI1234A1Z5<br>
+         sales@indussteel.in | +91-161-4567890</p>
+    </div>
+    <div class="quotation-badge">
+      <h2>QUOTATION</h2>
+      <p style="margin-top:6px">
+        <strong>No.:</strong> QT-2026-435B<br>
+        <strong>Date:</strong> 04-07-2026<br>
+        <strong>Valid Until:</strong> 03-08-2026<br>
+        <span style="background:#d97706;color:white;
+                     padding:2px 8px;border-radius:3px;font-size:10px">
+          PENDING APPROVAL
+        </span>
+      </p>
+    </div>
+  </div>
+
+  
+    <div class="approval-banner">
+      <strong>⚠ PENDING HUMAN APPROVAL</strong><br>
+      This quotation cannot be sent until approved. Reasons:<ul><li>large_order_value: invoice ₹82.5L exceeds ₹50L threshold</li></ul>
+    </div>
+
+  <!-- ── META GRID ──────────────────────────────────────── -->
+  <div class="meta-grid">
+    <div class="meta-box">
+      <h4>Bill To / Ship To</h4>
+      <p><strong>Apex Steel Pvt Ltd</strong><br>
+         Ramesh Kumar<br>GSTIN: 03AABCA1234C1Z5<br>
+         Delivery: Ludhiana</p>
+    </div>
+    <div class="meta-box">
+      <h4>Reference</h4>
+      <p>Inquiry ID: INQ-001<br>
+         Prepared by: sales_agent<br>
+         Fulfillment: From Stock</p>
+    </div>
+  </div>
+
+  <!-- ── LINE ITEMS ─────────────────────────────────────── -->
+  <table class="items">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Description</th>
+        <th>Specification</th>
+        <th class="text-right">Qty</th>
+        <th>Unit</th>
+        <th class="text-right">Unit Price</th>
+        <th class="text-right">Disc%</th>
+        <th class="text-right">Net Price</th>
+        <th class="text-right">GST%</th>
+        <th class="text-right">GST Amt</th>
+        <th class="text-right">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>1</td>
+          <td><strong>MS Billet</strong><br>
+              <span style="color:#666;font-size:11px">MSB-001</span></td>
+          <td>100x100mm square section</td>
+          <td class="text-right">500.00</td>
+          <td>MT</td>
+          <td class="text-right">₹14,500.00</td>
+          <td class="text-right">3.5%</td>
+          <td class="text-right">₹13,989.13</td>
+          <td class="text-right">18%</td>
+          <td class="text-right">₹1,259,020.00</td>
+          <td class="text-right"><strong>₹8,253,585.00</strong></td>
+        </tr></tbody>
+  </table>
+
+  <!-- ── TOTALS ─────────────────────────────────────────── -->
+  <table class="totals-table">
+    <tr class="subtotal">
+      <td>Subtotal (ex-GST)</td>
+      <td class="text-right">₹6,994,565.00</td>
+    </tr>
+    <tr class="gst-row">
+      <td>GST Amount</td>
+      <td class="text-right">₹1,259,020.00</td>
+    </tr>
+    <tr class="grand-total">
+      <td>TOTAL INVOICE VALUE</td>
+      <td class="text-right">₹8,253,585.00</td>
+    </tr>
+  </table>
+
+  <!-- ── COMMERCIAL TERMS ───────────────────────────────── -->
+  <div class="terms-grid">
+    <div class="terms-box">
+      <h4>Payment Terms</h4>
+      <p>10% advance, balance net 60 days from dispatch</p>
+    </div>
+    <div class="terms-box">
+      <h4>Delivery &amp; Dispatch</h4>
+      <p>Material available ex-stock. Dispatch within 2–3 working days of order + payment confirmation. Transit: approx. 2 day(s) to Ludhiana. Total estimated delivery: 2 working days.</p>
+    </div>
+    <div class="terms-box">
+      <h4>Freight Terms</h4>
+      <p>Freight included up to delivery address mentioned above (road transport).</p>
+    </div>
+    <div class="terms-box">
+      <h4>Warranty</h4>
+      <p>Material supplied shall conform to the specified IS/BIS standard. Warranty is limited to replacement of non-conforming material on production of test certificate and physical inspection at our works.</p>
+    </div>
+  </div>
+
+  <!-- ── T&C ────────────────────────────────────────────── -->
+  <div class="terms-box" style="margin-top:14px">
+    <h4>Terms &amp; Conditions</h4>
+    <ol><li>Prices are exclusive of GST. GST will be charged extra at applicable rates.</li><li>Delivery is subject to availability of material and production schedule at the time of order confirmation.</li><li>Any variation in government levies, duties, or GST rates after the quotation date will be charged extra.</li><li>Force majeure events (strikes, natural calamities, government restrictions) are excluded from delivery commitments.</li><li>Disputes, if any, are subject to jurisdiction of courts in Ludhiana, Punjab only.</li><li>Payment should be made by RTGS/NEFT to the bank account mentioned. Cheques are not accepted.</li><li>Material once dispatched will not be accepted back without prior written approval.</li><li>This quotation supersedes all previous verbal or written communications for the same requirement.</li></ol>
+  </div>
+
+  <!-- ── BANK DETAILS ───────────────────────────────────── -->
+  <div class="terms-box" style="margin-top:14px">
+    <h4>Bank Details (for RTGS/NEFT)</h4>
+    <p>HDFC Bank, A/C: 50200012345678, IFSC: HDFC0001234</p>
+  </div>
+
+  <!-- ── FOOTER ─────────────────────────────────────────── -->
+  <div class="footer">
+    <div>
+      <p style="font-size:11px;color:#888">
+        This is a computer-generated quotation. Subject to terms stated above.
+      </p>
+    </div>
+    <div class="signature-block">
+      <div class="signature-line">
+        For IndusSteel Trading Pvt. Ltd.<br>Authorised Signatory
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

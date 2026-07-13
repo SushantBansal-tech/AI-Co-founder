@@ -1,0 +1,327 @@
+// Use a **Document Router + Agent Document Policy** before every sub-agent.
+
+// Your orchestration should look like this:
+
+// ```text
+// StateGraph
+//   ↓
+// load_lead
+//   ↓
+// load_business_config
+//   ↓
+// document_router
+//   ↓
+// sub-agent runs with only relevant documents
+// ```
+
+// ## 1. Store document metadata when client uploads
+
+// Every uploaded document should have tags:
+
+// ```python
+// document = {
+//     "document_id": "doc_001",
+//     "business_id": "abc_steel",
+//     "name": "Pricing Policy July 2026.pdf",
+//     "document_type": "pricing_policy",
+//     "allowed_agents": ["pricing_agent", "quotation_agent", "negotiation_agent"],
+//     "product_category": "steel",
+//     "version": "v3",
+//     "status": "active"
+// }
+// ```
+
+// Do not let agents search all documents blindly.
+
+// ---
+
+// ## 2. Define document needs per sub-agent
+
+// Create config like this:
+
+// ```python
+// AGENT_DOCUMENT_POLICY = {
+//     "requirement_understanding": [
+//         "product_catalog",
+//         "technical_specification",
+//         "manufacturing_capability"
+//     ],
+
+//     "customer_qualification": [
+//         "customer_history",
+//         "previous_orders",
+//         "payment_records",
+//         "previous_quotations"
+//     ],
+
+//     "feasibility_check": [
+//         "inventory",
+//         "production_capacity",
+//         "delivery_policy",
+//         "technical_specification"
+//     ],
+
+//     "pricing": [
+//         "pricing_sheet",
+//         "discount_policy",
+//         "tax_policy",
+//         "margin_policy"
+//     ],
+
+//     "quotation_generation": [
+//         "quotation_template",
+//         "payment_terms",
+//         "delivery_terms",
+//         "pricing_sheet"
+//     ],
+
+//     "negotiation_support": [
+//         "discount_policy",
+//         "approval_matrix",
+//         "margin_policy",
+//         "customer_history"
+//     ],
+
+//     "purchase_order_handling": [
+//         "quotation_record",
+//         "purchase_order_policy",
+//         "payment_terms"
+//     ],
+
+//     "sales_order_handoff": [
+//         "sales_order_template",
+//         "handoff_policy",
+//         "delivery_policy"
+//     ]
+// }
+// ```
+
+// ---
+
+// ## 3. Add retrieved docs into graph state
+
+// Extend your state:
+
+// ```python
+// class SalesAgentState(TypedDict, total=False):
+//     business_id: str
+//     lead_id: str
+//     raw_message: str
+//     current_agent: str
+
+//     documents_for_agent: list[dict]
+//     evidence: list[dict]
+//     decision: dict
+// ```
+
+// ---
+
+// ## 4. Document router node
+
+// This node decides which docs are relevant for the next sub-agent.
+
+// ```python
+// async def document_router_node(state: SalesAgentState) -> dict:
+//     agent_name = state["current_agent"]
+//     business_id = state["business_id"]
+//     query = build_agent_query(state, agent_name)
+
+//     allowed_doc_types = AGENT_DOCUMENT_POLICY[agent_name]
+
+//     docs = await retrieve_relevant_documents(
+//         business_id=business_id,
+//         allowed_doc_types=allowed_doc_types,
+//         query=query,
+//         top_k=5,
+//     )
+
+//     return {
+//         "documents_for_agent": docs,
+//         "evidence": [
+//             {
+//                 "document_id": d["document_id"],
+//                 "document_name": d["document_name"],
+//                 "chunk_id": d["chunk_id"],
+//                 "text": d["text"],
+//                 "score": d["score"],
+//             }
+//             for d in docs
+//         ],
+//     }
+// ```
+
+// ---
+
+// ## 5. Query builder per agent
+
+// Each agent should ask different questions from documents.
+
+// ```python
+// def build_agent_query(state: dict, agent_name: str) -> str:
+//     lead = state.get("lead", {})
+
+//     if agent_name == "requirement_understanding":
+//         return f"""
+//         Find product catalog and technical specs for:
+//         product={lead.get("product_requested")}
+//         specifications={lead.get("specifications")}
+//         quantity={lead.get("quantity")}
+//         """
+
+//     if agent_name == "pricing":
+//         return f"""
+//         Find pricing, discount, GST, margin rules for:
+//         product={lead.get("product_requested")}
+//         quantity={lead.get("quantity")}
+//         customer_type={lead.get("customer_type")}
+//         """
+
+//     if agent_name == "negotiation_support":
+//         return f"""
+//         Find discount approval rules, margin limits, negotiation policy for:
+//         requested_discount={lead.get("requested_discount")}
+//         deal_value={lead.get("deal_value")}
+//         """
+
+//     return state.get("raw_message", "")
+// ```
+
+// ---
+
+// ## 6. Retrieval function
+
+// Your vector DB search should filter by business and document type.
+
+// ```python
+// async def retrieve_relevant_documents(
+//     business_id: str,
+//     allowed_doc_types: list[str],
+//     query: str,
+//     top_k: int = 5,
+// ) -> list[dict]:
+//     return vector_db.search(
+//         query=query,
+//         filters={
+//             "business_id": business_id,
+//             "document_type": {"$in": allowed_doc_types},
+//             "status": "active",
+//         },
+//         top_k=top_k,
+//     )
+// ```
+
+// This ensures:
+
+// ```text
+// Pricing Agent cannot accidentally read HR policy.
+// Requirement Agent cannot accidentally read payment history.
+// Negotiation Agent only gets discount/margin/approval docs.
+// ```
+
+// ---
+
+// ## 7. Sub-agent receives only selected docs
+
+// Example pricing agent:
+
+// ```python
+// async def pricing_agent_node(state: SalesAgentState) -> dict:
+//     docs = state["documents_for_agent"]
+//     lead = state["lead"]
+
+//     prompt = f"""
+//     You are the Pricing Agent.
+
+//     Use ONLY the provided document evidence.
+//     If evidence is insufficient, say approval/manual review is required.
+
+//     Lead:
+//     {lead}
+
+//     Documents:
+//     {docs}
+
+//     Return:
+//     - price decision
+//     - discount
+//     - GST
+//     - approval_required
+//     - evidence_used
+//     """
+
+//     decision = await llm.structured_output(prompt)
+
+//     return {
+//         "pricing_decision": decision,
+//         "evidence": state["evidence"],
+//     }
+// ```
+
+// ---
+
+// ## 8. Best orchestration pattern
+
+// Before each sub-agent:
+
+// ```text
+// set_current_agent
+//       ↓
+// document_router
+//       ↓
+// sub_agent
+//       ↓
+// save_decision
+//       ↓
+// approval_gate
+// ```
+
+// Example:
+
+// ```text
+// current_agent = "pricing"
+//         ↓
+// document_router gets pricing docs
+//         ↓
+// pricing_agent uses only pricing docs
+//         ↓
+// decision saved
+//         ↓
+// approval gate checks risk
+// ```
+
+// ---
+
+// ## 9. How agent decides relevant documents
+
+// The agent should **not directly decide from all documents**.
+
+// Correct method:
+
+// ```text
+// 1. Admin/client tags document during upload
+// 2. System stores document_type and allowed_agents
+// 3. Document router filters by allowed document types
+// 4. Vector search retrieves top relevant chunks
+// 5. Sub-agent uses only those chunks
+// ```
+
+// So relevance is decided by:
+
+// ```text
+// Document metadata filter + semantic search + agent policy
+// ```
+
+// Not by the LLM alone.
+
+// ---
+
+// ## Final rule
+
+// For professional production design:
+
+// ```text
+// Sub-agent should never see all company documents.
+// Sub-agent should receive only relevant document chunks.
+// Every decision must include evidence.
+// If evidence is missing or weak, route to human approval.
+// ```
