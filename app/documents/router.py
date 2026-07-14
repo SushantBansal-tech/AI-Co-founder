@@ -1,7 +1,7 @@
-from documents.embbedings import LocalEmbeddingService
-from documents.models import RetrievedChunk
-from documents.policies import get_allowed_document_types
-from documents.vector_store import DocumentVectorStore
+from app.documents.embeddings import LocalEmbeddingService
+from app.documents.models import RetrievedChunk
+from app.documents.policies import get_allowed_document_types
+from app.documents.vector_store import DocumentVectorStore
 
 
 class AgentDocumentRetriever:

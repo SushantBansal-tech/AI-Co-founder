@@ -1,6 +1,6 @@
 from qdrant_client import QdrantClient, models
 
-from documents.models import DocumentChunk, RetrievedChunk
+from app.documents.models import DocumentChunk, RetrievedChunk
 
 
 class DocumentVectorStore:

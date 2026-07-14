@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Quotation {{quotation_number}}</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 40px; color: #222; }
+.header { display: flex; justify-content: space-between; border-bottom: 2px solid #1f4e78; padding-bottom: 14px; }
+.company h1 { margin: 0; color: #1f4e78; }
+.meta { text-align: right; }
+.customer, .summary, .terms { margin-top: 24px; }
+table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+th, td { border: 1px solid #bbb; padding: 8px; text-align: left; }
+th { background: #d9eaf7; }
+.amount { text-align: right; }
+.total-box { width: 42%; margin-left: auto; margin-top: 18px; }
+.total-box td:first-child { font-weight: bold; }
+.approval { margin-top: 30px; padding: 12px; background: #fff4ce; }
+.footer { margin-top: 40px; font-size: 12px; color: #666; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="company">
+    <h1>{{seller_company_name}}</h1>
+    <div>{{seller_address}}</div>
+    <div>GSTIN: {{seller_gstin}}</div>
+    <div>Email: {{seller_email}} | Phone: {{seller_phone}}</div>
+  </div>
+  <div class="meta">
+    <h2>QUOTATION</h2>
+    <div><strong>No:</strong> {{quotation_number}}</div>
+    <div><strong>Date:</strong> {{quotation_date}}</div>
+    <div><strong>Valid Until:</strong> {{valid_until}}</div>
+  </div>
+</div>
+
+<div class="customer">
+  <h3>Customer Details</h3>
+  <div><strong>{{customer_company_name}}</strong></div>
+  <div>Attn: {{customer_contact_person}}</div>
+  <div>{{billing_address}}</div>
+  <div>GSTIN: {{customer_gstin}}</div>
+</div>
+
+<div class="summary">
+  <h3>Requirement Summary</h3>
+  <p>{{requirement_summary}}</p>
+</div>
+
+<table>
+<thead>
+<tr>
+  <th>Sr.</th><th>Product Code</th><th>Description</th><th>Grade/Specification</th>
+  <th>Qty</th><th>Unit</th><th>Unit Price</th><th>Amount</th>
+</tr>
+</thead>
+<tbody>
+{{line_items_html}}
+</tbody>
+</table>
+
+<table class="total-box">
+<tr><td>Subtotal</td><td class="amount">{{subtotal}}</td></tr>
+<tr><td>Discount</td><td class="amount">{{discount_amount}}</td></tr>
+<tr><td>Freight</td><td class="amount">{{freight_amount}}</td></tr>
+<tr><td>Taxable Value</td><td class="amount">{{taxable_value}}</td></tr>
+<tr><td>GST</td><td class="amount">{{gst_amount}}</td></tr>
+<tr><td>Grand Total</td><td class="amount"><strong>{{grand_total}}</strong></td></tr>
+</table>
+
+<div class="terms">
+  <h3>Commercial Terms</h3>
+  <p><strong>Payment:</strong> {{payment_terms}}</p>
+  <p><strong>Delivery:</strong> {{delivery_terms}}</p>
+  <p><strong>Freight:</strong> {{freight_basis}}</p>
+  <p><strong>Warranty:</strong> {{warranty}}</p>
+  <p><strong>Special Conditions:</strong> {{special_conditions}}</p>
+</div>
+
+<div class="approval">
+  <strong>Internal Approval Status:</strong> {{approval_status}}<br>
+  <strong>Approved By:</strong> {{approved_by}}<br>
+  <strong>Approval Reference:</strong> {{approval_reference}}
+</div>
+
+<div class="footer">
+  This quotation is subject to the company's standard Terms and Conditions.
+</div>
+</body>
+</html>

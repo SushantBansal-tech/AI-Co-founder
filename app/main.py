@@ -9,13 +9,13 @@ from fastapi import (
     UploadFile,
 )
 
-from documents.embbedings import LocalEmbeddingService
-from documents.models import (
+from app.documents.embeddings import LocalEmbeddingService
+from app.documents.models import (
     DocumentType,
     DocumentUploadMetadata,
 )
-from documents.service import DocumentIngestionService
-from documents.vector_store import DocumentVectorStore
+from app.documents.service import DocumentIngestionService
+from app.documents.vector_store import DocumentVectorStore
 
 
 embedding_service: LocalEmbeddingService

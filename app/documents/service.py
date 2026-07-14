@@ -4,14 +4,14 @@ from pathlib import Path
 
 from fastapi import UploadFile
 
-from documents.chunker import split_into_chunks
-from documents.embbedings import LocalEmbeddingService
-from documents.models import (
+from app.documents.chunker import split_into_chunks
+from app.documents.embeddings import LocalEmbeddingService
+from app.documents.models import (
     DocumentUploadMetadata,
     ParsedDocument,
 )
-from documents.parser import parse_document
-from documents.vector_store import DocumentVectorStore
+from app.documents.parser import parse_document
+from app.documents.vector_store import DocumentVectorStore
 
 
 ALLOWED_EXTENSIONS = {

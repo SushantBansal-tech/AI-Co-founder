@@ -1,0 +1,101 @@
+﻿customer_id,company_name,contact_person,phone,email,city,state,customer_type,gstin,credit_limit_inr,outstanding_amount_inr,payment_behavior,previous_orders_count,lifetime_sales_inr,lead_source,status
+CUST-0001,Bharat Industrial 001 Pvt Ltd,Contact Person 001,+91-9896233790,buyer001@examplebusiness.in,Bengaluru,Karnataka,Dealer,GSTIN0000000001,800000,310000,Delayed,8,12500000,WhatsApp,Active
+CUST-0002,Crest Industrial 002 Pvt Ltd,Contact Person 002,+91-9249827706,buyer002@examplebusiness.in,Chennai,Tamil Nadu,Distributor,GSTIN0000000002,3300000,0,Good,23,5200000,Website,Active
+CUST-0003,Delta Industrial 003 Pvt Ltd,Contact Person 003,+91-9734036506,buyer003@examplebusiness.in,Hyderabad,Telangana,Corporate,GSTIN0000000003,1600000,1420000,High Risk,13,1600000,IndiaMART,Active
+CUST-0004,Everest Industrial 004 Pvt Ltd,Contact Person 004,+91-9334760738,buyer004@examplebusiness.in,Mumbai,Maharashtra,EPC Contractor,GSTIN0000000004,1600000,100000,Average,7,25800000,Referral,Active
+CUST-0005,Falcon Industrial 005 Pvt Ltd,Contact Person 005,+91-9128492780,buyer005@examplebusiness.in,Pune,Maharashtra,OEM,GSTIN0000000005,8200000,0,Excellent,17,10100000,Trade Fair,Active
+CUST-0006,Galaxy Industrial 006 Pvt Ltd,Contact Person 006,+91-9336696312,buyer006@examplebusiness.in,Ahmedabad,Gujarat,Government,GSTIN0000000006,5800000,1420000,Delayed,14,30100000,Email,Active
+CUST-0007,Horizon Industrial 007 Pvt Ltd,Contact Person 007,+91-9969119330,buyer007@examplebusiness.in,Delhi,Delhi,Dealer,GSTIN0000000007,4000000,0,Good,0,38800000,WhatsApp,Active
+CUST-0008,Indus Industrial 008 Pvt Ltd,Contact Person 008,+91-9553778756,buyer008@examplebusiness.in,Noida,Uttar Pradesh,Distributor,GSTIN0000000008,9400000,430000,High Risk,10,14200000,Website,Active
+CUST-0009,Jupiter Industrial 009 Pvt Ltd,Contact Person 009,+91-9919795579,buyer009@examplebusiness.in,Gurugram,Haryana,Corporate,GSTIN0000000009,3200000,420000,Average,10,5200000,IndiaMART,Active
+CUST-0010,Apex Industrial 010 Pvt Ltd,Contact Person 010,+91-9507943839,buyer010@examplebusiness.in,Jaipur,Rajasthan,EPC Contractor,GSTIN0000000010,1600000,0,Excellent,3,18300000,Referral,Active
+CUST-0011,Bharat Industrial 011 Pvt Ltd,Contact Person 011,+91-9384027113,buyer011@examplebusiness.in,Kolkata,West Bengal,OEM,GSTIN0000000011,8200000,905000,Delayed,25,2200000,Trade Fair,Inactive
+CUST-0012,Crest Industrial 012 Pvt Ltd,Contact Person 012,+91-9593303705,buyer012@examplebusiness.in,Bhubaneswar,Odisha,Government,GSTIN0000000012,9800000,0,Good,17,6300000,Email,Active
+CUST-0013,Delta Industrial 013 Pvt Ltd,Contact Person 013,+91-9692749116,buyer013@examplebusiness.in,Raipur,Chhattisgarh,Dealer,GSTIN0000000013,1500000,990000,High Risk,9,42400000,WhatsApp,Active
+CUST-0014,Everest Industrial 014 Pvt Ltd,Contact Person 014,+91-9306468299,buyer014@examplebusiness.in,Indore,Madhya Pradesh,Distributor,GSTIN0000000014,7800000,950000,Average,22,3500000,Website,Active
+CUST-0015,Falcon Industrial 015 Pvt Ltd,Contact Person 015,+91-9810026086,buyer015@examplebusiness.in,Nagpur,Maharashtra,Corporate,GSTIN0000000015,1000000,0,Excellent,7,39500000,IndiaMART,Active
+CUST-0016,Galaxy Industrial 016 Pvt Ltd,Contact Person 016,+91-9349957310,buyer016@examplebusiness.in,Bengaluru,Karnataka,EPC Contractor,GSTIN0000000016,1500000,765000,Delayed,3,19400000,Referral,Active
+CUST-0017,Horizon Industrial 017 Pvt Ltd,Contact Person 017,+91-9586845604,buyer017@examplebusiness.in,Chennai,Tamil Nadu,OEM,GSTIN0000000017,4000000,0,Good,20,42700000,Trade Fair,Active
+CUST-0018,Indus Industrial 018 Pvt Ltd,Contact Person 018,+91-9497478786,buyer018@examplebusiness.in,Hyderabad,Telangana,Government,GSTIN0000000018,2500000,955000,High Risk,11,10700000,Email,Active
+CUST-0019,Jupiter Industrial 019 Pvt Ltd,Contact Person 019,+91-9833953718,buyer019@examplebusiness.in,Mumbai,Maharashtra,Dealer,GSTIN0000000019,9400000,705000,Average,20,3600000,WhatsApp,Active
+CUST-0020,Apex Industrial 020 Pvt Ltd,Contact Person 020,+91-9781802744,buyer020@examplebusiness.in,Pune,Maharashtra,Distributor,GSTIN0000000020,8200000,0,Excellent,5,27300000,Website,Active
+CUST-0021,Bharat Industrial 021 Pvt Ltd,Contact Person 021,+91-9596348124,buyer021@examplebusiness.in,Ahmedabad,Gujarat,Corporate,GSTIN0000000021,2500000,650000,Delayed,12,13800000,IndiaMART,Active
+CUST-0022,Crest Industrial 022 Pvt Ltd,Contact Person 022,+91-9838908273,buyer022@examplebusiness.in,Delhi,Delhi,EPC Contractor,GSTIN0000000022,8600000,0,Good,17,11200000,Referral,Inactive
+CUST-0023,Delta Industrial 023 Pvt Ltd,Contact Person 023,+91-9345938494,buyer023@examplebusiness.in,Noida,Uttar Pradesh,OEM,GSTIN0000000023,1200000,855000,High Risk,1,41200000,Trade Fair,Active
+CUST-0024,Everest Industrial 024 Pvt Ltd,Contact Person 024,+91-9387484583,buyer024@examplebusiness.in,Gurugram,Haryana,Government,GSTIN0000000024,5600000,830000,Average,2,10800000,Email,Active
+CUST-0025,Falcon Industrial 025 Pvt Ltd,Contact Person 025,+91-9870854579,buyer025@examplebusiness.in,Jaipur,Rajasthan,Dealer,GSTIN0000000025,7700000,0,Excellent,10,10800000,WhatsApp,Active
+CUST-0026,Galaxy Industrial 026 Pvt Ltd,Contact Person 026,+91-9790256940,buyer026@examplebusiness.in,Kolkata,West Bengal,Distributor,GSTIN0000000026,5500000,1300000,Delayed,14,7300000,Website,Active
+CUST-0027,Horizon Industrial 027 Pvt Ltd,Contact Person 027,+91-9249926919,buyer027@examplebusiness.in,Bhubaneswar,Odisha,Corporate,GSTIN0000000027,3800000,0,Good,7,38100000,IndiaMART,Active
+CUST-0028,Indus Industrial 028 Pvt Ltd,Contact Person 028,+91-9382116655,buyer028@examplebusiness.in,Raipur,Chhattisgarh,EPC Contractor,GSTIN0000000028,7300000,1460000,High Risk,23,29900000,Referral,Active
+CUST-0029,Jupiter Industrial 029 Pvt Ltd,Contact Person 029,+91-9528853029,buyer029@examplebusiness.in,Indore,Madhya Pradesh,OEM,GSTIN0000000029,7900000,1120000,Average,11,11200000,Trade Fair,Active
+CUST-0030,Apex Industrial 030 Pvt Ltd,Contact Person 030,+91-9647099690,buyer030@examplebusiness.in,Nagpur,Maharashtra,Government,GSTIN0000000030,2200000,0,Excellent,15,4600000,Email,Active
+CUST-0031,Bharat Industrial 031 Pvt Ltd,Contact Person 031,+91-9264112119,buyer031@examplebusiness.in,Bengaluru,Karnataka,Dealer,GSTIN0000000031,1900000,145000,Delayed,20,8100000,WhatsApp,Active
+CUST-0032,Crest Industrial 032 Pvt Ltd,Contact Person 032,+91-9553290810,buyer032@examplebusiness.in,Chennai,Tamil Nadu,Distributor,GSTIN0000000032,9200000,0,Good,19,3200000,Website,Active
+CUST-0033,Delta Industrial 033 Pvt Ltd,Contact Person 033,+91-9739830322,buyer033@examplebusiness.in,Hyderabad,Telangana,Corporate,GSTIN0000000033,5300000,1010000,High Risk,14,27000000,IndiaMART,Inactive
+CUST-0034,Everest Industrial 034 Pvt Ltd,Contact Person 034,+91-9112327652,buyer034@examplebusiness.in,Mumbai,Maharashtra,EPC Contractor,GSTIN0000000034,7500000,665000,Average,21,36900000,Referral,Active
+CUST-0035,Falcon Industrial 035 Pvt Ltd,Contact Person 035,+91-9831980933,buyer035@examplebusiness.in,Pune,Maharashtra,OEM,GSTIN0000000035,1900000,0,Excellent,17,38400000,Trade Fair,Active
+CUST-0036,Galaxy Industrial 036 Pvt Ltd,Contact Person 036,+91-9465260635,buyer036@examplebusiness.in,Ahmedabad,Gujarat,Government,GSTIN0000000036,8700000,705000,Delayed,3,15000000,Email,Active
+CUST-0037,Horizon Industrial 037 Pvt Ltd,Contact Person 037,+91-9269820594,buyer037@examplebusiness.in,Delhi,Delhi,Dealer,GSTIN0000000037,6000000,0,Good,14,100000,WhatsApp,Active
+CUST-0038,Indus Industrial 038 Pvt Ltd,Contact Person 038,+91-9918150683,buyer038@examplebusiness.in,Noida,Uttar Pradesh,Distributor,GSTIN0000000038,6900000,695000,High Risk,5,25900000,Website,Active
+CUST-0039,Jupiter Industrial 039 Pvt Ltd,Contact Person 039,+91-9420452650,buyer039@examplebusiness.in,Gurugram,Haryana,Corporate,GSTIN0000000039,8500000,295000,Average,20,25900000,IndiaMART,Active
+CUST-0040,Apex Industrial 040 Pvt Ltd,Contact Person 040,+91-9313579170,buyer040@examplebusiness.in,Jaipur,Rajasthan,EPC Contractor,GSTIN0000000040,8200000,0,Excellent,4,19100000,Referral,Active
+CUST-0041,Bharat Industrial 041 Pvt Ltd,Contact Person 041,+91-9936043811,buyer041@examplebusiness.in,Kolkata,West Bengal,OEM,GSTIN0000000041,7400000,435000,Delayed,16,47000000,Trade Fair,Active
+CUST-0042,Crest Industrial 042 Pvt Ltd,Contact Person 042,+91-9743111853,buyer042@examplebusiness.in,Bhubaneswar,Odisha,Government,GSTIN0000000042,500000,0,Good,10,25000000,Email,Active
+CUST-0043,Delta Industrial 043 Pvt Ltd,Contact Person 043,+91-9489747629,buyer043@examplebusiness.in,Raipur,Chhattisgarh,Dealer,GSTIN0000000043,1900000,70000,High Risk,25,15700000,WhatsApp,Active
+CUST-0044,Everest Industrial 044 Pvt Ltd,Contact Person 044,+91-9358633898,buyer044@examplebusiness.in,Indore,Madhya Pradesh,Distributor,GSTIN0000000044,1200000,635000,Average,18,48400000,Website,Inactive
+CUST-0045,Falcon Industrial 045 Pvt Ltd,Contact Person 045,+91-9191969690,buyer045@examplebusiness.in,Nagpur,Maharashtra,Corporate,GSTIN0000000045,1500000,0,Excellent,23,24800000,IndiaMART,Active
+CUST-0046,Galaxy Industrial 046 Pvt Ltd,Contact Person 046,+91-9922308461,buyer046@examplebusiness.in,Bengaluru,Karnataka,EPC Contractor,GSTIN0000000046,7300000,200000,Delayed,4,6500000,Referral,Active
+CUST-0047,Horizon Industrial 047 Pvt Ltd,Contact Person 047,+91-9610330567,buyer047@examplebusiness.in,Chennai,Tamil Nadu,OEM,GSTIN0000000047,8900000,0,Good,17,8400000,Trade Fair,Active
+CUST-0048,Indus Industrial 048 Pvt Ltd,Contact Person 048,+91-9751325257,buyer048@examplebusiness.in,Hyderabad,Telangana,Government,GSTIN0000000048,7200000,700000,High Risk,13,49300000,Email,Active
+CUST-0049,Jupiter Industrial 049 Pvt Ltd,Contact Person 049,+91-9910959828,buyer049@examplebusiness.in,Mumbai,Maharashtra,Dealer,GSTIN0000000049,7400000,565000,Average,23,35300000,WhatsApp,Active
+CUST-0050,Apex Industrial 050 Pvt Ltd,Contact Person 050,+91-9865523129,buyer050@examplebusiness.in,Pune,Maharashtra,Distributor,GSTIN0000000050,3000000,0,Excellent,9,20400000,Website,Active
+CUST-0051,Bharat Industrial 051 Pvt Ltd,Contact Person 051,+91-9655742829,buyer051@examplebusiness.in,Ahmedabad,Gujarat,Corporate,GSTIN0000000051,6100000,980000,Delayed,14,6100000,IndiaMART,Active
+CUST-0052,Crest Industrial 052 Pvt Ltd,Contact Person 052,+91-9341266931,buyer052@examplebusiness.in,Delhi,Delhi,EPC Contractor,GSTIN0000000052,3600000,0,Good,2,17300000,Referral,Active
+CUST-0053,Delta Industrial 053 Pvt Ltd,Contact Person 053,+91-9694768704,buyer053@examplebusiness.in,Noida,Uttar Pradesh,OEM,GSTIN0000000053,8000000,75000,High Risk,7,30100000,Trade Fair,Active
+CUST-0054,Everest Industrial 054 Pvt Ltd,Contact Person 054,+91-9176228245,buyer054@examplebusiness.in,Gurugram,Haryana,Government,GSTIN0000000054,500000,585000,Average,22,32300000,Email,Active
+CUST-0055,Falcon Industrial 055 Pvt Ltd,Contact Person 055,+91-9345824373,buyer055@examplebusiness.in,Jaipur,Rajasthan,Dealer,GSTIN0000000055,1200000,0,Excellent,2,46300000,WhatsApp,Inactive
+CUST-0056,Galaxy Industrial 056 Pvt Ltd,Contact Person 056,+91-9176082500,buyer056@examplebusiness.in,Kolkata,West Bengal,Distributor,GSTIN0000000056,4700000,105000,Delayed,16,12100000,Website,Active
+CUST-0057,Horizon Industrial 057 Pvt Ltd,Contact Person 057,+91-9818309417,buyer057@examplebusiness.in,Bhubaneswar,Odisha,Corporate,GSTIN0000000057,4000000,0,Good,15,10900000,IndiaMART,Active
+CUST-0058,Indus Industrial 058 Pvt Ltd,Contact Person 058,+91-9876693898,buyer058@examplebusiness.in,Raipur,Chhattisgarh,EPC Contractor,GSTIN0000000058,2100000,1405000,High Risk,18,29500000,Referral,Active
+CUST-0059,Jupiter Industrial 059 Pvt Ltd,Contact Person 059,+91-9942478695,buyer059@examplebusiness.in,Indore,Madhya Pradesh,OEM,GSTIN0000000059,3600000,1235000,Average,15,41300000,Trade Fair,Active
+CUST-0060,Apex Industrial 060 Pvt Ltd,Contact Person 060,+91-9304451095,buyer060@examplebusiness.in,Nagpur,Maharashtra,Government,GSTIN0000000060,5700000,0,Excellent,3,4900000,Email,Active
+CUST-0061,Bharat Industrial 061 Pvt Ltd,Contact Person 061,+91-9554814084,buyer061@examplebusiness.in,Bengaluru,Karnataka,Dealer,GSTIN0000000061,5000000,1125000,Delayed,13,23900000,WhatsApp,Active
+CUST-0062,Crest Industrial 062 Pvt Ltd,Contact Person 062,+91-9158165865,buyer062@examplebusiness.in,Chennai,Tamil Nadu,Distributor,GSTIN0000000062,9800000,0,Good,21,33400000,Website,Active
+CUST-0063,Delta Industrial 063 Pvt Ltd,Contact Person 063,+91-9532311310,buyer063@examplebusiness.in,Hyderabad,Telangana,Corporate,GSTIN0000000063,1200000,275000,High Risk,23,17300000,IndiaMART,Active
+CUST-0064,Everest Industrial 064 Pvt Ltd,Contact Person 064,+91-9305718272,buyer064@examplebusiness.in,Mumbai,Maharashtra,EPC Contractor,GSTIN0000000064,3600000,300000,Average,6,27400000,Referral,Active
+CUST-0065,Falcon Industrial 065 Pvt Ltd,Contact Person 065,+91-9250519597,buyer065@examplebusiness.in,Pune,Maharashtra,OEM,GSTIN0000000065,6200000,0,Excellent,13,9300000,Trade Fair,Active
+CUST-0066,Galaxy Industrial 066 Pvt Ltd,Contact Person 066,+91-9368227631,buyer066@examplebusiness.in,Ahmedabad,Gujarat,Government,GSTIN0000000066,6400000,735000,Delayed,2,22600000,Email,Inactive
+CUST-0067,Horizon Industrial 067 Pvt Ltd,Contact Person 067,+91-9205128697,buyer067@examplebusiness.in,Delhi,Delhi,Dealer,GSTIN0000000067,7500000,0,Good,1,33300000,WhatsApp,Active
+CUST-0068,Indus Industrial 068 Pvt Ltd,Contact Person 068,+91-9200140141,buyer068@examplebusiness.in,Noida,Uttar Pradesh,Distributor,GSTIN0000000068,600000,1405000,High Risk,24,43400000,Website,Active
+CUST-0069,Jupiter Industrial 069 Pvt Ltd,Contact Person 069,+91-9536383774,buyer069@examplebusiness.in,Gurugram,Haryana,Corporate,GSTIN0000000069,2600000,630000,Average,15,24600000,IndiaMART,Active
+CUST-0070,Apex Industrial 070 Pvt Ltd,Contact Person 070,+91-9530613729,buyer070@examplebusiness.in,Jaipur,Rajasthan,EPC Contractor,GSTIN0000000070,3200000,0,Excellent,1,8400000,Referral,Active
+CUST-0071,Bharat Industrial 071 Pvt Ltd,Contact Person 071,+91-9519212169,buyer071@examplebusiness.in,Kolkata,West Bengal,OEM,GSTIN0000000071,500000,995000,Delayed,8,47400000,Trade Fair,Active
+CUST-0072,Crest Industrial 072 Pvt Ltd,Contact Person 072,+91-9406284028,buyer072@examplebusiness.in,Bhubaneswar,Odisha,Government,GSTIN0000000072,6300000,0,Good,13,35600000,Email,Active
+CUST-0073,Delta Industrial 073 Pvt Ltd,Contact Person 073,+91-9871385010,buyer073@examplebusiness.in,Raipur,Chhattisgarh,Dealer,GSTIN0000000073,8900000,1445000,High Risk,15,7900000,WhatsApp,Active
+CUST-0074,Everest Industrial 074 Pvt Ltd,Contact Person 074,+91-9333754555,buyer074@examplebusiness.in,Indore,Madhya Pradesh,Distributor,GSTIN0000000074,4200000,510000,Average,1,29600000,Website,Active
+CUST-0075,Falcon Industrial 075 Pvt Ltd,Contact Person 075,+91-9682177668,buyer075@examplebusiness.in,Nagpur,Maharashtra,Corporate,GSTIN0000000075,9900000,0,Excellent,1,38200000,IndiaMART,Active
+CUST-0076,Galaxy Industrial 076 Pvt Ltd,Contact Person 076,+91-9153839920,buyer076@examplebusiness.in,Bengaluru,Karnataka,EPC Contractor,GSTIN0000000076,1200000,825000,Delayed,18,24400000,Referral,Active
+CUST-0077,Horizon Industrial 077 Pvt Ltd,Contact Person 077,+91-9670292350,buyer077@examplebusiness.in,Chennai,Tamil Nadu,OEM,GSTIN0000000077,6900000,0,Good,5,2900000,Trade Fair,Inactive
+CUST-0078,Indus Industrial 078 Pvt Ltd,Contact Person 078,+91-9299528037,buyer078@examplebusiness.in,Hyderabad,Telangana,Government,GSTIN0000000078,1500000,1325000,High Risk,2,30400000,Email,Active
+CUST-0079,Jupiter Industrial 079 Pvt Ltd,Contact Person 079,+91-9352548261,buyer079@examplebusiness.in,Mumbai,Maharashtra,Dealer,GSTIN0000000079,9100000,195000,Average,12,6100000,WhatsApp,Active
+CUST-0080,Apex Industrial 080 Pvt Ltd,Contact Person 080,+91-9364371717,buyer080@examplebusiness.in,Pune,Maharashtra,Distributor,GSTIN0000000080,7700000,0,Excellent,18,30400000,Website,Active
+CUST-0081,Bharat Industrial 081 Pvt Ltd,Contact Person 081,+91-9188029013,buyer081@examplebusiness.in,Ahmedabad,Gujarat,Corporate,GSTIN0000000081,8400000,125000,Delayed,13,33600000,IndiaMART,Active
+CUST-0082,Crest Industrial 082 Pvt Ltd,Contact Person 082,+91-9706907788,buyer082@examplebusiness.in,Delhi,Delhi,EPC Contractor,GSTIN0000000082,7900000,0,Good,16,16100000,Referral,Active
+CUST-0083,Delta Industrial 083 Pvt Ltd,Contact Person 083,+91-9819112790,buyer083@examplebusiness.in,Noida,Uttar Pradesh,OEM,GSTIN0000000083,3100000,690000,High Risk,22,16000000,Trade Fair,Active
+CUST-0084,Everest Industrial 084 Pvt Ltd,Contact Person 084,+91-9524971817,buyer084@examplebusiness.in,Gurugram,Haryana,Government,GSTIN0000000084,3800000,635000,Average,4,34300000,Email,Active
+CUST-0085,Falcon Industrial 085 Pvt Ltd,Contact Person 085,+91-9422119408,buyer085@examplebusiness.in,Jaipur,Rajasthan,Dealer,GSTIN0000000085,8700000,0,Excellent,14,16100000,WhatsApp,Active
+CUST-0086,Galaxy Industrial 086 Pvt Ltd,Contact Person 086,+91-9592080329,buyer086@examplebusiness.in,Kolkata,West Bengal,Distributor,GSTIN0000000086,600000,210000,Delayed,19,28800000,Website,Active
+CUST-0087,Horizon Industrial 087 Pvt Ltd,Contact Person 087,+91-9178663096,buyer087@examplebusiness.in,Bhubaneswar,Odisha,Corporate,GSTIN0000000087,1700000,0,Good,17,10900000,IndiaMART,Active
+CUST-0088,Indus Industrial 088 Pvt Ltd,Contact Person 088,+91-9242224154,buyer088@examplebusiness.in,Raipur,Chhattisgarh,EPC Contractor,GSTIN0000000088,3800000,1320000,High Risk,11,45100000,Referral,Inactive
+CUST-0089,Jupiter Industrial 089 Pvt Ltd,Contact Person 089,+91-9496776692,buyer089@examplebusiness.in,Indore,Madhya Pradesh,OEM,GSTIN0000000089,3600000,200000,Average,9,8000000,Trade Fair,Active
+CUST-0090,Apex Industrial 090 Pvt Ltd,Contact Person 090,+91-9995226828,buyer090@examplebusiness.in,Nagpur,Maharashtra,Government,GSTIN0000000090,6100000,0,Excellent,17,36000000,Email,Active
+CUST-0091,Bharat Industrial 091 Pvt Ltd,Contact Person 091,+91-9966616964,buyer091@examplebusiness.in,Bengaluru,Karnataka,Dealer,GSTIN0000000091,8300000,795000,Delayed,20,27000000,WhatsApp,Active
+CUST-0092,Crest Industrial 092 Pvt Ltd,Contact Person 092,+91-9817112652,buyer092@examplebusiness.in,Chennai,Tamil Nadu,Distributor,GSTIN0000000092,600000,0,Good,17,15300000,Website,Active
+CUST-0093,Delta Industrial 093 Pvt Ltd,Contact Person 093,+91-9383968123,buyer093@examplebusiness.in,Hyderabad,Telangana,Corporate,GSTIN0000000093,2200000,290000,High Risk,3,45500000,IndiaMART,Active
+CUST-0094,Everest Industrial 094 Pvt Ltd,Contact Person 094,+91-9266910922,buyer094@examplebusiness.in,Mumbai,Maharashtra,EPC Contractor,GSTIN0000000094,7500000,295000,Average,8,14400000,Referral,Active
+CUST-0095,Falcon Industrial 095 Pvt Ltd,Contact Person 095,+91-9326161867,buyer095@examplebusiness.in,Pune,Maharashtra,OEM,GSTIN0000000095,8200000,0,Excellent,22,17500000,Trade Fair,Active
+CUST-0096,Galaxy Industrial 096 Pvt Ltd,Contact Person 096,+91-9781007818,buyer096@examplebusiness.in,Ahmedabad,Gujarat,Government,GSTIN0000000096,9200000,545000,Delayed,8,25800000,Email,Active
+CUST-0097,Horizon Industrial 097 Pvt Ltd,Contact Person 097,+91-9369639388,buyer097@examplebusiness.in,Delhi,Delhi,Dealer,GSTIN0000000097,6700000,0,Good,1,4700000,WhatsApp,Active
+CUST-0098,Indus Industrial 098 Pvt Ltd,Contact Person 098,+91-9147337803,buyer098@examplebusiness.in,Noida,Uttar Pradesh,Distributor,GSTIN0000000098,4000000,1105000,High Risk,0,17000000,Website,Active
+CUST-0099,Jupiter Industrial 099 Pvt Ltd,Contact Person 099,+91-9381272327,buyer099@examplebusiness.in,Gurugram,Haryana,Corporate,GSTIN0000000099,8600000,355000,Average,5,37900000,IndiaMART,Inactive
+CUST-0100,Apex Industrial 100 Pvt Ltd,Contact Person 100,+91-9692362342,buyer100@examplebusiness.in,Jaipur,Rajasthan,EPC Contractor,GSTIN0000000100,6100000,0,Excellent,22,21800000,Referral,Active

@@ -533,73 +533,73 @@ def _print_state(state: PipelineState):
 # DEMO — runs three scenarios through the compiled graph
 # ═══════════════════════════════════════════════════════════════════════════
 
-async def _demo():
-    from document_store import DocumentManager
-    from database import init_db, create_all_tables, _engine
+# async def _demo():
+#     from document_store import DocumentManager
+#     from database import init_db, create_all_tables, _engine
 
-    init_db()
-    await create_all_tables()
-    from database import _engine as engine
-    Session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+#     init_db()
+#     await create_all_tables()
+#     from database import _engine as engine
+#     Session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
-    client_obj = None
-    if os.environ.get("GEMINI_API_KEY"):
-        from google import genai
-        client_obj = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+#     client_obj = None
+#     if os.environ.get("GEMINI_API_KEY"):
+#         from google import genai
+#         client_obj = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
-    dm  = DocumentManager()
-    app = build_graph(Session, dm, client_obj)
+#     dm  = DocumentManager()
+#     app = build_graph(Session, dm, client_obj)
 
-    scenarios = [
-        {
-            "label": "Complete inquiry — Apex Steel, 500 MT MS Billet",
-            "state": {
-                "source": "email",
-                "raw_text": (
-                    "Hi, need 500 MT MS Billet IS2062, 100x100mm, "
-                    "delivery Ludhiana, within 30 days. "
-                    "Ramesh Kumar, Apex Steel Pvt Ltd"
-                ),
-                "sender_identifier": "ramesh@apexsteel.in",
-                "stages_completed": [],
-                "human_approval_reasons": [],
-                "needs_followup": False,
-                "needs_human_approval": False,
-                "human_approval_stage": None,
-                "inquiry_id": None, "lead_id": None, "quotation_number": None,
-                "extraction": None, "requirement": None, "customer_profile": None,
-                "qualification": None, "feasibility": None, "pricing": None,
-                "error": None,
-            },
-        },
-        {
-            "label": "Incomplete inquiry — missing name and company",
-            "state": {
-                "source": "whatsapp",
-                "raw_text": "Need 200 MT MS Pipe 2 inch ASAP",
-                "sender_identifier": "+919812345678",
-                "stages_completed": [],
-                "human_approval_reasons": [],
-                "needs_followup": False,
-                "needs_human_approval": False,
-                "human_approval_stage": None,
-                "inquiry_id": None, "lead_id": None, "quotation_number": None,
-                "extraction": None, "requirement": None, "customer_profile": None,
-                "qualification": None, "feasibility": None, "pricing": None,
-                "error": None,
-            },
-        },
-    ]
+#     scenarios = [
+#         {
+#             "label": "Complete inquiry — Apex Steel, 500 MT MS Billet",
+#             "state": {
+#                 "source": "email",
+#                 "raw_text": (
+#                     "Hi, need 500 MT MS Billet IS2062, 100x100mm, "
+#                     "delivery Ludhiana, within 30 days. "
+#                     "Ramesh Kumar, Apex Steel Pvt Ltd"
+#                 ),
+#                 "sender_identifier": "ramesh@apexsteel.in",
+#                 "stages_completed": [],
+#                 "human_approval_reasons": [],
+#                 "needs_followup": False,
+#                 "needs_human_approval": False,
+#                 "human_approval_stage": None,
+#                 "inquiry_id": None, "lead_id": None, "quotation_number": None,
+#                 "extraction": None, "requirement": None, "customer_profile": None,
+#                 "qualification": None, "feasibility": None, "pricing": None,
+#                 "error": None,
+#             },
+#         },
+#         {
+#             "label": "Incomplete inquiry — missing name and company",
+#             "state": {
+#                 "source": "whatsapp",
+#                 "raw_text": "Need 200 MT MS Pipe 2 inch ASAP",
+#                 "sender_identifier": "+919812345678",
+#                 "stages_completed": [],
+#                 "human_approval_reasons": [],
+#                 "needs_followup": False,
+#                 "needs_human_approval": False,
+#                 "human_approval_stage": None,
+#                 "inquiry_id": None, "lead_id": None, "quotation_number": None,
+#                 "extraction": None, "requirement": None, "customer_profile": None,
+#                 "qualification": None, "feasibility": None, "pricing": None,
+#                 "error": None,
+#             },
+#         },
+#     ]
 
-    for scenario in scenarios:
-        print(f"\n{'='*60}")
-        print(f"SCENARIO: {scenario['label']}")
-        result = await app.ainvoke(scenario["state"])
-        _print_state(result)
+#     for scenario in scenarios:
+#         print(f"\n{'='*60}")
+#         print(f"SCENARIO: {scenario['label']}")
+#         result = await app.ainvoke(scenario["state"])
+#         _print_state(result)
 
 
 if __name__ == "__main__":
-    asyncio.run(_demo())
+    asyncio.run(build_graph())
     
     
     

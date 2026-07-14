@@ -1,0 +1,101 @@
+﻿material_code,material_name,unit,cost_per_unit_inr,supplier_lead_time_days,preferred_supplier,effective_date,overhead_percentage,status
+RM-001,Iron Ore Grade 001,KG,137.71,17,Spot Market,2026-06-26,10.1,Active
+RM-002,Scrap Steel Grade 002,KG,83.1,33,Approved Vendor A,2026-06-17,9.48,Active
+RM-003,Coking Coal Grade 003,KG,689.65,20,Spot Market,2026-01-20,6.59,Active
+RM-004,Ferro Manganese Grade 004,KG,552.86,13,Approved Vendor A,2026-05-12,2.88,Active
+RM-005,Zinc Grade 005,KG,511.6,34,Approved Vendor A,2026-04-28,8.11,Active
+RM-006,Nickel Grade 006,KG,613.0,25,Approved Vendor C,2026-06-01,6.64,Active
+RM-007,Chromium Grade 007,KG,87.49,17,Approved Vendor A,2026-07-19,11.56,Active
+RM-008,Paint Grade 008,KG,332.58,4,Approved Vendor C,2026-05-11,12.58,Active
+RM-009,Packaging Grade 009,Nos,186.96,45,Spot Market,2026-06-16,10.21,Active
+RM-010,Welding Consumables Grade 010,KG,775.64,6,Spot Market,2026-01-10,4.62,Active
+RM-011,Iron Ore Grade 011,KG,756.78,4,Approved Vendor C,2026-03-17,7.18,Active
+RM-012,Scrap Steel Grade 012,KG,779.25,32,Approved Vendor C,2026-01-25,10.41,Active
+RM-013,Coking Coal Grade 013,KG,289.65,5,Approved Vendor C,2026-03-04,12.39,Active
+RM-014,Ferro Manganese Grade 014,KG,429.18,27,Spot Market,2026-04-11,14.66,Active
+RM-015,Zinc Grade 015,KG,483.99,33,Approved Vendor C,2026-07-17,5.47,Active
+RM-016,Nickel Grade 016,KG,101.42,29,Approved Vendor A,2026-04-20,14.94,Active
+RM-017,Chromium Grade 017,KG,191.92,20,Approved Vendor C,2026-01-03,6.26,Active
+RM-018,Paint Grade 018,KG,298.47,30,Spot Market,2026-02-23,7.77,Active
+RM-019,Packaging Grade 019,Nos,438.59,24,Spot Market,2026-03-21,14.74,Active
+RM-020,Welding Consumables Grade 020,KG,901.81,6,Spot Market,2026-03-17,12.41,Active
+RM-021,Iron Ore Grade 021,KG,653.45,3,Approved Vendor B,2026-07-20,10.82,Active
+RM-022,Scrap Steel Grade 022,KG,430.31,10,Approved Vendor A,2026-02-25,10.39,Active
+RM-023,Coking Coal Grade 023,KG,359.99,38,Approved Vendor A,2026-05-05,10.83,Active
+RM-024,Ferro Manganese Grade 024,KG,902.66,25,Spot Market,2026-07-03,9.46,Active
+RM-025,Zinc Grade 025,KG,514.75,27,Approved Vendor C,2026-06-09,5.24,Active
+RM-026,Nickel Grade 026,KG,129.94,13,Spot Market,2026-05-13,13.88,Active
+RM-027,Chromium Grade 027,KG,133.93,18,Spot Market,2026-02-20,5.71,Active
+RM-028,Paint Grade 028,KG,872.74,33,Approved Vendor B,2026-01-05,13.09,Active
+RM-029,Packaging Grade 029,Nos,443.14,30,Approved Vendor A,2026-07-22,14.58,Active
+RM-030,Welding Consumables Grade 030,KG,937.58,44,Approved Vendor C,2026-06-03,9.15,Active
+RM-031,Iron Ore Grade 031,KG,293.59,21,Approved Vendor B,2026-06-23,14.06,Active
+RM-032,Scrap Steel Grade 032,KG,614.87,25,Approved Vendor B,2026-01-07,12.3,Active
+RM-033,Coking Coal Grade 033,KG,243.98,33,Approved Vendor A,2026-03-18,9.44,Active
+RM-034,Ferro Manganese Grade 034,KG,457.35,37,Approved Vendor B,2026-05-03,2.85,Active
+RM-035,Zinc Grade 035,KG,393.3,32,Spot Market,2026-07-14,12.7,Active
+RM-036,Nickel Grade 036,KG,93.22,22,Approved Vendor A,2026-04-15,10.84,Active
+RM-037,Chromium Grade 037,KG,343.68,37,Approved Vendor B,2026-07-05,7.62,Active
+RM-038,Paint Grade 038,KG,867.41,5,Approved Vendor A,2026-05-05,5.95,Active
+RM-039,Packaging Grade 039,Nos,174.82,16,Approved Vendor C,2026-05-10,13.0,Active
+RM-040,Welding Consumables Grade 040,KG,256.81,42,Approved Vendor C,2026-02-21,5.94,Active
+RM-041,Iron Ore Grade 041,KG,518.47,34,Approved Vendor B,2026-05-19,4.0,Active
+RM-042,Scrap Steel Grade 042,KG,634.33,40,Approved Vendor C,2026-07-19,2.54,Active
+RM-043,Coking Coal Grade 043,KG,824.0,7,Approved Vendor A,2026-06-25,9.5,Active
+RM-044,Ferro Manganese Grade 044,KG,627.3,38,Spot Market,2026-05-21,2.39,Active
+RM-045,Zinc Grade 045,KG,847.32,36,Approved Vendor C,2026-06-10,8.28,Active
+RM-046,Nickel Grade 046,KG,769.34,45,Spot Market,2026-03-15,2.95,Active
+RM-047,Chromium Grade 047,KG,80.42,30,Spot Market,2026-04-15,4.65,Active
+RM-048,Paint Grade 048,KG,586.16,22,Approved Vendor C,2026-06-28,6.49,Active
+RM-049,Packaging Grade 049,Nos,393.81,25,Approved Vendor A,2026-03-08,8.06,Active
+RM-050,Welding Consumables Grade 050,KG,272.41,17,Approved Vendor B,2026-01-02,5.77,Active
+RM-051,Iron Ore Grade 051,KG,380.34,41,Spot Market,2026-02-28,13.73,Active
+RM-052,Scrap Steel Grade 052,KG,777.47,38,Approved Vendor C,2026-02-25,4.07,Active
+RM-053,Coking Coal Grade 053,KG,946.27,31,Spot Market,2026-03-16,2.3,Active
+RM-054,Ferro Manganese Grade 054,KG,899.34,34,Spot Market,2026-02-07,9.58,Active
+RM-055,Zinc Grade 055,KG,70.01,20,Spot Market,2026-05-27,10.51,Active
+RM-056,Nickel Grade 056,KG,460.29,36,Approved Vendor A,2026-07-04,7.6,Active
+RM-057,Chromium Grade 057,KG,841.27,25,Spot Market,2026-03-02,7.21,Active
+RM-058,Paint Grade 058,KG,552.51,14,Approved Vendor C,2026-05-10,2.96,Active
+RM-059,Packaging Grade 059,Nos,491.44,37,Approved Vendor C,2026-07-20,10.85,Active
+RM-060,Welding Consumables Grade 060,KG,134.9,8,Spot Market,2026-03-26,14.83,Active
+RM-061,Iron Ore Grade 061,KG,540.99,25,Approved Vendor B,2026-02-20,8.62,Active
+RM-062,Scrap Steel Grade 062,KG,487.57,4,Approved Vendor A,2026-02-23,6.33,Active
+RM-063,Coking Coal Grade 063,KG,463.21,31,Approved Vendor B,2026-05-17,3.82,Active
+RM-064,Ferro Manganese Grade 064,KG,886.52,22,Approved Vendor B,2026-04-20,11.61,Active
+RM-065,Zinc Grade 065,KG,301.79,23,Spot Market,2026-06-19,5.9,Active
+RM-066,Nickel Grade 066,KG,779.57,25,Approved Vendor C,2026-06-04,14.74,Active
+RM-067,Chromium Grade 067,KG,564.92,42,Approved Vendor A,2026-05-16,5.45,Active
+RM-068,Paint Grade 068,KG,631.42,39,Approved Vendor B,2026-06-02,9.59,Active
+RM-069,Packaging Grade 069,Nos,182.72,42,Spot Market,2026-02-27,10.85,Active
+RM-070,Welding Consumables Grade 070,KG,54.2,9,Approved Vendor B,2026-01-15,6.08,Active
+RM-071,Iron Ore Grade 071,KG,165.07,15,Spot Market,2026-05-25,9.95,Active
+RM-072,Scrap Steel Grade 072,KG,461.24,5,Approved Vendor B,2026-05-07,9.29,Active
+RM-073,Coking Coal Grade 073,KG,948.26,32,Spot Market,2026-03-06,7.98,Active
+RM-074,Ferro Manganese Grade 074,KG,518.14,36,Approved Vendor C,2026-06-25,13.28,Active
+RM-075,Zinc Grade 075,KG,654.69,18,Spot Market,2026-02-08,5.63,Active
+RM-076,Nickel Grade 076,KG,301.11,21,Approved Vendor C,2026-06-07,10.97,Active
+RM-077,Chromium Grade 077,KG,477.33,32,Approved Vendor C,2026-05-26,11.38,Active
+RM-078,Paint Grade 078,KG,291.21,38,Spot Market,2026-04-27,6.49,Active
+RM-079,Packaging Grade 079,Nos,740.08,11,Approved Vendor C,2026-01-10,14.42,Active
+RM-080,Welding Consumables Grade 080,KG,98.1,30,Approved Vendor C,2026-06-16,4.78,Active
+RM-081,Iron Ore Grade 081,KG,790.86,19,Approved Vendor C,2026-02-04,10.0,Active
+RM-082,Scrap Steel Grade 082,KG,567.82,17,Approved Vendor A,2026-06-17,4.93,Active
+RM-083,Coking Coal Grade 083,KG,240.37,8,Spot Market,2026-03-23,8.14,Active
+RM-084,Ferro Manganese Grade 084,KG,655.1,10,Approved Vendor A,2026-05-06,7.29,Active
+RM-085,Zinc Grade 085,KG,889.9,32,Spot Market,2026-06-07,11.83,Active
+RM-086,Nickel Grade 086,KG,290.7,20,Approved Vendor A,2026-07-03,10.48,Active
+RM-087,Chromium Grade 087,KG,239.8,4,Approved Vendor B,2026-04-27,4.29,Active
+RM-088,Paint Grade 088,KG,875.66,27,Spot Market,2026-02-24,14.51,Active
+RM-089,Packaging Grade 089,Nos,881.59,4,Approved Vendor A,2026-03-19,9.84,Active
+RM-090,Welding Consumables Grade 090,KG,883.82,23,Approved Vendor C,2026-04-21,9.06,Active
+RM-091,Iron Ore Grade 091,KG,481.87,10,Spot Market,2026-03-07,12.51,Active
+RM-092,Scrap Steel Grade 092,KG,330.88,31,Approved Vendor C,2026-06-06,2.18,Active
+RM-093,Coking Coal Grade 093,KG,336.83,20,Approved Vendor B,2026-02-20,13.13,Active
+RM-094,Ferro Manganese Grade 094,KG,854.76,29,Approved Vendor C,2026-01-13,10.7,Active
+RM-095,Zinc Grade 095,KG,195.92,10,Spot Market,2026-03-08,2.09,Active
+RM-096,Nickel Grade 096,KG,379.81,30,Approved Vendor C,2026-03-10,9.57,Active
+RM-097,Chromium Grade 097,KG,554.91,18,Approved Vendor C,2026-06-08,2.81,Active
+RM-098,Paint Grade 098,KG,134.36,21,Approved Vendor B,2026-04-22,8.53,Active
+RM-099,Packaging Grade 099,Nos,852.98,21,Approved Vendor A,2026-06-10,6.78,Active
+RM-100,Welding Consumables Grade 100,KG,229.29,10,Spot Market,2026-02-15,11.72,Active
