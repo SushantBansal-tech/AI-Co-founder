@@ -20,7 +20,7 @@ Humans are involved only for high-risk approvals such as large discounts, low-ma
 
 ## Architecture
 
-![AI Sales Operations Agent Architecture](docs/images/sales-agent-architecture.pn)
+![AI Sales Operations Agent Architecture]([docs/images/sales-agent-architecture.pn](https://github.com/SushantBansal-tech/Sales_Operation_OS/blob/main/Firebase%20Cloud%20Data-2026-07-15-180227.png))
 
 The workflow is coordinated using LangGraph, with separate agents for each stage of the sales process.
 
