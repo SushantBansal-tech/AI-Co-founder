@@ -24,7 +24,7 @@ Humans are involved only for high-risk approvals such as large discounts, low-ma
 (![Firebase%20Cloud%20Data-2026-07-15-180227.png](mermaid-ai-diagram-2026-07-16-080241.png))
 ![(Firebase%20Cloud%20Data-2026-07-15-180227.png)](mermaid-ai-diagram-2026-07-16-080420.png)
 ![(Firebase%20Cloud%20Data-2026-07-15-180227.png)](mermaid-ai-diagram-2026-07-16-080500.png)
-(mermaid-ai-diagram-2026-07-16-080647.png)
+![(Firebase%20Cloud%20Data-2026-07-15-180227.png)](mermaid-ai-diagram-2026-07-16-080647.png)
 The workflow is coordinated using LangGraph, with separate agents for each stage of the sales process.
 
 ## Document Intelligence
