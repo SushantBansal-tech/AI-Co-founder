@@ -1,6 +1,9 @@
 import json
+import os
 from contextlib import asynccontextmanager
+from importlib import import_module
 
+from dotenv import load_dotenv
 from fastapi import (
     FastAPI,
     File,
@@ -8,26 +11,56 @@ from fastapi import (
     HTTPException,
     UploadFile,
 )
+from google import genai
 from pydantic import BaseModel, Field
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 
 from app.documents.embeddings import LocalEmbeddingService
 from app.documents.models import (
     DocumentType,
     DocumentUploadMetadata,
 )
+from app.documents.router import AgentDocumentRetriever
 from app.documents.service import DocumentIngestionService
 from app.documents.vector_store import DocumentVectorStore
-from app.documents.router import AgentDocumentRetriever
+from app.graph2 import (
+    build_complete_graph,
+    make_initial_state,
+)
 from app.rag.langgraph_adapter import LangGraphRAGAdapter
-from app.rag.service import RAGContextService
 from app.rag.query_builder import canonical_agent_name
+from app.rag.service import RAGContextService
 
 
-embedding_service: LocalEmbeddingService
-vector_store: DocumentVectorStore
-ingestion_service: DocumentIngestionService
-rag_adapter: LangGraphRAGAdapter
+# Load GEMINI_API_KEY and other environment variables from .env.
+load_dotenv()
 
+
+# ---------------------------------------------------------------------------
+# Application services
+# Initialized during FastAPI lifespan.
+# ---------------------------------------------------------------------------
+
+embedding_service: LocalEmbeddingService | None = None
+vector_store: DocumentVectorStore | None = None
+ingestion_service: DocumentIngestionService | None = None
+rag_service: RAGContextService | None = None
+rag_adapter: LangGraphRAGAdapter | None = None
+
+database_engine = None
+Session = None
+
+sales_graph = None
+gemini_client = None
+
+
+# ---------------------------------------------------------------------------
+# Request models
+# ---------------------------------------------------------------------------
 
 class RAGRetrieveRequest(BaseModel):
     business_id: str = Field(min_length=1)
@@ -36,14 +69,16 @@ class RAGRetrieveRequest(BaseModel):
     top_k: int = Field(default=5, ge=1, le=20)
 
 
-embedding_service = None
-vector_store = None
-ingestion_service = None
-rag_service = None
-rag_adapter = None
-sales_graph = None
-gemini_client = None
+class InquiryRequest(BaseModel):
+    business_id: str = Field(min_length=1)
+    source: str = "email"
+    raw_text: str = Field(min_length=1)
+    sender_identifier: str | None = None
 
+
+# ---------------------------------------------------------------------------
+# FastAPI lifespan
+# ---------------------------------------------------------------------------
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -52,15 +87,29 @@ async def lifespan(app: FastAPI):
     global ingestion_service
     global rag_service
     global rag_adapter
+    global database_engine
+    global Session
     global sales_graph
     global gemini_client
 
+    # ------------------------------------------------------------------
+    # 1. Initialize the local embedding model.
+    # ------------------------------------------------------------------
+
     embedding_service = LocalEmbeddingService()
+
+    # ------------------------------------------------------------------
+    # 2. Initialize local persisted Qdrant.
+    # ------------------------------------------------------------------
 
     vector_store = DocumentVectorStore(
         embedding_dimension=embedding_service.dimension,
         path="qdrant_data",
     )
+
+    # ------------------------------------------------------------------
+    # 3. Initialize document ingestion.
+    # ------------------------------------------------------------------
 
     ingestion_service = DocumentIngestionService(
         embedding_service=embedding_service,
@@ -68,60 +117,140 @@ async def lifespan(app: FastAPI):
         upload_root="uploads",
     )
 
-    rag_service = RAGContextService(
-        vector_store=vector_store,
+    # ------------------------------------------------------------------
+    # 4. Initialize agent document retrieval and RAG services.
+    # ------------------------------------------------------------------
+
+    document_retriever = AgentDocumentRetriever(
         embedding_service=embedding_service,
+        vector_store=vector_store,
+    )
+
+    rag_service = RAGContextService(
+        retriever=document_retriever,
     )
 
     rag_adapter = LangGraphRAGAdapter(
         rag_service=rag_service,
     )
 
-    gemini_client = genai.Client(
-        api_key=settings.GEMINI_API_KEY
+    # ------------------------------------------------------------------
+    # 5. Initialize Gemini.
+    # The graph can still start without a key, but LLM-dependent nodes
+    # will use their configured fallbacks.
+    # ------------------------------------------------------------------
+
+    gemini_api_key = os.getenv("GEMINI_API_KEY")
+
+    gemini_client = (
+        genai.Client(api_key=gemini_api_key)
+        if gemini_api_key
+        else None
     )
 
-    sales_graph = build_graph(
+    # ------------------------------------------------------------------
+    # 6. Initialize the local SQLite database.
+    # ------------------------------------------------------------------
+
+    database_engine = create_async_engine(
+        "sqlite+aiosqlite:///sales_os.db",
+    )
+
+    Session = async_sessionmaker(
+        database_engine,
+        class_=AsyncSession,
+        expire_on_commit=False,
+    )
+
+    # ------------------------------------------------------------------
+    # 7. Build the complete LangGraph.
+    #
+    # Building the graph imports the agent modules. Those modules register
+    # their SQLAlchemy models on the shared Base metadata.
+    # ------------------------------------------------------------------
+
+    sales_graph = build_complete_graph(
         session_factory=Session,
         rag_adapter=rag_adapter,
         client=gemini_client,
     )
 
-    yield
+    # ------------------------------------------------------------------
+    # 8. Create all registered database tables.
+    # ------------------------------------------------------------------
 
-    vector_store.client.close()
+    inquiry_module = import_module("01_Inquiry")
 
+    async with database_engine.begin() as connection:
+        await connection.run_sync(
+            inquiry_module.Base.metadata.create_all
+        )
+
+    try:
+        yield
+
+    finally:
+        # --------------------------------------------------------------
+        # Clean shutdown.
+        # --------------------------------------------------------------
+
+        if vector_store is not None:
+            vector_store.client.close()
+
+        if database_engine is not None:
+            await database_engine.dispose()
+
+
+# ---------------------------------------------------------------------------
+# FastAPI application
+# ---------------------------------------------------------------------------
 
 app = FastAPI(
     title="AI Sales Operations Agent",
+    version="1.0.0",
     lifespan=lifespan,
 )
 
-class InquiryRequest(BaseModel):
-    business_id: str
-    source: str
-    raw_text: str
-    sender_identifier: str | None = None
 
+# ---------------------------------------------------------------------------
+# Health endpoint
+# ---------------------------------------------------------------------------
 
 @app.get("/healthz")
 async def healthz():
-    return {"status": "ok", "qdrant": "local", "rag": "ready"}
+    return {
+        "status": "ok",
+        "qdrant": (
+            "ready"
+            if vector_store is not None
+            else "not_initialized"
+        ),
+        "rag": (
+            "ready"
+            if rag_adapter is not None
+            else "not_initialized"
+        ),
+        "graph": (
+            "ready"
+            if sales_graph is not None
+            else "not_initialized"
+        ),
+        "gemini": (
+            "ready"
+            if gemini_client is not None
+            else "not_configured"
+        ),
+        "database": (
+            "ready"
+            if Session is not None
+            else "not_initialized"
+        ),
+    }
 
 
-@app.post("/rag/retrieve")
-async def retrieve_agent_context(request: RAGRetrieveRequest):
-    state = {**request.state, "business_id": request.business_id}
-    try:
-        context = await rag_adapter.get_context(
-            agent_name=request.agent_name,
-            state=state,
-            top_k=request.top_k,
-        )
-        return context.model_dump()
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
-
+# ---------------------------------------------------------------------------
+# Document upload endpoint
+# ---------------------------------------------------------------------------
 
 @app.post("/documents/upload")
 async def upload_document(
@@ -131,28 +260,60 @@ async def upload_document(
     version: str = Form("1.0"),
     file: UploadFile = File(...),
 ):
+    if ingestion_service is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Document ingestion service is not initialized.",
+        )
+
     try:
-        allowed_agents = json.loads(allowed_agents_json)
+        allowed_agents = json.loads(
+            allowed_agents_json
+        )
 
         if not isinstance(allowed_agents, list):
             raise ValueError(
                 "allowed_agents_json must contain a JSON list"
             )
-        if not all(isinstance(name, str) and name.strip() for name in allowed_agents):
-            raise ValueError("allowed_agents_json entries must be non-empty strings")
-        allowed_agents = [canonical_agent_name(name.strip()) for name in allowed_agents]
+
+        if not allowed_agents:
+            raise ValueError(
+                "At least one allowed agent is required."
+            )
+
+        if not all(
+            isinstance(agent_name, str)
+            and agent_name.strip()
+            for agent_name in allowed_agents
+        ):
+            raise ValueError(
+                "allowed_agents_json entries must be "
+                "non-empty strings"
+            )
+
+        # Accept both canonical names and shorter graph aliases.
+        allowed_agents = list(
+            dict.fromkeys(
+                canonical_agent_name(
+                    agent_name.strip()
+                )
+                for agent_name in allowed_agents
+            )
+        )
 
         metadata = DocumentUploadMetadata(
-            business_id=business_id,
+            business_id=business_id.strip(),
             document_type=document_type,
             allowed_agents=allowed_agents,
             version=version,
         )
 
-        return await ingestion_service.ingest(
+        result = await ingestion_service.ingest(
             file=file,
             metadata=metadata,
         )
+
+        return result
 
     except (ValueError, json.JSONDecodeError) as exc:
         raise HTTPException(
@@ -160,38 +321,77 @@ async def upload_document(
             detail=str(exc),
         ) from exc
 
+
+# ---------------------------------------------------------------------------
+# Direct RAG retrieval test endpoint
+# ---------------------------------------------------------------------------
+
+@app.post("/rag/retrieve")
+async def retrieve_agent_context(
+    request: RAGRetrieveRequest,
+):
+    if rag_adapter is None:
+        raise HTTPException(
+            status_code=503,
+            detail="RAG adapter is not initialized.",
+        )
+
+    state = {
+        **request.state,
+        "business_id": request.business_id,
+    }
+
+    try:
+        context = await rag_adapter.get_context(
+            agent_name=request.agent_name,
+            state=state,
+            top_k=request.top_k,
+        )
+
+        return {
+            **context.model_dump(),
+            "combined_text": context.combined_text,
+            "chunk_ids": context.chunk_ids,
+        }
+
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc),
+        ) from exc
+
+
+# ---------------------------------------------------------------------------
+# Inquiry processing endpoint
+# ---------------------------------------------------------------------------
+
 @app.post("/inquiries/process")
 async def process_inquiry(
     request: InquiryRequest,
 ):
-    initial_state = {
-        "business_id": request.business_id,
-        "source": request.source,
-        "raw_text": request.raw_text,
-        "sender_identifier": request.sender_identifier,
+    if sales_graph is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Sales graph is not initialized.",
+        )
 
-        "stages_completed": [],
-        "human_approval_reasons": [],
-
-        "inquiry_id": None,
-        "lead_id": None,
-        "quotation_number": None,
-
-        "extraction": None,
-        "requirement": None,
-        "customer_profile": None,
-        "qualification": None,
-        "feasibility": None,
-        "pricing": None,
-
-        "needs_followup": False,
-        "needs_human_approval": False,
-        "human_approval_stage": None,
-        "error": None,
-    }
-
-    result = await sales_graph.ainvoke(
-        initial_state
+    initial_state = make_initial_state(
+        trigger="inquiry",
+        business_id=request.business_id,
+        source=request.source,
+        raw_text=request.raw_text,
+        sender_identifier=request.sender_identifier,
     )
 
-    return result
+    try:
+        result = await sales_graph.ainvoke(
+            initial_state
+        )
+
+        return result
+
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Sales graph execution failed: {exc}",
+        ) from exc

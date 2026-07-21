@@ -26,7 +26,7 @@ from enum import Enum
 from typing import Optional
 from importlib import import_module
 
-import chromadb
+#import chromadb
 from google import genai
 from pydantic import BaseModel, Field
 from app.rag.models import AgentRAGContext
