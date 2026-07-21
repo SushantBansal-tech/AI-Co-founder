@@ -1,0 +1,16 @@
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic
+qdrant-client
+sentence-transformers
+pypdf
+python-docx
+openpyxl
+pandas
+langgraph
+sqlalchemy
+aiosqlite
+google-genai
+chromadb
+python-dotenv

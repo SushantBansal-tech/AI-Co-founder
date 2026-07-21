@@ -31,6 +31,7 @@ from typing import Optional
 from importlib import import_module
 
 from pydantic import BaseModel
+from app.rag.models import AgentRAGContext
 
 sys.path.insert(0, os.path.dirname(__file__))
 po_mod = import_module("18_PO")
@@ -379,6 +380,7 @@ def _build_correction_message(
 def validate_po(
     po: POExtraction,
     draft: QuotationDraft,
+    rag_context: Optional[AgentRAGContext] = None,
 ) -> POValidationResult:
     """
     Runs all field comparisons and returns a POValidationResult.

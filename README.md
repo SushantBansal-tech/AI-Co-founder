@@ -125,6 +125,22 @@ Open Swagger UI:
 http://127.0.0.1:8000/docs
 ```
 
+Upload company documents through `POST /documents/upload`. Use the canonical
+agent names shown below in `allowed_agents_json`; older names such as
+`requirement_agent` are accepted and normalized automatically.
+
+```text
+requirement_understanding, customer_qualification, internal_feasibility,
+cost_and_pricing, quotation_generation, follow_up_management,
+negotiation_support, purchase_order_handling, sales_order_handoff
+```
+
+Use `POST /rag/retrieve` to verify the exact chunks that a graph node will
+receive. Every graph state must contain `business_id` so documents from
+different businesses cannot be mixed. LangGraph nodes can be connected with
+`with_rag_context(...)` from `app.rag.wrapper`; the wrapped handler receives
+both `state` and `rag_context`.
+
 ## Future Scope
 
 - WhatsApp and email integration

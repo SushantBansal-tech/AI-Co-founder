@@ -1,97 +1,59 @@
-# app/rag/query_builder.py
-
 from typing import Any
+
+
+AGENT_NAME_ALIASES = {
+    "requirement_agent": "requirement_understanding",
+    "qualification_agent": "customer_qualification",
+    "feasibility_agent": "internal_feasibility",
+    "pricing_agent": "cost_and_pricing",
+    "quotation_agent": "quotation_generation",
+    "followup_agent": "follow_up_management",
+    "negotiation_agent": "negotiation_support",
+    "purchase_order_agent": "purchase_order_handling",
+    "handoff_agent": "sales_order_handoff",
+}
+
+
+def canonical_agent_name(agent_name: str) -> str:
+    return AGENT_NAME_ALIASES.get(agent_name, agent_name)
+
+
+def _as_dict(value: Any) -> dict[str, Any]:
+    if value is None:
+        return {}
+    if isinstance(value, dict):
+        return value
+    if hasattr(value, "model_dump"):
+        return value.model_dump()
+    return vars(value) if hasattr(value, "__dict__") else {}
 
 
 class AgentQueryBuilder:
     @staticmethod
-    def build(
-        agent_name: str,
-        state: dict[str, Any],
-    ) -> str:
-        if agent_name == "requirement_agent":
-            return AgentQueryBuilder._requirement_query(state)
+    def build(agent_name: str, state: dict[str, Any]) -> str:
+        agent_name = canonical_agent_name(agent_name)
+        extraction = _as_dict(state.get("extraction") or state.get("inquiry_extraction"))
+        requirement = _as_dict(state.get("requirement") or state.get("requirement_summary"))
+        product = extraction.get("product_requested") or requirement.get("matched_product") or ""
+        if isinstance(product, dict):
+            product = product.get("name") or product.get("product_code") or str(product)
+        quantity = extraction.get("quantity", "")
+        specifications = extraction.get("specifications", "")
+        company = extraction.get("company_name") or state.get("company_name", "")
+        raw_text = state.get("raw_text") or state.get("raw_message") or ""
 
-        if agent_name == "qualification_agent":
-            return AgentQueryBuilder._qualification_query(state)
-
-        if agent_name == "feasibility_agent":
-            return AgentQueryBuilder._feasibility_query(state)
-
-        if agent_name == "pricing_agent":
-            return AgentQueryBuilder._pricing_query(state)
-
-        if agent_name == "quotation_agent":
-            return AgentQueryBuilder._quotation_query(state)
-
-        if agent_name == "negotiation_agent":
-            return AgentQueryBuilder._negotiation_query(state)
-
-        raise ValueError(
-            f"No query builder configured for agent: {agent_name}"
-        )
-
-    @staticmethod
-    def _requirement_query(state: dict[str, Any]) -> str:
-        inquiry = state["inquiry_extraction"]
-
-        return (
-            f"Product requested: {inquiry.product_requested}. "
-            f"Specifications: {inquiry.specifications}. "
-            f"Quantity: {inquiry.quantity}."
-        )
-
-    @staticmethod
-    def _qualification_query(state: dict[str, Any]) -> str:
-        customer = state.get("customer_name", "")
-        company = state.get("company_name", "")
-
-        return (
-            f"Customer qualification history for customer {customer}, "
-            f"company {company}. Include previous quotations, orders, "
-            f"payments, outstanding balances and purchasing behavior."
-        )
-
-    @staticmethod
-    def _feasibility_query(state: dict[str, Any]) -> str:
-        requirement = state["requirement_summary"]
-
-        return (
-            f"Check inventory, production and delivery feasibility for "
-            f"{requirement.matched_product}. "
-            f"Customer quantity and specifications: "
-            f"{requirement.summary_text}"
-        )
-
-    @staticmethod
-    def _pricing_query(state: dict[str, Any]) -> str:
-        requirement = state["requirement_summary"]
-        qualification = state.get("qualification_summary")
-
-        return (
-            f"Calculate applicable price for "
-            f"{requirement.matched_product}. "
-            f"Required quantity: "
-            f"{state['inquiry_extraction'].quantity}. "
-            f"Customer qualification: {qualification}. "
-            f"Find base price, quantity discount, customer discount, "
-            f"tax, freight and minimum margin rules."
-        )
-
-    @staticmethod
-    def _quotation_query(state: dict[str, Any]) -> str:
-        return (
-            f"Prepare quotation for pricing result "
-            f"{state.get('pricing_result')}. "
-            f"Retrieve quotation format, payment terms, delivery terms, "
-            f"tax terms and validity conditions."
-        )
-
-    @staticmethod
-    def _negotiation_query(state: dict[str, Any]) -> str:
-        return (
-            f"Evaluate customer counteroffer "
-            f"{state.get('counteroffer')}. "
-            f"Retrieve discount authority, minimum margin, "
-            f"approval limits and negotiation policy."
-        )
+        queries = {
+            "requirement_understanding": f"Product catalog and technical match for {product}. Specifications: {specifications}. Quantity: {quantity}. Request: {raw_text}",
+            "customer_qualification": f"Customer history, quotations, orders and payment behaviour for {company}. Product: {product}",
+            "internal_feasibility": f"Inventory, production capacity and delivery feasibility for {product}, quantity {quantity}. Requirement: {requirement}",
+            "cost_and_pricing": f"Base price, discounts, tax, freight and minimum margin for {product}, quantity {quantity}, customer {company}",
+            "quotation_generation": f"Quotation template, payment, tax and delivery terms for {product}. Pricing: {state.get('pricing') or state.get('pricing_result')}",
+            "follow_up_management": f"Previous quotations, orders and customer follow-up history for {company}",
+            "negotiation_support": f"Discount authority, minimum margin and negotiation policy for counteroffer {state.get('counteroffer') or state.get('customer_reply_text')}",
+            "purchase_order_handling": f"Validate purchase order against quotation and approved terms. PO: {state.get('po_raw_text') or raw_text}",
+            "sales_order_handoff": f"Sales order handoff, delivery and payment policy for {product}. PO validation: {state.get('po_validation')}",
+        }
+        query = queries.get(agent_name)
+        if query is None:
+            raise ValueError(f"No query builder configured for agent: {agent_name}")
+        return " ".join(query.split())

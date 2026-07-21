@@ -27,6 +27,7 @@ from importlib import import_module
 
 from pydantic import BaseModel, Field
 from google import genai
+from app.rag.models import AgentRAGContext
 
 sys.path.insert(0, os.path.dirname(__file__))
 pe_mod = import_module("10_pricing_agent")
@@ -307,6 +308,7 @@ def suggest_negotiation(
     objection: ObjectionAnalysis,
     pricing: PricingResult,
     client: Optional[genai.Client],
+    rag_context: Optional[AgentRAGContext] = None,
 ) -> NegotiationSuggestion:
     ctx = build_negotiation_context(pricing)
 
@@ -341,6 +343,13 @@ def suggest_negotiation(
                 remaining=ctx.remaining_discount_pct,
                 best_price=ctx.best_possible_price_per_mt,
             )
+            if rag_context:
+                prompt += (
+                    "\n\nRETRIEVED NEGOTIATION POLICIES:\n"
+                    f"{rag_context.combined_text}\n"
+                    "The calculated floor price is authoritative. Never reveal "
+                    "internal margins or approval limits to the customer."
+                )
             resp = client.models.generate_content(model="gemini-3.1-flash-lite", contents=prompt)
             suggested = resp.text.strip()
         except Exception:

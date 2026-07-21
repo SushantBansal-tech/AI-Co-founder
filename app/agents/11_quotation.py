@@ -36,6 +36,7 @@ from typing import Optional
 from importlib import import_module
 
 from pydantic import BaseModel, Field
+from app.rag.models import AgentRAGContext
 
 sys.path.insert(0, os.path.dirname(__file__))
 ia        = import_module("01_Inquiry")  # for Base, log_action, InquiryExtraction
@@ -243,6 +244,7 @@ def build_quotation(
     feasibility:   FeasibilityResult,
     qualification: QualificationResult,
     customer:      CustomerProfile,
+    rag_context:   Optional[AgentRAGContext] = None,
 ) -> QuotationDraft:
 
     # ── Payment terms ──────────────────────────────────────────────────

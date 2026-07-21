@@ -33,6 +33,7 @@ from typing import Optional
 from importlib import import_module
 
 from pydantic import BaseModel, Field
+from app.rag.models import AgentRAGContext
 
 sys.path.insert(0, os.path.dirname(__file__))
 fe_mod  = import_module("08_feasiblity")
@@ -438,6 +439,7 @@ def build_all_packages(
     pricing: PricingResult,
     qualification: QualificationResult,
     quotation_number: str,
+    rag_context: Optional[AgentRAGContext] = None,
 ) -> HandoffSummary:
     packages = [
         _build_production_package(po, feasibility, pricing, qualification, quotation_number),

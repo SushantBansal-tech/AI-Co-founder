@@ -30,6 +30,7 @@ from dataclasses import dataclass, field
 
 from pydantic import BaseModel
 from google import genai
+from app.rag.models import AgentRAGContext
 
 sys.path.insert(0, os.path.dirname(__file__))
 ia      = import_module("01_Inquiry")  # for Base, log_action, InquiryExtraction
@@ -287,6 +288,7 @@ def generate_rationale(
     temp: LeadTemperature,
     priority: Priority,
     client: Optional[genai.Client],
+    rag_context: Optional[AgentRAGContext] = None,
 ) -> str:
     signals = "\n".join(f"  • {r}" for r in breakdown.reasons)
     fallback = (
@@ -305,6 +307,13 @@ def generate_rationale(
         priority=priority.value,
         signals=signals,
     )
+    if rag_context:
+        prompt += (
+            "\n\nRETRIEVED CUSTOMER RECORDS:\n"
+            f"{rag_context.combined_text}\n"
+            "Use these records only as supporting evidence. Do not override "
+            "structured balances, credit limits, or payment data."
+        )
     try:
         response = client.models.generate_content(
             model="gemini-3.1-flash-lite", contents=prompt
@@ -322,13 +331,16 @@ def qualify_lead(
     inquiry_id: str,
     profile: CustomerProfile,
     client: Optional[genai.Client] = None,
+    rag_context: Optional[AgentRAGContext] = None,
 ) -> QualificationResult:
 
     breakdown   = compute_score(profile)
     temperature = classify_temperature(breakdown.total)
     priority    = assign_priority(temperature, profile)
     credit_risk, credit_reason = check_credit_risk(profile)
-    rationale   = generate_rationale(profile, breakdown, temperature, priority, client)
+    rationale   = generate_rationale(
+        profile, breakdown, temperature, priority, client, rag_context
+    )
 
     # Human review is needed for credit risk OR cold leads with large order signals
     human_review   = credit_risk

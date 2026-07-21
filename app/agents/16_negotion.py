@@ -33,6 +33,7 @@ from importlib import import_module
 
 from pydantic import BaseModel, Field
 from google import genai
+from app.rag.models import AgentRAGContext
 
 sys.path.insert(0, os.path.dirname(__file__))
 pe_mod = import_module("10_pricing_agent")
@@ -173,6 +174,7 @@ def _compute_price_at_discount(list_price: float, discount_pct: float) -> float:
 def evaluate_counteroffer(
     customer_price_per_mt: float,
     pricing: PricingResult,
+    rag_context: Optional[AgentRAGContext] = None,
 ) -> NegotiationAnalysis:
     """
     100% deterministic — no LLM.

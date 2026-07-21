@@ -55,48 +55,45 @@ import operator
 from datetime import datetime
 from typing import TypedDict, Annotated, Optional
 from importlib import import_module
-
+from pathlib import Path
 from langgraph.graph import StateGraph, START, END
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from app.rag.langgraph_adapter import LangGraphRAGAdapter
+from app.rag.models import AgentRAGContext
 
-sys.path.insert(0, os.path.dirname(__file__))
+#sys.path.insert(0, os.path.dirname(__file__))
+APP_DIR = Path(__file__).resolve().parent
+AGENTS_DIR = APP_DIR / "agents"
+
+if str(AGENTS_DIR) not in sys.path:
+    sys.path.insert(0, str(AGENTS_DIR))
 
 
 # ── Lazy module loader ────────────────────────────────────────────────────
 
 def _mods() -> dict:
     return {
-        # Inquiry stage
-        "ia":   import_module("inquiry_agent"),
-        "cat":  import_module("03_catalog_ingestion"),
-        "req":  import_module("04_requirement_matching"),
-        # Qualification stage
-        "lk":   import_module("05_customer_lookup"),
-        "qual": import_module("06_customer_qualification"),
-        # Feasibility stage
-        "inv":  import_module("07_inventory_check"),
-        "fe":   import_module("08_feasibility_engine"),
-        # Pricing stage
-        "pd":   import_module("09_pricing_documents"),
-        "pe":   import_module("10_pricing_engine"),
-        # Quotation stage
-        "qb":   import_module("11_quotation_builder"),
-        "qr":   import_module("12_quotation_renderer"),
-        # Follow-up stage
-        "ft":   import_module("13_followup_tracker"),
-        "od":   import_module("14_objection_detector"),
-        "fc":   import_module("15_followup_composer"),
-        # Negotiation stage
-        "ne":   import_module("16_negotiation_engine"),
-        "rv":   import_module("17_revised_quotation"),
-        # PO handling stage
-        "poe":  import_module("18_po_extractor"),
-        "pov":  import_module("19_po_validator"),
-        # Handoff stage
-        "hb":   import_module("20_handoff_builder"),
-        "hd":   import_module("21_handoff_dispatcher"),
+        "ia": import_module("01_Inquiry"),
+        "cat": import_module("03_catalog"),
+        "req": import_module("04_requirment"),
+        "lk": import_module("05_customer_qual"),
+        "qual": import_module("06_customer"),
+        "inv": import_module("07_inventory"),
+        "fe": import_module("08_feasiblity"),
+        "pd": import_module("09_pricing"),
+        "pe": import_module("10_pricing_agent"),
+        "qb": import_module("11_quotation"),
+        "qr": import_module("12_quotation"),
+        "ft": import_module("13_followup"),
+        "od": import_module("14_objection"),
+        "fc": import_module("15_followup"),
+        "ne": import_module("16_negotion"),
+        "rv": import_module("17_revised"),
+        "poe": import_module("18_PO"),
+        "pov": import_module("19_PO"),
+        "hb": import_module("20_handoff"),
+        "hd": import_module("21_handoff"),
     }
-
 
 # ═══════════════════════════════════════════════════════════════════════════
 # COMPLETE PIPELINE STATE
@@ -106,6 +103,9 @@ def _mods() -> dict:
 # ═══════════════════════════════════════════════════════════════════════════
 
 class CompletePipelineState(TypedDict):
+
+    # ── Multi-tenant business scope ───────────────────────────────────
+    business_id: str
 
     # ── Entry control ──────────────────────────────────────────────────
     trigger: str
@@ -129,6 +129,7 @@ class CompletePipelineState(TypedDict):
     # ── Accumulating across all re-invocations ─────────────────────────
     stages_completed:       Annotated[list[str], operator.add]
     human_approval_reasons: Annotated[list[str], operator.add]
+    rag_audit: Annotated[list[dict], operator.add]
 
     # ── Identifiers ────────────────────────────────────────────────────
     inquiry_id:       Optional[str]
@@ -225,10 +226,61 @@ def _mock_send(channel: str, recipient: str, message: str) -> bool:
 
 
 # ═══════════════════════════════════════════════════════════════════════════
+# COMMON RAG WRAPPER
+# Retrieves agent-specific evidence before the business node runs.
+# ═══════════════════════════════════════════════════════════════════════════
+
+def with_rag_context(
+    *,
+    agent_name: str,
+    rag_adapter: LangGraphRAGAdapter,
+    handler,
+):
+    async def wrapped(state: CompletePipelineState) -> dict:
+        try:
+            rag_context = await rag_adapter.get_context(
+                agent_name=agent_name,
+                state=state,
+            )
+        except Exception as exc:
+            return {
+                "error": f"{agent_name} retrieval failed: {exc}",
+                "stages_completed": [],
+                "rag_audit": [{
+                    "agent_name": agent_name,
+                    "query": None,
+                    "chunk_ids": [],
+                    "error": str(exc),
+                }],
+            }
+
+        result = await handler(state, rag_context)
+
+        audit_record = {
+            "agent_name": agent_name,
+            "query": rag_context.query,
+            "chunk_ids": rag_context.chunk_ids,
+            "document_ids": list(dict.fromkeys(
+                chunk.document_id
+                for chunk in rag_context.chunks
+                if chunk.document_id
+            )),
+            "scores": [chunk.score for chunk in rag_context.chunks],
+        }
+
+        return {
+            **result,
+            "rag_audit": [audit_record],
+        }
+
+    return wrapped
+
+
+# ═══════════════════════════════════════════════════════════════════════════
 # NODE FACTORY
 # ═══════════════════════════════════════════════════════════════════════════
 
-def build_all_nodes(session_factory, dm, client):
+def build_all_nodes(session_factory, rag_adapter, client):
     M = _mods()
     ia   = M["ia"];   cat  = M["cat"]; req  = M["req"]
     lk   = M["lk"];   qual = M["qual"]
@@ -310,109 +362,169 @@ def build_all_nodes(session_factory, dm, client):
 
 
 # for product match 
-    async def match_requirement(state: CompletePipelineState) -> dict:
+    async def match_requirement(
+        state: CompletePipelineState,
+        rag_context: AgentRAGContext,
+    ) -> dict:
         try:
-            ext = ia.InquiryExtraction(**(state.get("extraction") or {}))
-            collection = await dm.get_catalog_collection() if hasattr(dm, "get_catalog_collection") else None
-            if collection and client:
-                result = req.match_requirement(ext, collection, client)
-            else:
-                result = req.RequirementSummary(
-                    inquiry_id=ext.inquiry_id, match_type=req.MatchType.CUSTOM,
-                    similarity_score=0.0, summary_text="No catalog available.",
-                    requires_human_review=True, human_review_reason="Catalog unavailable.",
-                )
-            return {"requirement": result.model_dump(), "stages_completed": ["requirement"]}
-        except Exception as e:
-            return {"error": f"match_requirement: {e}", "stages_completed": []}
+            ext = ia.InquiryExtraction(
+                **(state.get("extraction") or {})
+            )
+            result = req.match_requirement(
+                extraction=ext,
+                client=client,
+                rag_context=rag_context,
+            )
+            return {
+                "requirement": result.model_dump(),
+                "stages_completed": ["requirement"],
+            }
+        except Exception as exc:
+            return {
+                "error": f"match_requirement: {exc}",
+                "stages_completed": [],
+            }
 
 #for customer match         
 
-    async def qualify_customer(state: CompletePipelineState) -> dict:
+    async def qualify_customer(
+        state: CompletePipelineState,
+        rag_context: AgentRAGContext,
+    ) -> dict:
         try:
             ext = ia.InquiryExtraction(**(state.get("extraction") or {}))
+
             async with session_factory() as session:
                 profile = await lk.lookup_customer(session, ext)
-            result = qual.qualify_lead(ext.inquiry_id, profile, client)
+
+            result = qual.qualify_lead(
+                ext.inquiry_id,
+                profile,
+                client,
+                rag_context=rag_context,
+            )
+
             return {
-                "customer_profile":     profile.model_dump(),
-                "qualification":        result.model_dump(),
+                "customer_profile": profile.model_dump(),
+                "qualification": result.model_dump(),
                 "needs_human_approval": result.credit_risk_flag,
-                "human_approval_stage": "qualification" if result.credit_risk_flag else None,
+                "human_approval_stage": (
+                    "qualification" if result.credit_risk_flag else None
+                ),
                 "human_approval_reasons": (
-                    [result.credit_risk_reason] if result.credit_risk_flag and result.credit_risk_reason else []
+                    [result.credit_risk_reason]
+                    if result.credit_risk_flag and result.credit_risk_reason
+                    else []
                 ),
                 "stages_completed": ["qualification"],
             }
         except Exception as e:
             return {"error": f"qualify_customer: {e}", "stages_completed": []}
 
-    async def check_feasibility(state: CompletePipelineState) -> dict:
+    async def check_feasibility(
+        state: CompletePipelineState,
+        rag_context: AgentRAGContext,
+    ) -> dict:
         try:
-            ext  = ia.InquiryExtraction(**(state.get("extraction") or {}))
-            req_ = _rebuild_requirement(state.get("requirement") or {}, req, cat)
-            ql   = _qualification(state.get("qualification"))
+            ext = ia.InquiryExtraction(**(state.get("extraction") or {}))
+            req_ = _rebuild_requirement(
+                state.get("requirement") or {},
+                req,
+                cat,
+            )
+            ql = _qualification(state.get("qualification"))
 
-            inv_idx = dm.get_inventory_index() if hasattr(dm,"get_inventory_index") \
-                      else inv.parse_inventory_csv(inv.SAMPLE_INVENTORY_CSV)
-            cap_idx = dm.get_capacity_index() if hasattr(dm,"get_capacity_index") \
-                      else fe.parse_capacity_csv(fe.SAMPLE_CAPACITY_CSV)
-            del_idx = dm.get_delivery_index() if hasattr(dm,"get_delivery_index") \
-                      else fe.parse_delivery_csv(fe.SAMPLE_DELIVERY_CSV)
-
-            inv_r  = inv.check_inventory(req_, ext, inv_idx)
-            result = fe.check_feasibility(ext, req_, ql, inv_r, cap_idx, del_idx, client)
+            result = fe.check_feasibility(
+                extraction=ext,
+                requirement=req_,
+                qualification=ql,
+                inventory=inv.parse_inventory_csv(inv.SAMPLE_INVENTORY_CSV),
+                capacity_index=fe.parse_capacity_csv(fe.SAMPLE_CAPACITY_CSV),
+                delivery_index=fe.parse_delivery_csv(fe.SAMPLE_DELIVERY_CSV),
+                client=client,
+                rag_context=rag_context,
+            )
 
             return {
-                "feasibility":          result.model_dump(),
+                "feasibility": result.model_dump(),
                 "needs_human_approval": result.requires_human_review,
-                "human_approval_stage": "feasibility" if result.requires_human_review else None,
+                "human_approval_stage": (
+                    "feasibility" if result.requires_human_review else None
+                ),
                 "human_approval_reasons": result.human_review_reasons,
-                "stages_completed":     ["feasibility"],
+                "stages_completed": ["feasibility"],
             }
         except Exception as e:
             return {"error": f"check_feasibility: {e}", "stages_completed": []}
 
-    async def compute_pricing(state: CompletePipelineState) -> dict:
+    async def compute_pricing(
+        state: CompletePipelineState,
+        rag_context: AgentRAGContext,
+    ) -> dict:
         try:
-            ext  = ia.InquiryExtraction(**(state.get("extraction") or {}))
-            req_ = _rebuild_requirement(state.get("requirement") or {}, req, cat)
-            ql   = _qualification(state.get("qualification"))
-            fs   = _feasibility(state.get("feasibility"))
-            docs = dm.get_pricing_docs() if hasattr(dm,"get_pricing_docs") \
-                   else pd.load_pricing_documents()
+            ext = ia.InquiryExtraction(**(state.get("extraction") or {}))
+            req_ = _rebuild_requirement(
+                state.get("requirement") or {},
+                req,
+                cat,
+            )
+            ql = _qualification(state.get("qualification"))
+            fs = _feasibility(state.get("feasibility"))
 
-            result = pe.compute_pricing(ext, req_, ql, fs, docs, client)
+            result = pe.compute_pricing(
+                extraction=ext,
+                requirement=req_,
+                qualification=ql,
+                feasibility=fs,
+                docs=pd.load_pricing_documents(),
+                client=client,
+                rag_context=rag_context,
+            )
+
             return {
-                "pricing":              result.model_dump(),
+                "pricing": result.model_dump(),
                 "needs_human_approval": result.requires_human_approval,
-                "human_approval_stage": "pricing" if result.requires_human_approval else None,
+                "human_approval_stage": (
+                    "pricing" if result.requires_human_approval else None
+                ),
                 "human_approval_reasons": result.approval_reasons,
-                "stages_completed":     ["pricing"],
+                "stages_completed": ["pricing"],
             }
         except Exception as e:
             return {"error": f"compute_pricing: {e}", "stages_completed": []}
 
-    async def generate_quotation(state: CompletePipelineState) -> dict:
+    async def generate_quotation(
+        state: CompletePipelineState,
+        rag_context: AgentRAGContext,
+    ) -> dict:
         try:
-            ext  = ia.InquiryExtraction(**(state.get("extraction") or {}))
-            ql   = _qualification(state.get("qualification"))
-            fs   = _feasibility(state.get("feasibility"))
-            pr   = _pricing(state.get("pricing"))
-            cust = lk.CustomerProfile(**(state.get("customer_profile") or {}))
+            ext = ia.InquiryExtraction(**(state.get("extraction") or {}))
+            ql = _qualification(state.get("qualification"))
+            fs = _feasibility(state.get("feasibility"))
+            pr = _pricing(state.get("pricing"))
+            cust = lk.CustomerProfile(
+                **(state.get("customer_profile") or {})
+            )
 
-            draft = qb.build_quotation(ext, pr, fs, ql, cust)
-            html  = qr.render_quotation_html(draft)
+            draft = qb.build_quotation(
+                extraction=ext,
+                pricing=pr,
+                feasibility=fs,
+                qualification=ql,
+                customer=cust,
+                rag_context=rag_context,
+            )
+            html = qr.render_quotation_html(draft)
 
             async with session_factory() as session:
                 rec = await qr.save_quotation(session, draft, html)
 
             return {
-                "quotation_id":     rec.id,
+                "quotation_id": rec.id,
                 "quotation_number": draft.quotation_number,
                 "final_draft_json": draft.model_dump_json(),
                 "quotation_sent_at": datetime.utcnow().isoformat(),
-                "pipeline_status":  "quotation_sent",
+                "pipeline_status": "quotation_sent",
                 "stages_completed": ["quotation"],
             }
         except Exception as e:
@@ -422,7 +534,10 @@ def build_all_nodes(session_factory, dm, client):
     # SUB-PIPELINE B: FOLLOW-UP  (trigger="followup")
     # ══════════════════════════════════════════════════════════════════
 
-    async def compose_reminder(state: CompletePipelineState) -> dict:
+    async def compose_reminder(
+        state: CompletePipelineState,
+        rag_context: AgentRAGContext,
+    ) -> dict:
         try:
             draft    = _draft(state.get("final_draft_json"))
             attempt  = state.get("followup_attempt", 1)
@@ -431,8 +546,13 @@ def build_all_nodes(session_factory, dm, client):
             if draft is None:
                 return {"error": "compose_reminder: no draft", "stages_completed": []}
 
-            msg = fc.generate_reminder(draft, schedule,
-                                       state.get("outbound_channel","email"), client)
+            msg = fc.generate_reminder(
+                draft,
+                schedule,
+                state.get("outbound_channel", "email"),
+                client,
+                rag_context=rag_context,
+            )
             return {
                 "followup_message":  msg,
                 "followup_tone":     schedule.tone,
@@ -514,25 +634,44 @@ def build_all_nodes(session_factory, dm, client):
             return {"error": f"analyze_reply: {e}",
                     "reply_type":"unknown", "stages_completed":[]}
 
-    async def evaluate_counteroffer(state: CompletePipelineState) -> dict:
+    async def evaluate_counteroffer(
+        state: CompletePipelineState,
+        rag_context: AgentRAGContext,
+    ) -> dict:
         try:
             pricing = _pricing(state.get("pricing"))
-            obj     = od.ObjectionAnalysis(**(state.get("objection") or {}))
+            obj = od.ObjectionAnalysis(
+                **(state.get("objection") or {})
+            )
             customer_price = obj.customer_price_mentioned or 0.0
 
             if not pricing or customer_price <= 0:
-                return {"error":"evaluate_counteroffer: no pricing or price",
-                        "stages_completed":[]}
+                return {
+                    "error": "evaluate_counteroffer: no pricing or price",
+                    "stages_completed": [],
+                }
 
-            analysis = ne.evaluate_counteroffer(customer_price, pricing)
+            analysis = ne.evaluate_counteroffer(
+                customer_price_per_mt=customer_price,
+                pricing=pricing,
+                rag_context=rag_context,
+            )
+
             return {
-                "negotiation_analysis":  analysis.model_dump(),
-                "needs_human_approval":  analysis.requires_human_approval,
-                "human_approval_stage":  "negotiation" if analysis.requires_human_approval else None,
-                "human_approval_reasons":[analysis.human_approval_reason]
-                                          if analysis.human_approval_reason else [],
-                "pipeline_status":       "negotiating",
-                "stages_completed":      ["counteroffer_evaluated"],
+                "negotiation_analysis": analysis.model_dump(),
+                "needs_human_approval": analysis.requires_human_approval,
+                "human_approval_stage": (
+                    "negotiation"
+                    if analysis.requires_human_approval
+                    else None
+                ),
+                "human_approval_reasons": (
+                    [analysis.human_approval_reason]
+                    if analysis.human_approval_reason
+                    else []
+                ),
+                "pipeline_status": "negotiating",
+                "stages_completed": ["counteroffer_evaluated"],
             }
         except Exception as e:
             return {"error": f"evaluate_counteroffer: {e}", "stages_completed": []}
@@ -589,13 +728,25 @@ def build_all_nodes(session_factory, dm, client):
         except Exception as e:
             return {"error": f"compose_rejection: {e}", "stages_completed": []}
 
-    async def compose_objection_response(state: CompletePipelineState) -> dict:
+    async def compose_objection_response(
+        state: CompletePipelineState,
+        rag_context: AgentRAGContext,
+    ) -> dict:
         try:
             draft    = _draft(state.get("final_draft_json"))
             obj      = od.ObjectionAnalysis(**(state.get("objection") or {}))
             pricing  = _pricing(state.get("pricing"))
 
-            suggestion = od.suggest_negotiation(obj, pricing, client) if pricing else None
+            suggestion = (
+                od.suggest_negotiation(
+                    obj,
+                    pricing,
+                    client,
+                    rag_context=rag_context,
+                )
+                if pricing
+                else None
+            )
 
             if suggestion and draft:
                 msg = fc.generate_objection_response(
@@ -656,27 +807,62 @@ def build_all_nodes(session_factory, dm, client):
         except Exception as e:
             return {"error": f"extract_po_fields: {e}", "stages_completed": []}
 
-    async def validate_po(state: CompletePipelineState) -> dict:
+    async def validate_po(
+        state: CompletePipelineState,
+        rag_context: AgentRAGContext,
+    ) -> dict:
         try:
             draft = _draft(state.get("final_draft_json"))
-            ext   = poe.POExtraction(**(state.get("po_extraction") or {}))
-            if not draft:
-                return {"error":"validate_po: no draft","stages_completed":[]}
+            ext = poe.POExtraction(
+                **(state.get("po_extraction") or {})
+            )
 
-            result = pov.validate_po(ext, draft)
+            if not draft:
+                return {
+                    "error": "validate_po: no draft",
+                    "stages_completed": [],
+                }
+
+            result = pov.validate_po(
+                po=ext,
+                draft=draft,
+                rag_context=rag_context,
+            )
+
             async with session_factory() as session:
-                await ia.log_action(session,"purchase_order",state.get("po_id",""),
-                                    "po_validated","po_agent",
-                                    {"verdict":result.verdict.value,
-                                     "critical":result.critical_count})
+                await ia.log_action(
+                    session,
+                    "purchase_order",
+                    state.get("po_id", ""),
+                    "po_validated",
+                    "purchase_order_agent",
+                    {
+                        "verdict": result.verdict.value,
+                        "critical": result.critical_count,
+                        "evidence_chunk_ids": rag_context.chunk_ids,
+                    },
+                )
                 await session.commit()
+
             return {
-                "po_validation":      result.model_dump(),
-                "po_verdict":         result.verdict.value,
-                "needs_human_approval": result.requires_human_review and not result.requires_customer_correction,
-                "human_approval_stage":"po" if (result.requires_human_review and not result.requires_customer_correction) else None,
-                "outbound_message":   result.customer_correction_message or "",
-                "stages_completed":   ["po_validated"],
+                "po_validation": result.model_dump(),
+                "po_verdict": result.verdict.value,
+                "needs_human_approval": (
+                    result.requires_human_review
+                    and not result.requires_customer_correction
+                ),
+                "human_approval_stage": (
+                    "po"
+                    if (
+                        result.requires_human_review
+                        and not result.requires_customer_correction
+                    )
+                    else None
+                ),
+                "outbound_message": (
+                    result.customer_correction_message or ""
+                ),
+                "stages_completed": ["po_validated"],
             }
         except Exception as e:
             return {"error": f"validate_po: {e}", "stages_completed": []}
@@ -752,7 +938,10 @@ def build_all_nodes(session_factory, dm, client):
     # SUB-PIPELINE E: HANDOFF  (runs after mark_order_won)
     # ══════════════════════════════════════════════════════════════════
 
-    async def build_handoff_packages(state: CompletePipelineState) -> dict:
+    async def build_handoff_packages(
+        state: CompletePipelineState,
+        rag_context: AgentRAGContext,
+    ) -> dict:
         try:
             po_ext  = poe.POExtraction(**(state.get("po_extraction") or {}))
             fs      = _feasibility(state.get("feasibility"))
@@ -764,6 +953,7 @@ def build_all_nodes(session_factory, dm, client):
                 po=po_ext, feasibility=fs, pricing=pr,
                 qualification=ql,
                 quotation_number=state.get("quotation_number",""),
+                rag_context=rag_context,
             )
             return {
                 "handoff_id":          summary.handoff_id,
@@ -835,29 +1025,69 @@ def build_all_nodes(session_factory, dm, client):
         # Inquiry → Quotation
         "extract_inquiry":            extract_inquiry,
         "send_inquiry_followup":      send_inquiry_followup,
-        "match_requirement":          match_requirement,
-        "qualify_customer":           qualify_customer,
-        "check_feasibility":          check_feasibility,
-        "compute_pricing":            compute_pricing,
-        "generate_quotation":         generate_quotation,
+        "match_requirement": with_rag_context(
+            agent_name="requirement_agent",
+            rag_adapter=rag_adapter,
+            handler=match_requirement,
+        ),
+        "qualify_customer": with_rag_context(
+            agent_name="qualification_agent",
+            rag_adapter=rag_adapter,
+            handler=qualify_customer,
+        ),
+        "check_feasibility": with_rag_context(
+            agent_name="feasibility_agent",
+            rag_adapter=rag_adapter,
+            handler=check_feasibility,
+        ),
+        "compute_pricing": with_rag_context(
+            agent_name="pricing_agent",
+            rag_adapter=rag_adapter,
+            handler=compute_pricing,
+        ),
+        "generate_quotation": with_rag_context(
+            agent_name="quotation_agent",
+            rag_adapter=rag_adapter,
+            handler=generate_quotation,
+        ),
         # Follow-up
-        "compose_reminder":           compose_reminder,
+        "compose_reminder": with_rag_context(
+            agent_name="followup_agent",
+            rag_adapter=rag_adapter,
+            handler=compose_reminder,
+        ),
         "dispatch_followup":          dispatch_followup,
         # Customer reply → Negotiation
         "analyze_reply":              analyze_reply,
-        "evaluate_counteroffer":      evaluate_counteroffer,
+        "evaluate_counteroffer": with_rag_context(
+            agent_name="negotiation_agent",
+            rag_adapter=rag_adapter,
+            handler=evaluate_counteroffer,
+        ),
         "prepare_revised_quotation":  prepare_revised_quotation,
         "compose_rejection":          compose_rejection,
-        "compose_objection_response": compose_objection_response,
+        "compose_objection_response": with_rag_context(
+            agent_name="negotiation_agent",
+            rag_adapter=rag_adapter,
+            handler=compose_objection_response,
+        ),
         "dispatch_message":           dispatch_message,
         # PO Handling
         "extract_po_fields":          extract_po_fields,
-        "validate_po":                validate_po,
+        "validate_po": with_rag_context(
+            agent_name="purchase_order_agent",
+            rag_adapter=rag_adapter,
+            handler=validate_po,
+        ),
         "send_po_correction":         send_po_correction,
         "mark_order_won":             mark_order_won,
         "create_sales_order":         create_sales_order,
         # Handoff
-        "build_handoff_packages":     build_handoff_packages,
+        "build_handoff_packages": with_rag_context(
+            agent_name="handoff_agent",
+            rag_adapter=rag_adapter,
+            handler=build_handoff_packages,
+        ),
         "dispatch_handoff":           dispatch_handoff,
         "finalize_audit":             finalize_audit,
         # Shared
@@ -965,8 +1195,8 @@ def route_after_dispatch_handoff(state: CompletePipelineState) -> str:
 # GRAPH BUILDER
 # ═══════════════════════════════════════════════════════════════════════════
 
-def build_complete_graph(session_factory, dm, client):
-    nodes = build_all_nodes(session_factory, dm, client)
+def build_complete_graph(session_factory, rag_adapter, client):
+    nodes = build_all_nodes(session_factory, rag_adapter, client)
     g     = StateGraph(CompletePipelineState)
 
     for name, fn in nodes.items():
@@ -1078,6 +1308,7 @@ def build_complete_graph(session_factory, dm, client):
 
 def make_initial_state(
     trigger: str,
+    business_id: str,
     source: str = "email",
     raw_text: str = "",
     sender_identifier: str | None = None,
@@ -1089,6 +1320,7 @@ def make_initial_state(
     (e.g. when re-invoking with trigger='po_received').
     """
     base = {
+        "business_id":        business_id,
         "trigger":            trigger,
         "approved_stage":     None,
         "pipeline_status":    "new",
@@ -1097,6 +1329,7 @@ def make_initial_state(
         "sender_identifier":  sender_identifier,
         "stages_completed":   [],
         "human_approval_reasons": [],
+        "rag_audit":           [],
         "inquiry_id":         None,
         "lead_id":            None,
         "quotation_id":       None,
@@ -1144,112 +1377,112 @@ def make_initial_state(
 # DEMO
 # ═══════════════════════════════════════════════════════════════════════════
 
-async def _demo():
-    from database import init_db, create_all_tables
-    from document_store import DocumentManager
+# async def _demo():
+#     from database import init_db, create_all_tables
+#     from document_store import DocumentManager
 
-    init_db()
-    await create_all_tables()
-    from database import _engine as engine
-    Session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+#     init_db()
+#     await create_all_tables()
+#     from database import _engine as engine
+#     Session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
-    client_obj = None
-    if os.environ.get("GEMINI_API_KEY"):
-        from google import genai
-        client_obj = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+#     client_obj = None
+#     if os.environ.get("GEMINI_API_KEY"):
+#         from google import genai
+#         client_obj = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
-    dm  = DocumentManager()
-    app = build_complete_graph(Session, dm, client_obj)
+#     dm  = DocumentManager()
+#     app = build_complete_graph(Session, dm, client_obj)
 
-    print(f"Graph nodes ({len(app.get_graph().nodes)}): {list(app.get_graph().nodes.keys())}")
+#     print(f"Graph nodes ({len(app.get_graph().nodes)}): {list(app.get_graph().nodes.keys())}")
 
-    # ── Scenario 1: New inquiry ────────────────────────────────────────
-    print("\n" + "="*62)
-    print("TRIGGER: inquiry")
-    s1 = make_initial_state(
-        trigger="inquiry", source="email",
-        raw_text="Need 500 MT MS Billet IS2062, 100x100mm, deliver Ludhiana by 30 June. Ramesh Kumar, Apex Steel Pvt Ltd",
-        sender_identifier="ramesh@apexsteel.in",
-    )
-    r1 = await app.ainvoke(s1)
-    print(f"Status    : {r1.get('pipeline_status')}")
-    print(f"Stages    : {r1.get('stages_completed')}")
-    print(f"Quotation : {r1.get('quotation_number','—')}")
-    if r1.get("error"): print(f"Error     : {r1['error']}")
+#     # ── Scenario 1: New inquiry ────────────────────────────────────────
+#     print("\n" + "="*62)
+#     print("TRIGGER: inquiry")
+#     s1 = make_initial_state(
+#         trigger="inquiry", source="email",
+#         raw_text="Need 500 MT MS Billet IS2062, 100x100mm, deliver Ludhiana by 30 June. Ramesh Kumar, Apex Steel Pvt Ltd",
+#         sender_identifier="ramesh@apexsteel.in",
+#     )
+#     r1 = await app.ainvoke(s1)
+#     print(f"Status    : {r1.get('pipeline_status')}")
+#     print(f"Stages    : {r1.get('stages_completed')}")
+#     print(f"Quotation : {r1.get('quotation_number','—')}")
+#     if r1.get("error"): print(f"Error     : {r1['error']}")
 
-    # ── Scenario 2: Follow-up reminder (day 7) ────────────────────────
-    print("\n" + "="*62)
-    print("TRIGGER: followup  (Celery scheduler, day 7)")
-    s2 = make_initial_state(
-        trigger="followup", source="email",
-        sender_identifier="ramesh@apexsteel.in",
-        followup_attempt=2,         # day 7 = attempt 2
-        quotation_number=r1.get("quotation_number","QT-DEMO"),
-        final_draft_json=r1.get("final_draft_json"),
-        inquiry_id=r1.get("inquiry_id"),
-        outbound_channel="email",
-        outbound_recipient="ramesh@apexsteel.in",
-    )
-    r2 = await app.ainvoke(s2)
-    print(f"Status : {r2.get('pipeline_status')}")
-    print(f"Stages : {r2.get('stages_completed')}")
+#     # ── Scenario 2: Follow-up reminder (day 7) ────────────────────────
+#     print("\n" + "="*62)
+#     print("TRIGGER: followup  (Celery scheduler, day 7)")
+#     s2 = make_initial_state(
+#         trigger="followup", source="email",
+#         sender_identifier="ramesh@apexsteel.in",
+#         followup_attempt=2,         # day 7 = attempt 2
+#         quotation_number=r1.get("quotation_number","QT-DEMO"),
+#         final_draft_json=r1.get("final_draft_json"),
+#         inquiry_id=r1.get("inquiry_id"),
+#         outbound_channel="email",
+#         outbound_recipient="ramesh@apexsteel.in",
+#     )
+#     r2 = await app.ainvoke(s2)
+#     print(f"Status : {r2.get('pipeline_status')}")
+#     print(f"Stages : {r2.get('stages_completed')}")
 
-    # ── Scenario 3: Customer sends counter-offer ──────────────────────
-    print("\n" + "="*62)
-    print("TRIGGER: customer_reply  (counter-offer)")
-    s3 = make_initial_state(
-        trigger="customer_reply", source="email",
-        raw_text="",
-        sender_identifier="ramesh@apexsteel.in",
-        customer_reply_text="Your price is high. Can you do ₹14,000/MT?",
-        inquiry_id=r1.get("inquiry_id"),
-        quotation_number=r1.get("quotation_number"),
-        final_draft_json=r1.get("final_draft_json"),
-        pricing=r1.get("pricing"),
-        outbound_channel="email",
-        outbound_recipient="ramesh@apexsteel.in",
-    )
-    r3 = await app.ainvoke(s3)
-    print(f"Status    : {r3.get('pipeline_status')}")
-    print(f"Reply type: {r3.get('reply_type')}")
-    print(f"Decision  : {(r3.get('negotiation_analysis') or {}).get('decision','—')}")
-    print(f"Stages    : {r3.get('stages_completed')}")
+#     # ── Scenario 3: Customer sends counter-offer ──────────────────────
+#     print("\n" + "="*62)
+#     print("TRIGGER: customer_reply  (counter-offer)")
+#     s3 = make_initial_state(
+#         trigger="customer_reply", source="email",
+#         raw_text="",
+#         sender_identifier="ramesh@apexsteel.in",
+#         customer_reply_text="Your price is high. Can you do ₹14,000/MT?",
+#         inquiry_id=r1.get("inquiry_id"),
+#         quotation_number=r1.get("quotation_number"),
+#         final_draft_json=r1.get("final_draft_json"),
+#         pricing=r1.get("pricing"),
+#         outbound_channel="email",
+#         outbound_recipient="ramesh@apexsteel.in",
+#     )
+#     r3 = await app.ainvoke(s3)
+#     print(f"Status    : {r3.get('pipeline_status')}")
+#     print(f"Reply type: {r3.get('reply_type')}")
+#     print(f"Decision  : {(r3.get('negotiation_analysis') or {}).get('decision','—')}")
+#     print(f"Stages    : {r3.get('stages_completed')}")
 
-    # ── Scenario 4: Customer sends PO ─────────────────────────────────
-    print("\n" + "="*62)
-    print("TRIGGER: po_received")
-    sample_po = """
-    PO Number: APX-2025-0891 | Date: 20-06-2025
-    Buyer: Apex Steel Pvt Ltd | GSTIN: 03AABCA1234C1Z5
-    Ship To: Apex Works, Sahnewal, Ludhiana
-    Product: MS Billet IS2062 100x100mm | Qty: 500 MT
-    Rate: ₹14,200/MT (ex-GST) | GST: 18% | Total: ₹8,378,000
-    Payment: 20% advance, 80% net 45 days | Delivery: 30-06-2025
-    """
-    s4 = make_initial_state(
-        trigger="po_received", source="email",
-        raw_text="",
-        sender_identifier="ramesh@apexsteel.in",
-        po_raw_text=sample_po,
-        inquiry_id=r1.get("inquiry_id"),
-        quotation_id=r1.get("quotation_id"),
-        quotation_number=r1.get("quotation_number"),
-        final_draft_json=r1.get("final_draft_json"),
-        pricing=r1.get("pricing"),
-        feasibility=r1.get("feasibility"),
-        qualification=r1.get("qualification"),
-        outbound_channel="email",
-        outbound_recipient="ramesh@apexsteel.in",
-    )
-    r4 = await app.ainvoke(s4)
-    print(f"Status         : {r4.get('pipeline_status')}")
-    print(f"Order won      : {r4.get('order_won')}")
-    print(f"Sales order ID : {r4.get('sales_order_id','—')}")
-    print(f"Handoff ID     : {r4.get('handoff_id','—')}")
-    print(f"Depts notified : {r4.get('departments_notified')}")
-    print(f"Stages         : {r4.get('stages_completed')}")
-    if r4.get("error"): print(f"Error          : {r4['error']}")
+#     # ── Scenario 4: Customer sends PO ─────────────────────────────────
+#     print("\n" + "="*62)
+#     print("TRIGGER: po_received")
+#     sample_po = """
+#     PO Number: APX-2025-0891 | Date: 20-06-2025
+#     Buyer: Apex Steel Pvt Ltd | GSTIN: 03AABCA1234C1Z5
+#     Ship To: Apex Works, Sahnewal, Ludhiana
+#     Product: MS Billet IS2062 100x100mm | Qty: 500 MT
+#     Rate: ₹14,200/MT (ex-GST) | GST: 18% | Total: ₹8,378,000
+#     Payment: 20% advance, 80% net 45 days | Delivery: 30-06-2025
+#     """
+#     s4 = make_initial_state(
+#         trigger="po_received", source="email",
+#         raw_text="",
+#         sender_identifier="ramesh@apexsteel.in",
+#         po_raw_text=sample_po,
+#         inquiry_id=r1.get("inquiry_id"),
+#         quotation_id=r1.get("quotation_id"),
+#         quotation_number=r1.get("quotation_number"),
+#         final_draft_json=r1.get("final_draft_json"),
+#         pricing=r1.get("pricing"),
+#         feasibility=r1.get("feasibility"),
+#         qualification=r1.get("qualification"),
+#         outbound_channel="email",
+#         outbound_recipient="ramesh@apexsteel.in",
+#     )
+#     r4 = await app.ainvoke(s4)
+#     print(f"Status         : {r4.get('pipeline_status')}")
+#     print(f"Order won      : {r4.get('order_won')}")
+#     print(f"Sales order ID : {r4.get('sales_order_id','—')}")
+#     print(f"Handoff ID     : {r4.get('handoff_id','—')}")
+#     print(f"Depts notified : {r4.get('departments_notified')}")
+#     print(f"Stages         : {r4.get('stages_completed')}")
+#     if r4.get("error"): print(f"Error          : {r4['error']}")
 
 
-if __name__ == "__main__":
-    asyncio.run(_demo())
+# Build and invoke this graph from FastAPI lifespan, where the database
+# session factory, Gemini client, and LangGraphRAGAdapter are initialized.

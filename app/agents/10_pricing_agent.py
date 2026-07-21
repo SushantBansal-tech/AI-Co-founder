@@ -42,6 +42,7 @@ from importlib import import_module
 
 from pydantic import BaseModel
 from google import genai
+from app.rag.models import AgentRAGContext
 
 sys.path.insert(0, os.path.dirname(__file__))
 ia       = import_module("01_Inquiry")  # for Base, log_action, InquiryExtraction
@@ -349,7 +350,11 @@ Total invoice: ₹{total:,.0f}
 Include: how cost was built up, why this price, what the discount is, total with GST.
 """
 
-def _generate_explanation(result: PricingResult, client: Optional[genai.Client]) -> str:
+def _generate_explanation(
+    result: PricingResult,
+    client: Optional[genai.Client],
+    rag_context: Optional[AgentRAGContext] = None,
+) -> str:
     approval_note = (
         "⚠ REQUIRES HUMAN APPROVAL: " + "; ".join(result.approval_reasons)
         if result.requires_human_approval else "✓ Within auto-approval limits."
@@ -381,6 +386,13 @@ def _generate_explanation(result: PricingResult, client: Optional[genai.Client])
             total=result.total_invoice_value,
             approval_note=approval_note,
         )
+        if rag_context:
+            prompt += (
+                "\n\nRETRIEVED PRICING EVIDENCE:\n"
+                f"{rag_context.combined_text}\n"
+                "Use this only to explain applicable policies. The calculated "
+                "prices, margins, taxes, and approval flags are authoritative."
+            )
         response = client.models.generate_content(model="gemini-2.5-flash", contents=prompt)
         return response.text.strip()
     except Exception:
@@ -398,6 +410,7 @@ def compute_pricing(
     feasibility:   FeasibilityResult,
     docs:          PricingDocuments,
     client:        Optional[genai.Client] = None,
+    rag_context:   Optional[AgentRAGContext] = None,
 ) -> PricingResult:
 
     matched    = requirement.matched_product
@@ -493,7 +506,9 @@ def compute_pricing(
         pricing_possible=True,
     )
 
-    result.explanation = _generate_explanation(result, client)
+    result.explanation = _generate_explanation(
+        result, client, rag_context
+    )
     return result
 
 

@@ -37,6 +37,7 @@ from importlib import import_module
 
 from pydantic import BaseModel
 from google import genai
+from app.rag.models import AgentRAGContext
 
 sys.path.insert(0, os.path.dirname(__file__))
 ia      = import_module("01_Inquiry")  # for Base, log_action, InquiryExtraction
@@ -346,6 +347,7 @@ def generate_narrative(
     result: FeasibilityResult,
     extraction: InquiryExtraction,
     client: Optional[genai.Client],
+    rag_context: Optional[AgentRAGContext] = None,
 ) -> str:
     risks_text = "; ".join(r.description for r in result.risks) or "None"
     deadline = (f"{result.customer_required_days} days"
@@ -371,6 +373,13 @@ def generate_narrative(
             deadline=deadline,
             risks=risks_text,
         )
+        if rag_context:
+            prompt += (
+                "\n\nRETRIEVED INTERNAL EVIDENCE:\n"
+                f"{rag_context.combined_text}\n"
+                "Use this only as supporting evidence. Structured inventory "
+                "and lead-time calculations remain authoritative."
+            )
         response = client.models.generate_content(model="gemini-3.1-flash-lite", contents=prompt)
         return response.text.strip()
     except Exception:
@@ -389,6 +398,7 @@ def check_feasibility(
     capacity_index: dict[str, dict],
     delivery_index: dict[str, dict],
     client: Optional[genai.Client] = None,
+    rag_context: Optional[AgentRAGContext] = None,
 ) -> FeasibilityResult:
 
     req_qty, _ = parse_quantity(extraction.quantity)
@@ -473,7 +483,9 @@ def check_feasibility(
         human_review_reasons=human_reasons,
     )
 
-    result.narrative = generate_narrative(result, extraction, client)
+    result.narrative = generate_narrative(
+        result, extraction, client, rag_context
+    )
     return result
 
 

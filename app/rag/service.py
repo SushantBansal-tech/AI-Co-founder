@@ -1,121 +1,46 @@
-# app/rag/service.py
-
-from typing import Any
-
-from qdrant_client import QdrantClient
-from qdrant_client.models import (
-    FieldCondition,
-    Filter,
-    MatchAny,
-    MatchValue,
-)
-
+from app.documents.router import AgentDocumentRetriever
 from app.rag.models import AgentRAGContext, RetrievedChunk
-from app.rag.policy import AGENT_RETRIEVAL_POLICIES
-from app.documents.service import DocumentIngestionService
 
 
 class RAGContextService:
-    def __init__(
-        self,
-        qdrant_client: QdrantClient,
-        embedding_service: DocumentIngestionService,
-        collection_name: str = "sales_agent_documents",
-    ) -> None:
-        self.qdrant_client = qdrant_client
-        self.embedding_service = DocumentIngestionService
-        self.collection_name = collection_name
+    """Build agent-scoped context using the application's document store."""
 
-    def retrieve_for_agent(
+    def __init__(self, retriever: AgentDocumentRetriever) -> None:
+        self.retriever = retriever
+
+    async def retrieve_for_agent(
         self,
         *,
         agent_name: str,
         business_id: str,
         query: str,
+        top_k: int = 5,
     ) -> AgentRAGContext:
-        policy = AGENT_RETRIEVAL_POLICIES.get(agent_name)
-
-        if policy is None:
-            raise ValueError(
-                f"No retrieval policy configured for agent: {agent_name}"
-            )
-
         cleaned_query = query.strip()
-
         if not cleaned_query:
-            return AgentRAGContext(
-                agent_name=agent_name,
-                query=query,
-                chunks=[],
-            )
+            return AgentRAGContext(agent_name=agent_name, query=query)
 
-        query_vector = self.embedding_service.embed_query(cleaned_query)
-
-        conditions = [
-            FieldCondition(
-                key="business_id",
-                match=MatchValue(value=business_id),
-            ),
-            FieldCondition(
-                key="document_type",
-                match=MatchAny(any=policy.document_types),
-            ),
-            FieldCondition(
-                key="status",
-                match=MatchValue(value="active"),
-            ),
-        ]
-
-        if policy.allowed_agents_filter:
-            conditions.append(
-                FieldCondition(
-                    key="allowed_agents",
-                    match=MatchValue(value=agent_name),
-                )
-            )
-
-        result = self.qdrant_client.query_points(
-            collection_name=self.collection_name,
-            query=query_vector,
-            query_filter=Filter(must=conditions),
-            limit=policy.top_k,
-            score_threshold=policy.score_threshold,
-            with_payload=True,
-            with_vectors=False,
+        results = await self.retriever.retrieve(
+            agent_name=agent_name,
+            business_id=business_id,
+            query=cleaned_query,
+            top_k=top_k,
         )
-
-        chunks: list[RetrievedChunk] = []
-
-        for point in result.points:
-            payload = dict(point.payload or {})
-
-            text = (
-                payload.get("text")
-                or payload.get("chunk_text")
-                or payload.get("content")
-                or ""
+        chunks = [
+            RetrievedChunk(
+                chunk_id=item.chunk_id,
+                document_id=item.document_id,
+                document_type=item.document_type,
+                text=item.chunk_text,
+                score=item.similarity_score,
+                metadata={
+                    "document_name": item.document_name,
+                    "page_number": item.page_number,
+                    "sheet_name": item.sheet_name,
+                },
             )
-
-            if not text:
-                continue
-
-            chunks.append(
-                RetrievedChunk(
-                    chunk_id=str(
-                        payload.get("chunk_id") or point.id
-                    ),
-                    document_id=str(
-                        payload.get("document_id") or ""
-                    ),
-                    document_type=str(
-                        payload.get("document_type") or "unknown"
-                    ),
-                    text=str(text),
-                    score=float(point.score),
-                    metadata=payload,
-                )
-            )
-
+            for item in results
+        ]
         return AgentRAGContext(
             agent_name=agent_name,
             query=cleaned_query,

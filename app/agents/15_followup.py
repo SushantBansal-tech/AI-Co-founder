@@ -32,6 +32,7 @@ from importlib import import_module
 
 from pydantic import BaseModel
 from google import genai
+from app.rag.models import AgentRAGContext
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 
 sys.path.insert(0, os.path.dirname(__file__))
@@ -166,6 +167,7 @@ def generate_reminder(
     schedule: ScheduleItem,
     channel: str,
     client: Optional[genai.Client] = None,
+    rag_context: Optional[AgentRAGContext] = None,
 ) -> str:
     from datetime import datetime as dt
     try:
@@ -196,6 +198,13 @@ def generate_reminder(
             attempt=schedule.attempt,
             channel_rule=CHANNEL_RULES.get(channel, CHANNEL_RULES["email"]),
         )
+        if rag_context:
+            prompt += (
+                "\n\nPREVIOUS CUSTOMER AND QUOTATION CONTEXT:\n"
+                f"{rag_context.combined_text}\n"
+                "Do not reveal internal notes, payment-risk labels, margins, "
+                "or approval information to the customer."
+            )
         resp = client.models.generate_content(model="gemini-3.1-flash-lite", contents=prompt)
         return resp.text.strip()
     except Exception:

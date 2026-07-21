@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from app.rag.query_builder import AgentQueryBuilder
+from app.rag.query_builder import AgentQueryBuilder, canonical_agent_name
 from app.rag.service import RAGContextService
 
 
@@ -13,19 +13,26 @@ class LangGraphRAGAdapter:
     ) -> None:
         self.rag_service = rag_service
 
-    def get_context(
+    async def get_context(
         self,
         *,
         agent_name: str,
         state: dict[str, Any],
+        top_k: int = 5,
     ):
+        canonical_name = canonical_agent_name(agent_name)
         query = AgentQueryBuilder.build(
-            agent_name=agent_name,
+            agent_name=canonical_name,
             state=state,
         )
 
-        return self.rag_service.retrieve_for_agent(
-            agent_name=agent_name,
+        business_id = state.get("business_id")
+        if not business_id:
+            raise ValueError("LangGraph state must include business_id for RAG isolation")
+
+        return await self.rag_service.retrieve_for_agent(
+            agent_name=canonical_name,
             business_id=state["business_id"],
             query=query,
+            top_k=top_k,
         )
