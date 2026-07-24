@@ -211,6 +211,7 @@ def compose_followup_message(
 class LeadStatus(str, Enum):
     AWAITING_INFO = "awaiting_info"
     NEW = "new"
+    WON = "won"
 
 
 class Base(DeclarativeBase):

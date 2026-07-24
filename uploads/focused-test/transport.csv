@@ -1,0 +1,8 @@
+﻿"transport_rate_id","destination_city","destination_state","zone","distance_km","vehicle_type","rate_per_mt_inr","minimum_charge_inr","handling_charge_inr","estimated_transit_days","preferred_transporter","status"
+"TR-007","Delhi","Delhi","North","392","19-ft Truck","4281","19723","1824","1","Transporter Beta","Active"
+"TR-022","Delhi","Delhi","North","219","19-ft Truck","1602","4449","1647","8","Transporter Alpha","Active"
+"TR-037","Delhi","Delhi","North","1983","19-ft Truck","1455","13910","1241","1","Transporter Alpha","Active"
+"TR-052","Delhi","Delhi","North","638","19-ft Truck","637","10167","2071","8","Transporter Beta","Active"
+"TR-067","Delhi","Delhi","North","610","19-ft Truck","3681","16051","315","5","Transporter Alpha","Active"
+"TR-082","Delhi","Delhi","North","1014","19-ft Truck","2942","20075","694","7","Transporter Alpha","Active"
+"TR-097","Delhi","Delhi","North","1859","19-ft Truck","3049","18703","2384","7","Transporter Gamma","Active"

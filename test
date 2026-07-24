@@ -1,0 +1,690 @@
+(.venv) PS C:\Users\susha\Downloads\AI> $inquiryBody = @{
+>>     business_id = "demo-steel-company"
+>>     source = "email"
+>>     raw_text = @"
+>> Buyer: Apex Steel Pvt Ltd
+>> Contact: Ramesh Kumar
+>> Product: Steel Billet Model 076
+>> Product code: MSB-076
+>> Grade: IS2062 E250
+>> Specification: size 100mm
+>> Quantity: 20 MT
+>> Delivery location: Delhi
+>> Required delivery date: 2026-09-30
+>> "@
+>>     sender_identifier = "ramesh@apexsteel.in"
+>> } | ConvertTo-Json
+>> 
+>> $inquiryResponse = Invoke-RestMethod `
+>>     -Method Post `
+>>     -Uri "http://127.0.0.1:8000/inquiries/process" `
+>>     -ContentType "application/json" `
+>>     -Body $inquiryBody `
+>>     -TimeoutSec 240
+>> 
+>> $threadId = $inquiryResponse.thread_id
+>> $state = $inquiryResponse.state
+>> 
+>> $state | ConvertTo-Json -Depth 30
+{
+    "business_id":  "demo-steel-company",
+    "trigger":  "inquiry",
+    "approved_stage":  null,
+    "pipeline_status":  "quotation_sent",
+    "stages_completed":  [
+                             "trigger:inquiry",
+                             "inquiry",
+                             "requirement",
+                             "qualification",
+                             "feasibility",
+                             "pricing",
+                             "quotation"
+                         ],
+    "human_approval_reasons":  [
+
+                               ],
+    "rag_audit":  [
+                      {
+                          "agent_name":  "requirement_agent",
+                          "query":  "Product catalog and technical match for Steel Billet Model 076 (MSB-076). Specifications: Grade: IS2062 E250, size 100mm. Quantity: 20 MT. Request: Buyer: Apex Steel Pvt Ltd Contact: Ramesh Kumar Product: Steel Billet Model 076 Product code: MSB-076 Grade: IS2062 E250 Specification: size 100mm Quantity: 20 MT Delivery location: Delhi Required delivery date: 2026-09-30",
+                          "chunk_ids":  [
+                                            "7ddd666a-5924-477e-affd-6bbb9233ef6a",
+                                            "3d5883b5-3b50-414c-991f-31238345203c",
+                                            "06835eb9-bb4f-4e94-9c29-fc243a9db880",
+                                            "e92e64d4-c62b-47ae-8c55-9e650d8aed22",
+                                            "4a7b4f13-7064-425d-ba51-7772079e87da"
+                                        ],
+                          "document_ids":  [
+                                               "14854a30-ace6-4181-8219-89b881b96d18"
+                                           ],
+                          "scores":  [
+                                         0.6160347120718683,
+                                         0.6140367721525647,
+                                         0.6132506288936275,
+                                         0.6037255351384507,
+                                         0.6003899304826036
+                                     ]
+                      },
+                      {
+                          "agent_name":  "qualification_agent",
+                          "query":  "Customer history, quotations, orders and payment behaviour for Apex Steel Pvt Ltd. Product: Steel Billet Model 076 (MSB-076)",
+                          "chunk_ids":  [
+                                            "ec0fedca-02ab-4e8d-9804-47dd6c2f01f2",
+                                            "89813604-a352-4022-985b-97c6d08c4c3e",
+                                            "7e1fe0f6-9ff6-4de5-9762-822225cdc99d",
+                                            "a418f319-2037-4af6-a653-52ba55cb058e",
+                                            "b073e255-d874-44ea-ae8e-138aa6748dc7"
+                                        ],
+                          "document_ids":  [
+                                               "5405baca-944a-4590-840e-20ed1dad9eef",
+                                               "d1ef8751-a569-4ac5-9d9e-99329cbeeb84"
+                                           ],
+                          "scores":  [
+                                         0.3962640346363807,
+                                         0.3962640346363807,
+                                         0.3899268675713007,
+                                         0.3899268675713007,
+                                         0.36392266400919104
+                                     ]
+                      },
+                      {
+                          "agent_name":  "feasibility_agent",
+                          "query":  "Inventory, production capacity and delivery feasibility for Steel Billet Model 076 (MSB-076), quantity 20 MT, delivery location Delhi, required delivery 2026-09-30. Requirement: {\u0027inquiry_id\u0027: \u0027580ee590-5a70-4b8d-adb8-cc5e9ad8df5d\u0027, \u0027match_type\u0027: \u003cMatchType.EXACT: \u0027exact\u0027\u003e, \u0027matched_product\u0027: {\u0027product_code\u0027: \u0027MSB-076\u0027, \u0027name\u0027: \u0027Steel Billet Model 076\u0027, \u0027category\u0027: \u0027Steel Billet\u0027, \u0027grade\u0027: \u0027IS2062 E250\u0027, \u0027specifications\u0027: \u0027size 100mm\u0027, \u0027unit\u0027: \u0027MT\u0027}, \u0027similarity_score\u0027: 0.6160347120718683, \u0027gap_analysis\u0027: {\u0027gaps\u0027: [], \u0027critical_gap\u0027: False, \u0027can_fulfill\u0027: True, \u0027notes\u0027: \u0027\u0027}, \u0027needs_technical_doc_review\u0027: False, \u0027requires_human_review\u0027: False, \u0027human_review_reason\u0027: None, \u0027summary_text\u0027: \u0027The customer has requested a quote for 20 MT of Steel Billet Model 076, specified as grade IS2062 E250 with a 100mm size. This request represents an exact match against our current catalog specifications, and no technical gaps were identified during the review. Please proceed immediately with the feasibility check and pricing phase to finalize the proposal.\u0027, \u0027evidence_chunk_ids\u0027: [\u00277ddd666a-5924-477e-affd-6bbb9233ef6a\u0027, \u00273d5883b5-3b50-414c-991f-31238345203c\u0027, \u002706835eb9-bb4f-4e94-9c29-fc243a9db880\u0027, \u0027e92e64d4-c62b-47ae-8c55-9e650d8aed22\u0027, \u00274a7b4f13-7064-425d-ba51-7772079e87da\u0027], \u0027retrieval_query\u0027: \u0027Product catalog and technical match for Steel Billet Model 076 (MSB-076). Specifications: Grade: IS2062 E250, size 100mm. Quantity: 20 MT. Request: Buyer: Apex Steel Pvt Ltd Contact: Ramesh Kumar Product: Steel Billet Model 076 Product code: MSB-076 Grade: IS2062 E250 Specification: size 100mm Quantity: 20 MT Delivery location: Delhi Required delivery date: 2026-09-30\u0027}",
+                          "chunk_ids":  [
+                                            "441e9790-3b43-4f0e-b5ec-44aec1765bb7",
+                                            "98f4693e-5d3c-454e-aee1-bf1d30763eae",
+                                            "287280d2-6d6b-4fdf-b2f3-a9484bccff82",
+                                            "e3952e55-12f2-442a-a7c3-ec68e5a96d59",
+                                            "ea5038ab-9ae6-46c4-87af-b230d487524e",
+                                            "e13fcf87-2766-4563-bdef-625961b58048",
+                                            "dddf6c41-bcb7-4ac4-be4f-bc00048c2962",
+                                            "716f623e-d951-4d97-aea5-238c8c30fea6",
+                                            "e92e64d4-c62b-47ae-8c55-9e650d8aed22",
+                                            "bfa6c985-acb3-4321-bfb9-d4e220e7c397",
+                                            "c73950ff-d2c0-40d1-aa3c-3666b7ca7fa2",
+                                            "48813039-a24c-42a5-afef-405f7c43f539",
+                                            "7ddd666a-5924-477e-affd-6bbb9233ef6a",
+                                            "3d5883b5-3b50-414c-991f-31238345203c",
+                                            "06835eb9-bb4f-4e94-9c29-fc243a9db880"
+                                        ],
+                          "document_ids":  [
+                                               "8e15ea58-8929-4de3-aa8a-1b0b1dc108fe",
+                                               "2b908fbe-1728-407e-a22c-dae5c93dd72e",
+                                               "14854a30-ace6-4181-8219-89b881b96d18"
+                                           ],
+                          "scores":  [
+                                         0.5939889520591577,
+                                         0.5813935791179995,
+                                         0.5801978320043639,
+                                         0.5778844381428363,
+                                         0.5776198545903894,
+                                         0.5685843725720221,
+                                         0.5573360099863891,
+                                         0.5567836667676308,
+                                         0.5452073709284462,
+                                         0.5446027907734514,
+                                         0.5354701778740912,
+                                         0.5204336271539183,
+                                         0.5199396094776378,
+                                         0.5172625375577065,
+                                         0.510125264907955
+                                     ]
+                      },
+                      {
+                          "agent_name":  "pricing_agent",
+                          "query":  "Base price, discounts, tax, freight and minimum margin for Steel Billet Model 076 (MSB-076), quantity 20 MT, customer Apex Steel Pvt Ltd",
+                          "chunk_ids":  [
+                                            "d8b4e0af-1db3-4c1e-81d1-224e7bc950cc",
+                                            "e825caec-fe9b-4263-8d1b-cdf269e94ac7",
+                                            "bd7a8b55-fd50-426c-9b51-ae1d878ef07d",
+                                            "ba7a1c1d-65a8-44c6-8452-88cb745c67da",
+                                            "da7fe009-8a7c-4d73-bc23-c5be6dd7eec3",
+                                            "5ff78785-46b9-4bec-8880-b8504460265b",
+                                            "085c707f-e844-4373-b1f3-4a06135423a2",
+                                            "182237aa-8b53-4c41-ae79-08725db5f590",
+                                            "285ca795-e5be-4579-b5e4-a7d05d46e751",
+                                            "d9796c21-540c-4fa7-958b-1d29ab5210fe",
+                                            "712b63fc-6b9f-45f7-814c-48f4c156c26e",
+                                            "33237d8d-19f2-453e-9058-7a9d6c90077b",
+                                            "01b90353-9440-49e6-ac13-76b22d9c1aa0",
+                                            "92c0c3c1-831a-42a2-9e25-51588c8ce2e4",
+                                            "d89a9c42-8b8d-4cca-a426-0a084b011f20",
+                                            "66f00839-a149-4faa-b60d-b701d5a89105",
+                                            "58a94bb4-eccf-44a8-9830-11603807aad4",
+                                            "210a8fe8-e1df-4439-b2ba-6ae462a32f7c",
+                                            "a4fc3ef4-5ee9-43fc-b22a-1d6d5d70ce67",
+                                            "10bc6524-1a23-4ed4-b213-d17f16f7f713",
+                                            "d4caa294-8041-4e7d-80d7-85385e61338b",
+                                            "7c86a7e7-7882-419a-a4d6-9c36a6fa5d9f",
+                                            "bbca459e-d4f6-47ed-9333-163b28a2f8c0",
+                                            "849e4b66-91ae-4b5e-a8b8-063cf3501a5b",
+                                            "d48e7b4e-074f-4034-94e7-99d6efc2f74f",
+                                            "122cd708-467e-4ed1-8a6d-eee3432373c9",
+                                            "7269ed26-0957-4a9e-bda1-32a69728f081",
+                                            "4bd18bcf-2b7d-4d05-8bd6-e4f5fc125ca8",
+                                            "6b885f6d-bbcf-4aff-9fc1-7e7822b83ad6",
+                                            "f19d990e-aaa8-48b3-bd9d-6b6a34f649b9"
+                                        ],
+                          "document_ids":  [
+                                               "a12ea8e4-3e9a-4210-b646-04d761312b15",
+                                               "297fa0ab-3bc3-4fa0-9249-da63a1ed5c24",
+                                               "7b58a9cb-76e0-4028-a020-f1c9feeb2b9a",
+                                               "160605b6-b54a-4f13-bb67-ca671b7b82b4",
+                                               "64ee95fb-cdb2-43d9-bfd4-1a697bd88ba6",
+                                               "342b974c-3e8f-40d4-9459-1f7235ea40cf",
+                                               "8f883b99-d236-4bc5-bcc3-7b408834b393",
+                                               "795c44a4-4a10-497d-a14c-e2c9a6b70033"
+                                           ],
+                          "scores":  [
+                                         0.7163258443883906,
+                                         0.6093473590433719,
+                                         0.6005705601599574,
+                                         0.5898199545904631,
+                                         0.5887185346121927,
+                                         0.5825256224595803,
+                                         0.5565561369889138,
+                                         0.5540866725841476,
+                                         0.5539309806979624,
+                                         0.5492802900418408,
+                                         0.5478821199357409,
+                                         0.5345636161351063,
+                                         0.5317034513771264,
+                                         0.526332110100667,
+                                         0.5205614992663055,
+                                         0.5190503155610554,
+                                         0.5186837496521279,
+                                         0.518280893115382,
+                                         0.515361717944351,
+                                         0.5153142727621609,
+                                         0.5135290870391997,
+                                         0.5126761884918416,
+                                         0.508885062190269,
+                                         0.5078211375451464,
+                                         0.5054810273136627,
+                                         0.5021563309780424,
+                                         0.5011824239773994,
+                                         0.5006081148012136,
+                                         0.49881587133982663,
+                                         0.49749119072203646
+                                     ]
+                      },
+                      {
+                          "agent_name":  "quotation_agent",
+                          "query":  "Quotation template, payment, tax and delivery terms for Steel Billet Model 076 (MSB-076). Pricing: {\u0027inquiry_id\u0027: \u0027580ee590-5a70-4b8d-adb8-cc5e9ad8df5d\u0027, \u0027product_code\u0027: \u0027MSB-076\u0027, \u0027product_name\u0027: \u0027Steel Billet Model 076\u0027, \u0027quantity_mt\u0027: 20.0, \u0027rm_cost_per_mt\u0027: 71347.9, \u0027overhead_per_mt\u0027: 7826.86, \u0027transport_per_mt\u0027: 2521.0, \u0027total_cost_per_mt\u0027: 81695.76, \u0027list_price_per_mt\u0027: 109766.0, \u0027floor_price_per_mt\u0027: 88348.39, \u0027suggested_price_per_mt\u0027: 109766.0, \u0027customer_type\u0027: \u0027new\u0027, \u0027discount_band_label\u0027: \u0027new, â¹20Lââ¹40L â max 6.61% (auto: 4.46%)\u0027, \u0027max_discount_pct\u0027: 6.61, \u0027approval_limit_pct\u0027: 4.46, \u0027applied_discount_pct\u0027: 4.46, \u0027discounted_price_per_mt\u0027: 104870.44, \u0027min_margin_pct\u0027: 7.53, \u0027target_margin_pct\u0027: 14.38, \u0027actual_margin_pct\u0027: 22.1, \u0027gst_rate_pct\u0027: 12.0, \u0027gst_per_mt\u0027: 12584.45, \u0027final_price_per_mt_ex_gst\u0027: 104870.44, \u0027final_price_per_mt_inc_gst\u0027: 117454.89, \u0027subtotal_ex_gst\u0027: 2097408.8, \u0027gst_amount\u0027: 251689.0, \u0027total_invoice_value\u0027: 2349097.8, \u0027requires_human_approval\u0027: False, \u0027approval_reasons\u0027: [], \u0027can_proceed_without_approval\u0027: True, \u0027price_logic\u0027: {\u00271_cost_build_up\u0027: {\u0027rm_cost_per_mt\u0027: 71347.9, \u0027manufacturing_overhead_pct\u0027: 10.97, \u0027overhead_per_mt\u0027: 7826.86, \u0027transport_zone\u0027: \u0027North\u0027, \u0027transport_per_mt\u0027: 2521.0, \u0027total_cost_per_mt\u0027: 81695.76}, \u00272_selling_price\u0027: {\u0027list_price_per_mt\u0027: 109766.0, \u0027min_margin_pct\u0027: 7.53, \u0027target_margin_pct\u0027: 14.38, \u0027floor_price_per_mt\u0027: 88348.39, \u0027floor_price_formula\u0027: \u002781695.76 / (1 - 7.53%) = 88348.39\u0027, \u0027suggested_price_per_mt\u0027: 109766.0, \u0027price_basis\u0027: \u0027list_price\u0027}, \u00273_discount\u0027: {\u0027customer_type\u0027: \u0027new\u0027, \u0027order_value_at_list\u0027: 2195320.0, \u0027discount_band\u0027: \u0027new, â¹20Lââ¹40L â max 6.61% (auto: 4.46%)\u0027, \u0027max_discount_pct\u0027: 6.61, \u0027approval_limit_pct\u0027: 4.46, \u0027auto_applied_discount\u0027: 4.46, \u0027discounted_price_per_mt\u0027: 104870.44, \u0027actual_margin_pct\u0027: 22.1, \u0027note\u0027: \u0027Standard auto-discount applied\u0027}, \u00274_gst_and_totals\u0027: {\u0027gst_rate_pct\u0027: 12.0, \u0027gst_per_mt\u0027: 12584.45, \u0027final_price_per_mt_ex_gst\u0027: 104870.44, \u0027final_price_per_mt_inc_gst\u0027: 117454.89, \u0027quantity_mt\u0027: 20.0, \u0027subtotal_ex_gst\u0027: 2097408.8, \u0027gst_amount\u0027: 251689.0, \u0027total_invoice_value\u0027: 2349097.8}}, \u0027pricing_possible\u0027: True, \u0027explanation\u0027: \u0027The cost for Steel Billet Model 076 is â¹81,696/MT, built from â¹71,347.9/MT for raw materials, 10.97% manufacturing overhead, and including transport. Our offered price of â¹104,870/MT ex-GST reflects a 4.46% discount from the list price of â¹109,766/MT. This discount is within auto-approval limits and ensures a healthy 22.1% margin, well above our 7.53% minimum floor margin. The total invoice for 20 MT, including 12% GST, amounts to â¹2,349,098.\u0027}",
+                          "chunk_ids":  [
+                                            "ba7a1c1d-65a8-44c6-8452-88cb745c67da",
+                                            "bd7a8b55-fd50-426c-9b51-ae1d878ef07d",
+                                            "16eb5219-7a15-4f0b-b39f-092d9daf7fb3",
+                                            "33237d8d-19f2-453e-9058-7a9d6c90077b",
+                                            "085c707f-e844-4373-b1f3-4a06135423a2"
+                                        ],
+                          "document_ids":  [
+                                               "7b58a9cb-76e0-4028-a020-f1c9feeb2b9a",
+                                               "9b8d7612-7918-4402-a5de-f6589ee3f3a4",
+                                               "342b974c-3e8f-40d4-9459-1f7235ea40cf"
+                                           ],
+                          "scores":  [
+                                         0.5885827482889666,
+                                         0.5596202530349152,
+                                         0.5568378198619893,
+                                         0.5546225170575672,
+                                         0.5468221606943705
+                                     ]
+                      }
+                  ],
+    "inquiry_id":  "580ee590-5a70-4b8d-adb8-cc5e9ad8df5d",
+    "lead_id":  "0bfa3d80-ccc5-4d2d-bf2d-e19483cc7b03",
+    "quotation_id":  "c2ceac46-6b9a-4621-885c-6145984678a5",
+    "quotation_number":  "QT-2026-0C0C",
+    "sales_order_id":  null,
+    "po_id":  null,
+    "handoff_id":  null,
+    "source":  "email",
+    "raw_text":  "Buyer: Apex Steel Pvt Ltd\nContact: Ramesh Kumar\nProduct: Steel Billet Model 076\nProduct code: MSB-076\nGrade: IS2062 E250\nSpecification: size 100mm\nQuantity: 20 MT\nDelivery location: Delhi\nRequired delivery date: 2026-09-30",
+    "sender_identifier":  "ramesh@apexsteel.in",
+    "extraction":  {
+                       "inquiry_id":  "580ee590-5a70-4b8d-adb8-cc5e9ad8df5d",
+                       "customer_name":  "Apex Steel Pvt Ltd",
+                       "company_name":  "Apex Steel Pvt Ltd",
+                       "contact_person":  "Ramesh Kumar",
+                       "product_requested":  "Steel Billet Model 076 (MSB-076)",
+                       "quantity":  "20 MT",
+                       "specifications":  "Grade: IS2062 E250, size 100mm",
+                       "delivery_location":  "Delhi",
+                       "delivery_date":  "2026-09-30",
+                       "payment_expectation":  null,
+                       "extraction_confidence":  1.0,
+                       "missing_fields":  [
+
+                                          ]
+                   },
+    "needs_followup":  false,
+    "requirement":  {
+                        "inquiry_id":  "580ee590-5a70-4b8d-adb8-cc5e9ad8df5d",
+                        "match_type":  "exact",
+                        "matched_product":  {
+                                                "product_code":  "MSB-076",
+                                                "name":  "Steel Billet Model 076",
+                                                "category":  "Steel Billet",
+                                                "grade":  "IS2062 E250",
+                                                "specifications":  "size 100mm",
+                                                "unit":  "MT"
+                                            },
+                        "similarity_score":  0.6160347120718683,
+                        "gap_analysis":  {
+                                             "gaps":  [
+
+                                                      ],
+                                             "critical_gap":  false,
+                                             "can_fulfill":  true,
+                                             "notes":  ""
+                                         },
+                        "needs_technical_doc_review":  false,
+                        "requires_human_review":  false,
+                        "human_review_reason":  null,
+                        "summary_text":  "The customer has requested a quote for 20 MT of Steel Billet Model 076, specified as grade IS2062 E250 with a 100mm size. This request represents an exact match against our current catalog specifications, and no technical gaps were identified during the review. Please proceed immediately with the feasibility check and pricing phase to finalize the proposal.",
+                        "evidence_chunk_ids":  [
+                                                   "7ddd666a-5924-477e-affd-6bbb9233ef6a",
+                                                   "3d5883b5-3b50-414c-991f-31238345203c",
+                                                   "06835eb9-bb4f-4e94-9c29-fc243a9db880",
+                                                   "e92e64d4-c62b-47ae-8c55-9e650d8aed22",
+                                                   "4a7b4f13-7064-425d-ba51-7772079e87da"
+                                               ],
+                        "retrieval_query":  "Product catalog and technical match for Steel Billet Model 076 (MSB-076). Specifications: Grade: IS2062 E250, size 100mm. Quantity: 20 MT. Request: Buyer: Apex Steel Pvt Ltd Contact: Ramesh Kumar Product: Steel Billet Model 076 Product code: MSB-076 Grade: IS2062 E250 Specification: size 100mm Quantity: 20 MT Delivery location: Delhi Required delivery date: 2026-09-30"
+                    },
+    "customer_profile":  {
+                             "customer_type":  "new",
+                             "customer_id":  null,
+                             "company_name":  "Apex Steel Pvt Ltd",
+                             "contact_person":  "Ramesh Kumar",
+                             "city":  null,
+                             "gstin":  null,
+                             "credit_limit":  0.0,
+                             "outstanding_amount":  0.0,
+                             "credit_utilization_pct":  0.0,
+                             "payment_behavior":  "unknown",
+                             "total_orders":  0,
+                             "total_order_value":  0.0,
+                             "won_quotations":  0,
+                             "lost_quotations":  0,
+                             "win_rate_pct":  0.0,
+                             "avg_delay_days":  0.0,
+                             "recent_orders":  [
+
+                                               ],
+                             "recent_quotations":  [
+
+                                                   ]
+                         },
+    "qualification":  {
+                          "inquiry_id":  "580ee590-5a70-4b8d-adb8-cc5e9ad8df5d",
+                          "company_name":  "Apex Steel Pvt Ltd",
+                          "customer_type":  "new",
+                          "score":  53,
+                          "score_breakdown":  {
+                                                  "order_history":  10,
+                                                  "payment":  15,
+                                                  "credit_health":  10,
+                                                  "win_rate":  8,
+                                                  "recency":  10,
+                                                  "reasons":  [
+                                                                  "New customer â no order history.",
+                                                                  "No payment history â neutral score.",
+                                                                  "No credit limit set â neutral.",
+                                                                  "No quotation history â new opportunity.",
+                                                                  "New customer â opportunity bonus."
+                                                              ]
+                                              },
+                          "temperature":  "warm",
+                          "priority":  "P2",
+                          "credit_risk_flag":  false,
+                          "credit_risk_reason":  null,
+                          "requires_human_review":  false,
+                          "human_review_reason":  null,
+                          "rationale":  "Apex Steel Pvt Ltd is qualified as a WARM (53/100) lead primarily due to the \"new customer\" opportunity bonus and potential market alignment within the industrial sector. As this is a new account, we have no established payment or quotation history to validate procurement reliability. Please monitor for credit risk during initial engagement, as there is currently no set credit limit. Prioritize a discovery call to assess their current volume requirements and verify their operational scope before proceeding with a formal quotation."
+                      },
+    "feasibility":  {
+                        "inquiry_id":  "580ee590-5a70-4b8d-adb8-cc5e9ad8df5d",
+                        "fulfillment_type":  "from_stock",
+                        "stock_qty":  20.0,
+                        "production_qty":  0.0,
+                        "production_lead_days":  0,
+                        "transit_days":  7,
+                        "total_lead_time_days":  7,
+                        "customer_required_days":  null,
+                        "can_meet_deadline":  true,
+                        "delivery_location":  "Delhi",
+                        "delivery_zone":  "North",
+                        "location_found":  true,
+                        "risks":  [
+
+                                  ],
+                        "requires_human_review":  false,
+                        "human_review_reasons":  [
+
+                                                 ],
+                        "narrative":  "We can fulfill the request for 20.0 MT of Steel Billet Model 076 (MSB-076) directly from existing stock, requiring zero additional production. The total lead time for delivery to Delhi is 7 days, with no identified risks to the shipment. Please proceed with confirming the order and initiating the dispatch process."
+                    },
+    "pricing":  {
+                    "inquiry_id":  "580ee590-5a70-4b8d-adb8-cc5e9ad8df5d",
+                    "product_code":  "MSB-076",
+                    "product_name":  "Steel Billet Model 076",
+                    "quantity_mt":  20.0,
+                    "rm_cost_per_mt":  71347.9,
+                    "overhead_per_mt":  7826.86,
+                    "transport_per_mt":  2521.0,
+                    "total_cost_per_mt":  81695.76,
+                    "list_price_per_mt":  109766.0,
+                    "floor_price_per_mt":  88348.39,
+                    "suggested_price_per_mt":  109766.0,
+                    "customer_type":  "new",
+                    "discount_band_label":  "new, â¹20Lââ¹40L  â  max 6.61%  (auto: 4.46%)",
+                    "max_discount_pct":  6.61,
+                    "approval_limit_pct":  4.46,
+                    "applied_discount_pct":  4.46,
+                    "discounted_price_per_mt":  104870.44,
+                    "min_margin_pct":  7.53,
+                    "target_margin_pct":  14.38,
+                    "actual_margin_pct":  22.1,
+                    "gst_rate_pct":  12.0,
+                    "gst_per_mt":  12584.45,
+                    "final_price_per_mt_ex_gst":  104870.44,
+                    "final_price_per_mt_inc_gst":  117454.89,
+                    "subtotal_ex_gst":  2097408.8,
+                    "gst_amount":  251689.0,
+                    "total_invoice_value":  2349097.8,
+                    "requires_human_approval":  false,
+                    "approval_reasons":  [
+
+                                         ],
+                    "can_proceed_without_approval":  true,
+                    "price_logic":  {
+                                        "1_cost_build_up":  {
+                                                                "rm_cost_per_mt":  71347.9,
+                                                                "manufacturing_overhead_pct":  10.97,
+                                                                "overhead_per_mt":  7826.86,
+                                                                "transport_zone":  "North",
+                                                                "transport_per_mt":  2521.0,
+                                                                "total_cost_per_mt":  81695.76
+                                                            },
+                                        "2_selling_price":  {
+                                                                "list_price_per_mt":  109766.0,
+                                                                "min_margin_pct":  7.53,
+                                                                "target_margin_pct":  14.38,
+                                                                "floor_price_per_mt":  88348.39,
+                                                                "floor_price_formula":  "81695.76 / (1 - 7.53%) = 88348.39",
+                                                                "suggested_price_per_mt":  109766.0,
+                                                                "price_basis":  "list_price"
+                                                            },
+                                        "3_discount":  {
+                                                           "customer_type":  "new",
+                                                           "order_value_at_list":  2195320.0,
+                                                           "discount_band":  "new, â¹20Lââ¹40L  â  max 6.61%  (auto: 4.46%)",
+                                                           "max_discount_pct":  6.61,
+                                                           "approval_limit_pct":  4.46,
+                                                           "auto_applied_discount":  4.46,
+                                                           "discounted_price_per_mt":  104870.44,
+                                                           "actual_margin_pct":  22.1,
+                                                           "note":  "Standard auto-discount applied"
+                                                       },
+                                        "4_gst_and_totals":  {
+                                                                 "gst_rate_pct":  12.0,
+                                                                 "gst_per_mt":  12584.45,
+                                                                 "final_price_per_mt_ex_gst":  104870.44,
+                                                                 "final_price_per_mt_inc_gst":  117454.89,
+                                                                 "quantity_mt":  20.0,
+                                                                 "subtotal_ex_gst":  2097408.8,
+                                                                 "gst_amount":  251689.0,
+                                                                 "total_invoice_value":  2349097.8
+                                                             }
+                                    },
+                    "pricing_possible":  true,
+                    "explanation":  "The cost for Steel Billet Model 076 is â¹81,696/MT, built from â¹71,347.9/MT for raw materials, 10.97% manufacturing overhead, and including transport. Our offered price of â¹104,870/MT ex-GST reflects a 4.46% discount from the list price of â¹109,766/MT. This discount is within auto-approval limits and ensures a healthy 22.1% margin, well above our 7.53% minimum floor margin. The total invoice for 20 MT, including 12% GST, amounts to â¹2,349,098."
+                },
+    "final_draft_json":  "{\"quotation_number\":\"QT-2026-0C0C\",\"inquiry_id\":\"580ee590-5a70-4b8d-adb8-cc5e9ad8df5d\",\"quotation_date\":\"24-07-2026\",\"valid_until\":\"23-08-2026\",\"seller_name\":\"IndusSteel Trading Pvt. Ltd.\",\"seller_address\":\"Plot 14, Industrial Area Phase II, Ludhiana - 141003, Punjab\",\"seller_gstin\":\"03AABCI1234A1Z5\",\"seller_email\":\"sales@indussteel.in\",\"seller_phone\":\"+91-161-4567890\",\"seller_bank\":\"HDFC Bank, A/C: 50200012345678, IFSC: HDFC0001234\",\"buyer_company\":\"Apex Steel Pvt Ltd\",\"buyer_contact\":\"Ramesh Kumar\",\"buyer_delivery_location\":\"Delhi\",\"buyer_gstin\":null,\"line_items\":[{\"sr_no\":1,\"product_code\":\"MSB-076\",\"description\":\"Steel Billet Model 076\",\"specification\":\"Grade: IS2062 E250, size 100mm\",\"quantity\":20.0,\"unit\":\"MT\",\"unit_price_ex_gst\":109766.0,\"discount_pct\":4.46,\"discounted_price_ex_gst\":104870.44,\"gst_rate_pct\":12.0,\"gst_amount_per_unit\":12584.45,\"total_inc_gst\":2349097.8}],\"subtotal_ex_gst\":2097408.8,\"total_gst_amount\":251689.0,\"total_inc_gst\":2349097.8,\"payment_terms_code\":\"ADV_50\",\"payment_terms_text\":\"50% advance with order, balance before dispatch\",\"delivery_timeline\":\"Material available ex-stock. Dispatch within 2â3 working days of order + payment confirmation. Transit: approx. 7 day(s) to Delhi. Total estimated delivery: 7 working days.\",\"freight_terms\":\"Freight included up to delivery address mentioned above (road transport).\",\"warranty\":\"Material supplied shall conform to the specified IS/BIS standard. Warranty is limited to replacement of non-conforming material on production of test certificate and physical inspection at our works.\",\"fulfillment_type\":\"from_stock\",\"terms_and_conditions\":[\"Prices are exclusive of GST. GST will be charged extra at applicable rates.\",\"Delivery is subject to availability of material and production schedule at the time of order confirmation.\",\"Any variation in government levies, duties, or GST rates after the quotation date will be charged extra.\",\"Force majeure events (strikes, natural calamities, government restrictions) are excluded from delivery commitments.\",\"Disputes, if any, are subject to jurisdiction of courts in Ludhiana, Punjab only.\",\"Payment should be made by RTGS/NEFT to the bank account mentioned. Cheques are not accepted.\",\"Material once dispatched will not be accepted back without prior written approval.\",\"This quotation supersedes all previous verbal or written communications for the same requirement.\"],\"status\":\"draft\",\"requires_human_approval\":false,\"approval_reasons\":[],\"prepared_by\":\"sales_agent\"}",
+    "quotation_sent_at":  "2026-07-24T15:46:08.687105",
+    "followup_attempt":  1,
+    "followup_tone":  null,
+    "followup_message":  null,
+    "customer_reply_text":  null,
+    "reply_type":  null,
+    "objection":  null,
+    "negotiation_analysis":  null,
+    "revised_draft_json":  null,
+    "negotiation_version":  0,
+    "po_raw_text":  null,
+    "po_extraction":  null,
+    "po_validation":  null,
+    "po_verdict":  null,
+    "order_won":  false,
+    "handoff_summary_json":  null,
+    "departments_notified":  [
+
+                             ],
+    "needs_human_approval":  false,
+    "human_approval_stage":  null,
+    "outbound_channel":  "email",
+    "outbound_recipient":  "ramesh@apexsteel.in",
+    "outbound_message":  null,
+    "error":  null
+}
+(.venv) PS C:\Users\susha\Downloads\AI> [PSCustomObject]@{
+>>     ThreadId        = $threadId
+>>     Status          = $state.pipeline_status
+>>     ProductCode     = $state.requirement.matched_product.product_code
+>>     MatchType       = $state.requirement.match_type
+>>     Fulfillment     = $state.feasibility.fulfillment_type
+>>     Stock           = $state.feasibility.stock_qty
+>>     DeliveryZone    = $state.feasibility.delivery_zone
+>>     LocationFound   = $state.feasibility.location_found
+>>     PricingPossible = $state.pricing.pricing_possible
+>>     FinalPricePerMT = $state.pricing.final_price_per_mt_ex_gst
+>>     InvoiceTotal    = $state.pricing.total_invoice_value
+>>     Quotation       = $state.quotation_number
+>>     Error           = $state.error
+>> } | Format-List
+
+
+ThreadId        : dc2e1469-fd8b-4a26-84d9-ac50d187fa1f
+Status          : quotation_sent
+ProductCode     : MSB-076
+MatchType       : exact
+Fulfillment     : from_stock
+Stock           : 20.0
+DeliveryZone    : North
+LocationFound   : True
+PricingPossible : True
+FinalPricePerMT : 104870.44
+InvoiceTotal    : 2349097.8
+Quotation       : QT-2026-0C0C
+Error           : 
+
+
+
+(.venv) PS C:\Users\susha\Downloads\AI> $draft = $state.final_draft_json | ConvertFrom-Json
+>> $item = $draft.line_items[0]
+>> 
+>> $culture = [System.Globalization.CultureInfo]::InvariantCulture
+>> 
+>> $quantity = ([double]$item.quantity).ToString(
+>>     "0.00",
+>>     $culture
+>> )
+>> 
+>> $rate = ([double]$item.discounted_price_ex_gst).ToString(
+>>     "0.00",
+>>     $culture
+>> )
+>> 
+>> $gstRate = ([double]$item.gst_rate_pct).ToString(
+>>     "0.00",
+>>     $culture
+>> )
+>> 
+>> $gstAmount = ([double]$draft.total_gst_amount).ToString(
+>>     "0.00",
+>>     $culture
+>> )
+>> 
+>> $total = ([double]$draft.total_inc_gst).ToString(
+>>     "0.00",
+>>     $culture
+>> )
+(.venv) PS C:\Users\susha\Downloads\AI> $poText = @"
+>> PURCHASE ORDER
+>> 
+>> PO Number: APX-PO-2026-2001
+>> PO Date: 2026-07-24
+>> 
+>> Buyer Company: $($draft.buyer_company)
+>> Quotation Reference: $($draft.quotation_number)
+>> 
+>> Product Description: $($item.description)
+>> Product Code: $($item.product_code)
+>> Specification: $($item.specification)
+>> Quantity: $quantity MT
+>> Unit: MT
+>> 
+>> Price per unit ex-GST: INR $rate
+>> GST rate: $gstRate percent
+>> GST amount: INR $gstAmount
+>> Total amount including GST: INR $total
+>> 
+>> Payment terms: $($draft.payment_terms_text)
+>> Delivery date: 2026-09-30
+>> Delivery location: Delhi
+>> Shipping address: Apex Steel Receiving Yard, Delhi
+>> "@
+>> 
+>> $poText
+PURCHASE ORDER
+
+PO Number: APX-PO-2026-2001
+PO Date: 2026-07-24
+
+Buyer Company: Apex Steel Pvt Ltd
+Quotation Reference: QT-2026-0C0C
+
+Product Description: Steel Billet Model 076
+Product Code: MSB-076
+Specification: Grade: IS2062 E250, size 100mm
+Quantity: 20.00 MT
+Unit: MT
+
+Price per unit ex-GST: INR 104870.44
+GST rate: 12.00 percent
+GST amount: INR 251689.00
+Total amount including GST: INR 2349097.80
+
+Payment terms: 50% advance with order, balance before dispatch
+Delivery date: 2026-09-30
+Delivery location: Delhi
+Shipping address: Apex Steel Receiving Yard, Delhi
+(.venv) PS C:\Users\susha\Downloads\AI> $poBody = @{
+>>     business_id = "demo-steel-company"
+>>     thread_id = $threadId
+>>     trigger = "po_received"
+>>     po_raw_text = $poText
+>>     outbound_channel = "email"
+>>     outbound_recipient = "ramesh@apexsteel.in"
+>> } | ConvertTo-Json -Depth 10
+>> 
+>> $poResponse = Invoke-RestMethod `
+>>     -Method Post `
+>>     -Uri "http://127.0.0.1:8000/pipeline/events" `
+>>     -ContentType "application/json" `
+>>     -Body $poBody `
+>>     -TimeoutSec 240
+>> 
+>> $state = $poResponse.state
+>> 
+>> [PSCustomObject]@{
+>>     Status      = $state.pipeline_status
+>>     POVerdict   = $state.po_verdict
+>>     POId        = $state.po_id
+>>     Missing     = $state.po_extraction.missing_critical_fields -join ", "
+>>     OrderWon    = $state.order_won
+>>     Error       = $state.error
+>> } | Format-List
+
+
+Status    : awaiting_approval:po
+POVerdict : minor_mismatch
+POId      : 0065940d-8bd3-4097-9366-69c27b90506f
+Missing   : 
+OrderWon  : False
+Error     : 
+
+
+
+(.venv) PS C:\Users\susha\Downloads\AI> if ($state.pipeline_status -eq "awaiting_approval:po") {
+>>     $approvalBody = @{
+>>         business_id = "demo-steel-company"
+>>         thread_id = $threadId
+>>         approved_stage = "po"
+>>     } | ConvertTo-Json
+>> 
+>>     $approvalResponse = Invoke-RestMethod `
+>>         -Method Post `
+>>         -Uri "http://127.0.0.1:8000/pipeline/approve" `
+>>         -ContentType "application/json" `
+>>         -Body $approvalBody `
+>>         -TimeoutSec 240
+>> 
+>>     $state = $approvalResponse.state
+>> }
+(.venv) PS C:\Users\susha\Downloads\AI> [PSCustomObject]@{
+>>     Status              = $state.pipeline_status
+>>     POVerdict           = $state.po_verdict
+>>     OrderWon            = $state.order_won
+>>     POId                = $state.po_id
+>>     SalesOrderId        = $state.sales_order_id
+>>     HandoffId           = $state.handoff_id
+>>     DepartmentsNotified = $state.departments_notified -join ", "
+>>     Error               = $state.error
+>> } | Format-List
+
+
+Status              : handed_off
+POVerdict           : minor_mismatch
+OrderWon            : True
+POId                : 0065940d-8bd3-4097-9366-69c27b90506f
+SalesOrderId        : ca2f1387-88cb-4cc3-867a-d8d1bd78732a
+HandoffId           : 9c62e493-cf1d-4f03-9b07-c4ee84ea3b5e
+DepartmentsNotified : production, inventory, purchase, dispatch, finance
+Error               : 
+
+
+
+(.venv) PS C:\Users\susha\Downloads\AI> $documentBody = @{
+>>     business_id = "demo-steel-company"
+>>     agent_name = "cost_and_pricing"
+>>     document_name = "transport.csv"
+>>     document_type = "pricing_sheet"
+>> } | ConvertTo-Json
+>> 
+>> Invoke-RestMethod `
+>>     -Method Post `
+>>     -Uri "http://127.0.0.1:8000/rag/document" `
+>>     -ContentType "application/json" `
+>>     -Body $documentBody |
+>>     ConvertTo-Json -Depth 20
+{
+    "agent_name":  "cost_and_pricing",
+    "query":  "Exact structured document lookup: pricing_sheet/transport.csv",
+    "chunks":  [
+                   {
+                       "chunk_id":  "71f1fe8c-2ab1-4b6a-840f-8ae5e3a1c9ec",
+                       "document_id":  "bcbcb089-4619-4887-b870-cd3be8f4eeb6",
+                       "document_type":  "pricing_sheet",
+                       "text":  "transport_rate_id | destination_city | destination_state | zone | distance_km | vehicle_type | rate_per_mt_inr | minimum_charge_inr | handling_charge_inr | estimated_transit_days | preferred_transporter | status\nTR-007 | Delhi | Delhi | North | 392 | 19-ft Truck | 4281 | 19723 | 1824 | 1 | Transporter Beta | Active\nTR-022 | Delhi | Delhi | North | 219 | 19-ft Truck | 1602 | 4449 | 1647 | 8 | Transporter Alpha | Active\nTR-037 | Delhi | Delhi | North | 1983 | 19-ft Truck | 1455 | 13910 | 1241 | 1 | Transporter Alpha | Active\nTR-052 | Delhi | Delhi | North | 638 | 19-ft Truck | 637 | 10167 | 2071 | 8 | Transporter Beta | Active\nTR-067 | Delhi | Delhi | North | 610 | 19-ft Truck | 3681 | 16051 | 315 | 5 | Transporter Alpha | Active\nTR-082 | Delhi | Delhi | North | 1014 | 19-ft Truck | 2942 | 20075 | 694 | 7 | Transporter Alpha | Active\nTR-097 | Delhi | Delhi | North | 1859 | 19-ft Truck | 3049 | 18703 | 2384 | 7 | Transporter Gamma | Active",
+                       "score":  1.0,
+                       "metadata":  {
+                                        "document_name":  "transport.csv",
+                                        "chunk_index":  0,
+                                        "version":  "2.0-focused-test",
+                                        "structured_lookup":  true
+                                    }
+                   }
+               ]
+}

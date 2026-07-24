@@ -73,6 +73,13 @@ class RAGRetrieveRequest(BaseModel):
     top_k: int = Field(default=5, ge=1, le=20)
 
 
+class StructuredDocumentRequest(BaseModel):
+    business_id: str = Field(min_length=1)
+    agent_name: str = Field(min_length=1)
+    document_name: str = Field(min_length=1)
+    document_type: DocumentType
+
+
 class InquiryRequest(BaseModel):
     business_id: str = Field(min_length=1)
     source: str = "email"
@@ -388,6 +395,31 @@ async def retrieve_agent_context(
             "chunk_ids": context.chunk_ids,
         }
 
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc),
+        ) from exc
+
+
+@app.post("/rag/document")
+async def retrieve_structured_document(
+    request: StructuredDocumentRequest,
+):
+    if rag_adapter is None:
+        raise HTTPException(
+            status_code=503,
+            detail="RAG adapter is not initialized.",
+        )
+
+    try:
+        context = await rag_adapter.get_document_context(
+            agent_name=request.agent_name,
+            state={"business_id": request.business_id},
+            document_name=request.document_name,
+            document_type=request.document_type.value,
+        )
+        return context.model_dump()
     except ValueError as exc:
         raise HTTPException(
             status_code=400,

@@ -1,3 +1,5 @@
+import re
+
 from qdrant_client import QdrantClient, models
 
 from app.documents.models import DocumentChunk, RetrievedChunk
@@ -131,6 +133,95 @@ class DocumentVectorStore:
             )
 
         return retrieved
+
+    def get_document_chunks(
+        self,
+        *,
+        business_id: str,
+        agent_name: str,
+        document_name: str,
+        document_type: str,
+        page_size: int = 100,
+    ) -> list[DocumentChunk]:
+        """
+        Retrieve a complete structured document by exact payload filters.
+
+        Unlike semantic search, this method does not use embeddings, scores,
+        or a top-k limit. It is intended for CSV-backed deterministic lookups
+        such as inventory, capacity, prices, margins, taxes and transport.
+        When several active versions exist, only the lexicographically latest
+        version is returned.
+        """
+        conditions: list[models.Condition] = [
+            models.FieldCondition(
+                key="business_id",
+                match=models.MatchValue(value=business_id),
+            ),
+            models.FieldCondition(
+                key="status",
+                match=models.MatchValue(value="active"),
+            ),
+            models.FieldCondition(
+                key="document_name",
+                match=models.MatchValue(value=document_name),
+            ),
+            models.FieldCondition(
+                key="document_type",
+                match=models.MatchValue(value=document_type),
+            ),
+            models.FieldCondition(
+                key="allowed_agents",
+                match=models.MatchValue(value=agent_name),
+            ),
+        ]
+
+        chunks: list[DocumentChunk] = []
+        offset = None
+
+        while True:
+            points, offset = self.client.scroll(
+                collection_name=self.COLLECTION_NAME,
+                scroll_filter=models.Filter(must=conditions),
+                limit=page_size,
+                offset=offset,
+                with_payload=True,
+                with_vectors=False,
+            )
+
+            for point in points:
+                payload = point.payload or {}
+                chunks.append(DocumentChunk(**payload))
+
+            if offset is None:
+                break
+
+        if not chunks:
+            return []
+
+        def version_key(version: str):
+            return tuple(
+                (0, int(part)) if part.isdigit() else (1, part.lower())
+                for part in re.split(r"(\d+)", version)
+                if part
+            )
+
+        latest_version = max(
+            (chunk.version for chunk in chunks),
+            key=version_key,
+        )
+        latest_chunks = [
+            chunk
+            for chunk in chunks
+            if chunk.version == latest_version
+        ]
+
+        return sorted(
+            latest_chunks,
+            key=lambda chunk: (
+                chunk.document_id,
+                chunk.chunk_index,
+            ),
+        )
 
     def delete_document(
         self,

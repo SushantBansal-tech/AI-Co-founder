@@ -1,0 +1,8 @@
+﻿"zone_code","city","state","region","pincode_start","pincode_end","transit_days","preferred_mode","minimum_freight_inr","service_level","status"
+"ZONE-007","Delhi","Delhi","North","107000","107999","2","Rail","2472","Standard","Active"
+"ZONE-022","Delhi","Delhi","North","122000","122999","3","Rail","1429","Priority","Active"
+"ZONE-037","Delhi","Delhi","North","137000","137999","6","Road","2115","Remote","Active"
+"ZONE-052","Delhi","Delhi","North","152000","152999","12","Rail","650","Standard","Active"
+"ZONE-067","Delhi","Delhi","North","167000","167999","12","Road/Rail","1263","Standard","Active"
+"ZONE-082","Delhi","Delhi","North","182000","182999","3","Road/Rail","1846","Priority","Active"
+"ZONE-097","Delhi","Delhi","North","197000","197999","7","Road/Rail","612","Standard","Active"

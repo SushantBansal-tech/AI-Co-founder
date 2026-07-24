@@ -300,6 +300,29 @@ def build_all_nodes(session_factory, rag_adapter, client):
     def _qualification(d): return qual.QualificationResult(**d) if d else None
 
 
+    async def _structured_document_context(
+        state: CompletePipelineState,
+        *,
+        agent_name: str,
+        documents: list[tuple[str, str]],
+    ) -> AgentRAGContext:
+        chunks = []
+        for document_name, document_type in documents:
+            context = await rag_adapter.get_document_context(
+                agent_name=agent_name,
+                state=state,
+                document_name=document_name,
+                document_type=document_type,
+            )
+            chunks.extend(context.chunks)
+
+        return AgentRAGContext(
+            agent_name=agent_name,
+            query="Exact structured document retrieval",
+            chunks=chunks,
+        )
+
+
 
     def _rag_rows(
         rag_context: AgentRAGContext,
@@ -434,6 +457,12 @@ def build_all_nodes(session_factory, rag_adapter, client):
                 )
             except (TypeError, ValueError):
                 continue
+
+        docs.transport_costs = {
+            zone: round(sum(rates) / len(rates), 2)
+            for zone, rates in transport_by_zone.items()
+            if rates
+        }
 
         # The pricing engine uses qualification values "new"/"existing".
         # Keep those exact values in this normalized policy file.
@@ -628,9 +657,28 @@ def build_all_nodes(session_factory, rag_adapter, client):
             )
             ql = _qualification(state.get("qualification"))
 
-            inventory_index = _inventory_from_rag(rag_context)
-            capacity_index = _capacity_from_rag(rag_context)
-            delivery_index = _delivery_from_rag(rag_context)
+            structured_context = await _structured_document_context(
+                state,
+                agent_name="feasibility_agent",
+                documents=[
+                    ("inventory_report.csv", "inventory"),
+                    (
+                        "production_capacity.csv",
+                        "production_capacity",
+                    ),
+                    ("delivery_zones.csv", "delivery_policy"),
+                ],
+            )
+
+            inventory_index = _inventory_from_rag(
+                structured_context
+            )
+            capacity_index = _capacity_from_rag(
+                structured_context
+            )
+            delivery_index = _delivery_from_rag(
+                structured_context
+            )
 
             if not inventory_index:
                 raise ValueError(
@@ -680,15 +728,43 @@ def build_all_nodes(session_factory, rag_adapter, client):
             ql = _qualification(state.get("qualification"))
             fs = _feasibility(state.get("feasibility"))
 
+            structured_context = await _structured_document_context(
+                state,
+                agent_name="pricing_agent",
+                documents=[
+                    ("price_list.csv", "pricing_sheet"),
+                    ("product_cost.csv", "pricing_sheet"),
+                    ("transport.csv", "pricing_sheet"),
+                    (
+                        "discount_policy_normalized.csv",
+                        "discount_policy",
+                    ),
+                    ("margin_rules.csv", "margin_policy"),
+                    ("gst_rates.csv", "tax_policy"),
+                ],
+            )
+
             result = pe.compute_pricing(
                 extraction=ext,
                 requirement=req_,
                 qualification=ql,
                 feasibility=fs,
-                docs=_pricing_documents_from_rag(rag_context),
+                docs=_pricing_documents_from_rag(
+                    structured_context
+                ),
                 client=client,
                 rag_context=rag_context,
             )
+
+            if not result.pricing_possible:
+                return {
+                    "pricing": result.model_dump(),
+                    "pipeline_status": "blocked:pricing_data",
+                    "needs_human_approval": False,
+                    "human_approval_stage": None,
+                    "human_approval_reasons": result.approval_reasons,
+                    "stages_completed": ["pricing_blocked"],
+                }
 
             return {
                 "pricing": result.model_dump(),
@@ -1350,6 +1426,9 @@ def route_after_feasibility(state: CompletePipelineState) -> str:
 
 def route_after_pricing(state: CompletePipelineState) -> str:
     if state.get("error"): return END
+    pricing = state.get("pricing") or {}
+    if pricing and not pricing.get("pricing_possible", False):
+        return END
     if state.get("needs_human_approval") and state.get("human_approval_stage") == "pricing":
         return "request_approval"
     return "generate_quotation"

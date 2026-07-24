@@ -36,3 +36,26 @@ class LangGraphRAGAdapter:
             query=query,
             top_k=top_k,
         )
+
+    async def get_document_context(
+        self,
+        *,
+        agent_name: str,
+        state: dict[str, Any],
+        document_name: str,
+        document_type: str,
+    ):
+        canonical_name = canonical_agent_name(agent_name)
+        business_id = state.get("business_id")
+        if not business_id:
+            raise ValueError(
+                "LangGraph state must include business_id "
+                "for structured document isolation"
+            )
+
+        return await self.rag_service.retrieve_document_for_agent(
+            agent_name=canonical_name,
+            business_id=business_id,
+            document_name=document_name,
+            document_type=document_type,
+        )
