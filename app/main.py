@@ -2,6 +2,8 @@ import json
 import os
 from contextlib import asynccontextmanager
 from importlib import import_module
+from typing import Literal
+from uuid import uuid4
 
 from dotenv import load_dotenv
 from fastapi import (
@@ -12,6 +14,7 @@ from fastapi import (
     UploadFile,
 )
 from google import genai
+from langgraph.checkpoint.memory import MemorySaver
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -55,6 +58,7 @@ database_engine = None
 Session = None
 
 sales_graph = None
+graph_checkpointer = None
 gemini_client = None
 
 
@@ -76,6 +80,32 @@ class InquiryRequest(BaseModel):
     sender_identifier: str | None = None
 
 
+class PipelineEventRequest(BaseModel):
+    business_id: str = Field(min_length=1)
+    thread_id: str = Field(min_length=1)
+    trigger: Literal[
+        "followup",
+        "customer_reply",
+        "po_received",
+    ]
+    customer_reply_text: str | None = None
+    po_raw_text: str | None = None
+    outbound_channel: str = "email"
+    outbound_recipient: str | None = None
+
+
+class ApprovalRequest(BaseModel):
+    business_id: str = Field(min_length=1)
+    thread_id: str = Field(min_length=1)
+    approved_stage: Literal[
+        "qualification",
+        "feasibility",
+        "pricing",
+        "negotiation",
+        "po",
+    ]
+
+
 # ---------------------------------------------------------------------------
 # FastAPI lifespan
 # ---------------------------------------------------------------------------
@@ -90,6 +120,7 @@ async def lifespan(app: FastAPI):
     global database_engine
     global Session
     global sales_graph
+    global graph_checkpointer
     global gemini_client
 
     # ------------------------------------------------------------------
@@ -169,10 +200,13 @@ async def lifespan(app: FastAPI):
     # their SQLAlchemy models on the shared Base metadata.
     # ------------------------------------------------------------------
 
+    graph_checkpointer = MemorySaver()
+
     sales_graph = build_complete_graph(
         session_factory=Session,
         rag_adapter=rag_adapter,
         client=gemini_client,
+        checkpointer=graph_checkpointer,
     )
 
     # ------------------------------------------------------------------
@@ -365,6 +399,46 @@ async def retrieve_agent_context(
 # Inquiry processing endpoint
 # ---------------------------------------------------------------------------
 
+def _graph_config(thread_id: str) -> dict:
+    return {
+        "configurable": {
+            "thread_id": thread_id,
+        }
+    }
+
+
+async def _load_thread_state(thread_id: str) -> dict:
+    if sales_graph is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Sales graph is not initialized.",
+        )
+
+    snapshot = await sales_graph.aget_state(
+        _graph_config(thread_id)
+    )
+    state = dict(snapshot.values or {})
+
+    if not state:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No pipeline state found for thread_id={thread_id}.",
+        )
+
+    return state
+
+
+def _validate_thread_business(
+    state: dict,
+    business_id: str,
+) -> None:
+    if state.get("business_id") != business_id:
+        raise HTTPException(
+            status_code=403,
+            detail="The thread does not belong to this business_id.",
+        )
+
+
 @app.post("/inquiries/process")
 async def process_inquiry(
     request: InquiryRequest,
@@ -383,15 +457,194 @@ async def process_inquiry(
         sender_identifier=request.sender_identifier,
     )
 
+    thread_id = str(uuid4())
+    config = _graph_config(thread_id)
+
     try:
         result = await sales_graph.ainvoke(
-            initial_state
+            initial_state,
+            config=config,
         )
 
-        return result
+        return {
+            "thread_id": thread_id,
+            "state": result,
+        }
 
     except Exception as exc:
         raise HTTPException(
             status_code=500,
             detail=f"Sales graph execution failed: {exc}",
+        ) from exc
+
+
+# ---------------------------------------------------------------------------
+# Follow-up, customer reply, and PO event endpoint
+# ---------------------------------------------------------------------------
+
+@app.post("/pipeline/events")
+async def process_pipeline_event(
+    request: PipelineEventRequest,
+):
+    current_state = await _load_thread_state(
+        request.thread_id
+    )
+    _validate_thread_business(
+        current_state,
+        request.business_id,
+    )
+
+    current_status = current_state.get("pipeline_status", "")
+    if current_status.startswith("awaiting_approval:"):
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                f"Pipeline is {current_status}. "
+                "Approve the pending stage before sending another event."
+            ),
+        )
+
+    event_state = {
+        "business_id": request.business_id,
+        "trigger": request.trigger,
+        "outbound_channel": request.outbound_channel,
+        "outbound_recipient": (
+            request.outbound_recipient
+            or current_state.get("outbound_recipient")
+            or current_state.get("sender_identifier")
+            or ""
+        ),
+        "error": None,
+    }
+
+    if request.trigger == "customer_reply":
+        if not request.customer_reply_text:
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "customer_reply_text is required when "
+                    "trigger='customer_reply'."
+                ),
+            )
+        event_state["customer_reply_text"] = (
+            request.customer_reply_text
+        )
+
+    if request.trigger == "po_received":
+        if not request.po_raw_text:
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "po_raw_text is required when "
+                    "trigger='po_received'."
+                ),
+            )
+        event_state["po_raw_text"] = request.po_raw_text
+
+    try:
+        result = await sales_graph.ainvoke(
+            event_state,
+            config=_graph_config(request.thread_id),
+        )
+        return {
+            "thread_id": request.thread_id,
+            "state": result,
+        }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Pipeline event execution failed: {exc}",
+        ) from exc
+
+
+# ---------------------------------------------------------------------------
+# Human approval endpoint
+# ---------------------------------------------------------------------------
+
+@app.post("/pipeline/approve")
+async def approve_pipeline_stage(
+    request: ApprovalRequest,
+):
+    current_state = await _load_thread_state(
+        request.thread_id
+    )
+    _validate_thread_business(
+        current_state,
+        request.business_id,
+    )
+
+    expected_status = (
+        f"awaiting_approval:{request.approved_stage}"
+    )
+    current_status = current_state.get("pipeline_status")
+    current_stage = current_state.get("human_approval_stage")
+
+    if (
+        current_status != expected_status
+        or current_stage != request.approved_stage
+    ):
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                f"Cannot approve stage '{request.approved_stage}'. "
+                f"Current status is '{current_status}' and the pending "
+                f"stage is '{current_stage}'."
+            ),
+        )
+
+    if request.approved_stage == "pricing":
+        pricing = current_state.get("pricing") or {}
+        missing_inputs = (
+            (pricing.get("price_logic") or {})
+            .get("validation", {})
+            .get("missing_inputs", [])
+        )
+
+        if (
+            not pricing
+            or not pricing.get("pricing_possible", False)
+            or missing_inputs
+        ):
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "message": (
+                        "Pricing cannot be approved because fundamental "
+                        "pricing inputs are missing or incompatible."
+                    ),
+                    "missing_inputs": missing_inputs,
+                    "approval_reasons": pricing.get(
+                        "approval_reasons",
+                        [],
+                    ),
+                },
+            )
+
+    approval_state = {
+        "business_id": request.business_id,
+        "trigger": "approved",
+        "approved_stage": request.approved_stage,
+        "needs_human_approval": False,
+        "human_approval_stage": None,
+        "error": None,
+    }
+
+    try:
+        result = await sales_graph.ainvoke(
+            approval_state,
+            config=_graph_config(request.thread_id),
+        )
+        return {
+            "thread_id": request.thread_id,
+            "approved_stage": request.approved_stage,
+            "state": result,
+        }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Pipeline approval failed: {exc}",
         ) from exc

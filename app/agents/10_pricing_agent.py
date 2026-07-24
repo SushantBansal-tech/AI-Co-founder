@@ -147,14 +147,9 @@ def _compute_cost(
                      docs.transport_costs.get(DEFAULT_TRANSPORT_ZONE, 900.0))
 
     if rm_entry is None:
-        # No RM data — use transport only as a minimum
-        return 0.0, 0.0, transport_cost, transport_cost, {
-            "rm_cost_per_mt": "N/A",
-            "overhead_per_mt": "N/A",
-            "transport_per_mt": transport_cost,
-            "total_cost_per_mt": transport_cost,
-            "note": "RM cost not found — partial cost only",
-        }
+        raise ValueError(
+        f"RM cost not found for product {product_code}"
+    )
 
     overhead   = rm_entry.overhead_per_mt
     total_cost = rm_entry.rm_cost_per_mt + overhead + transport_cost
@@ -397,6 +392,64 @@ def _generate_explanation(
         return response.text.strip()
     except Exception:
         return fallback
+    
+def _missing_pricing_inputs(
+    *,
+    product_code: str,
+    product_category: str,
+    delivery_zone: str,
+    customer_type: str,
+    quantity_mt: float,
+    docs: PricingDocuments,
+) -> list[str]:
+    missing: list[str] = []
+
+    if product_code not in docs.price_list:
+        missing.append(
+            f"Price-list entry missing for {product_code}"
+        )
+
+    if product_code not in docs.rm_costs:
+        missing.append(
+            f"Product-level RM cost missing for {product_code}"
+        )
+
+    if product_code not in docs.margin_rules:
+        missing.append(
+            f"Margin rule missing for {product_code}"
+        )
+
+    if product_category not in docs.gst_rates:
+        missing.append(
+            f"GST rule missing for category {product_category}"
+        )
+
+    if delivery_zone not in docs.transport_costs:
+        missing.append(
+            f"Transport rate missing for zone {delivery_zone}"
+        )
+
+    price_entry = docs.price_list.get(product_code)
+
+    if price_entry:
+        provisional_order_value = (
+            price_entry.base_price_per_mt * quantity_mt
+        )
+
+        discount_band = get_discount_band(
+            docs,
+            customer_type,
+            provisional_order_value,
+        )
+
+        if discount_band is None:
+            missing.append(
+                "No discount policy for "
+                f"customer_type={customer_type}, "
+                f"order_value={provisional_order_value}"
+            )
+
+    return missing
 
 
 # ---------------------------------------------------------------------------
@@ -436,6 +489,38 @@ def compute_pricing(
     product_category = matched.category
     delivery_zone    = feasibility.delivery_zone or DEFAULT_TRANSPORT_ZONE
     customer_type    = qualification.customer_type  # "new" or "existing"
+    
+    missing_inputs = _missing_pricing_inputs(
+    product_code=product_code,
+    product_category=product_category,
+    delivery_zone=delivery_zone,
+    customer_type=customer_type,
+    quantity_mt=qty_mt,
+    docs=docs,
+  )
+
+    if missing_inputs:
+     return PricingResult(
+        inquiry_id=extraction.inquiry_id,
+        product_code=product_code,
+        product_name=matched.name,
+        quantity_mt=qty_mt,
+        pricing_possible=False,
+        requires_human_approval=True,
+        approval_reasons=missing_inputs,
+        can_proceed_without_approval=False,
+        price_logic={
+            "validation": {
+                "status": "failed",
+                "missing_inputs": missing_inputs,
+            }
+        },
+        explanation=(
+            "Pricing was stopped because required pricing "
+            "documents are missing or incompatible: "
+            + "; ".join(missing_inputs)
+        ),
+    )
 
     # ── Step 1: Cost build-up ────────────────────────────────────────────
     rm_cost, overhead, transport, total_cost, cost_logic = _compute_cost(

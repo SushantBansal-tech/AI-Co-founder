@@ -1,0 +1,101 @@
+﻿term_id,customer_type,minimum_order_value_inr,maximum_order_value_inr,advance_percentage,credit_days,balance_payment_condition,late_payment_interest_pct_pa,exception_approver,status
+PAY-001,Dealer,0,14000000,50,7,Within Credit Period,18.74,Finance Manager,Active
+PAY-002,Distributor,450000,8600000,50,60,Before Dispatch,17.78,Finance Head,Active
+PAY-003,Corporate,500000,23000000,20,30,Within Credit Period,15.13,Finance Manager,Active
+PAY-004,EPC Contractor,450000,5800000,100,0,Against Proforma Invoice,18.21,Finance Manager,Active
+PAY-005,OEM,950000,11300000,10,7,Within Credit Period,20.17,Finance Manager,Active
+PAY-006,Government,0,17700000,100,0,Milestone Based,23.97,Finance Manager,Active
+PAY-007,Dealer,600000,10900000,20,45,Before Dispatch,19.0,Finance Head,Active
+PAY-008,Distributor,500000,19500000,50,15,Against Proforma Invoice,20.24,Finance Manager,Active
+PAY-009,Corporate,750000,24200000,100,0,Within Credit Period,18.09,Finance Manager,Active
+PAY-010,EPC Contractor,250000,8500000,10,60,Before Dispatch,17.65,Finance Head,Active
+PAY-011,OEM,400000,19500000,100,0,Against Proforma Invoice,23.36,Finance Manager,Active
+PAY-012,Government,350000,10000000,20,7,Against Proforma Invoice,20.93,Finance Manager,Active
+PAY-013,Dealer,500000,10500000,20,45,Within Credit Period,19.03,Finance Head,Active
+PAY-014,Distributor,750000,2300000,30,7,Before Dispatch,17.67,Finance Manager,Active
+PAY-015,Corporate,150000,23200000,10,60,Milestone Based,18.36,Finance Head,Active
+PAY-016,EPC Contractor,200000,4500000,30,7,Against Proforma Invoice,16.11,Finance Manager,Active
+PAY-017,OEM,200000,9000000,50,45,Against Proforma Invoice,21.35,Finance Head,Active
+PAY-018,Government,250000,9000000,30,30,Before Dispatch,12.06,Finance Manager,Active
+PAY-019,Dealer,250000,15700000,20,15,Against Proforma Invoice,17.87,Finance Manager,Active
+PAY-020,Distributor,950000,12100000,0,15,Milestone Based,16.84,Finance Manager,Active
+PAY-021,Corporate,0,1900000,30,45,Against Proforma Invoice,20.77,Finance Head,Active
+PAY-022,EPC Contractor,800000,5800000,0,30,Before Dispatch,20.12,Finance Manager,Active
+PAY-023,OEM,350000,6700000,100,0,Within Credit Period,15.75,Finance Manager,Active
+PAY-024,Government,800000,16000000,0,45,Within Credit Period,14.0,Finance Head,Active
+PAY-025,Dealer,450000,12600000,0,30,Within Credit Period,17.2,Finance Manager,Active
+PAY-026,Distributor,200000,9700000,100,0,Milestone Based,16.31,Finance Manager,Active
+PAY-027,Corporate,600000,1400000,10,15,Against Proforma Invoice,14.69,Finance Manager,Active
+PAY-028,EPC Contractor,0,16000000,10,15,Against Proforma Invoice,13.48,Finance Manager,Active
+PAY-029,OEM,50000,10600000,100,0,Within Credit Period,21.25,Finance Manager,Active
+PAY-030,Government,950000,2200000,50,7,Before Dispatch,19.84,Finance Manager,Active
+PAY-031,Dealer,150000,11600000,0,7,Milestone Based,16.56,Finance Manager,Active
+PAY-032,Distributor,750000,18900000,50,30,Against Proforma Invoice,14.47,Finance Manager,Active
+PAY-033,Corporate,0,8700000,100,0,Milestone Based,19.94,Finance Manager,Active
+PAY-034,EPC Contractor,800000,7900000,100,0,Against Proforma Invoice,17.03,Finance Manager,Active
+PAY-035,OEM,950000,4000000,0,60,Within Credit Period,13.37,Finance Head,Active
+PAY-036,Government,300000,16500000,0,45,Against Proforma Invoice,21.34,Finance Head,Active
+PAY-037,Dealer,550000,19000000,50,15,Milestone Based,15.54,Finance Manager,Active
+PAY-038,Distributor,750000,24300000,0,60,Against Proforma Invoice,20.26,Finance Head,Active
+PAY-039,Corporate,350000,1000000,30,30,Before Dispatch,20.06,Finance Manager,Active
+PAY-040,EPC Contractor,750000,4800000,0,60,Before Dispatch,21.35,Finance Head,Active
+PAY-041,OEM,400000,17400000,0,7,Against Proforma Invoice,17.48,Finance Manager,Active
+PAY-042,Government,700000,2200000,20,30,Before Dispatch,21.76,Finance Manager,Active
+PAY-043,Dealer,550000,21500000,0,30,Within Credit Period,17.11,Finance Manager,Active
+PAY-044,Distributor,50000,1200000,0,7,Against Proforma Invoice,19.96,Finance Manager,Active
+PAY-045,Corporate,550000,23800000,10,30,Milestone Based,23.46,Finance Manager,Active
+PAY-046,EPC Contractor,550000,21800000,20,7,Within Credit Period,14.19,Finance Manager,Active
+PAY-047,OEM,700000,7900000,30,45,Milestone Based,20.28,Finance Head,Active
+PAY-048,Government,250000,3800000,30,45,Against Proforma Invoice,20.35,Finance Head,Active
+PAY-049,Dealer,150000,11600000,0,15,Milestone Based,21.63,Finance Manager,Active
+PAY-050,Distributor,700000,5600000,100,0,Milestone Based,21.35,Finance Manager,Active
+PAY-051,Corporate,200000,13300000,50,7,Milestone Based,13.36,Finance Manager,Active
+PAY-052,EPC Contractor,50000,2600000,30,45,Within Credit Period,19.86,Finance Head,Active
+PAY-053,OEM,900000,19500000,0,60,Against Proforma Invoice,23.73,Finance Head,Active
+PAY-054,Government,500000,14200000,100,0,Before Dispatch,17.19,Finance Manager,Active
+PAY-055,Dealer,350000,13300000,100,0,Within Credit Period,19.96,Finance Manager,Active
+PAY-056,Distributor,600000,4800000,100,0,Before Dispatch,12.14,Finance Manager,Active
+PAY-057,Corporate,750000,22800000,10,60,Milestone Based,22.43,Finance Head,Active
+PAY-058,EPC Contractor,500000,7100000,0,45,Within Credit Period,23.64,Finance Head,Active
+PAY-059,OEM,350000,15000000,0,60,Milestone Based,16.84,Finance Head,Active
+PAY-060,Government,700000,12300000,10,7,Milestone Based,13.06,Finance Manager,Active
+PAY-061,Dealer,500000,4000000,30,45,Milestone Based,20.94,Finance Head,Active
+PAY-062,Distributor,600000,11500000,0,7,Before Dispatch,18.69,Finance Manager,Active
+PAY-063,Corporate,950000,16800000,0,7,Within Credit Period,22.68,Finance Manager,Active
+PAY-064,EPC Contractor,700000,9700000,50,15,Within Credit Period,21.9,Finance Manager,Active
+PAY-065,OEM,500000,15300000,10,45,Milestone Based,20.6,Finance Head,Active
+PAY-066,Government,150000,3400000,20,45,Against Proforma Invoice,12.03,Finance Head,Active
+PAY-067,Dealer,850000,14300000,20,30,Within Credit Period,20.43,Finance Manager,Active
+PAY-068,Distributor,750000,4500000,0,15,Milestone Based,13.28,Finance Manager,Active
+PAY-069,Corporate,300000,4000000,50,15,Milestone Based,14.59,Finance Manager,Active
+PAY-070,EPC Contractor,150000,20300000,10,30,Milestone Based,12.56,Finance Manager,Active
+PAY-071,OEM,900000,4100000,100,0,Milestone Based,17.49,Finance Manager,Active
+PAY-072,Government,200000,13700000,50,60,Before Dispatch,18.36,Finance Head,Active
+PAY-073,Dealer,650000,22400000,0,60,Milestone Based,23.09,Finance Head,Active
+PAY-074,Distributor,250000,19700000,10,60,Against Proforma Invoice,13.24,Finance Head,Active
+PAY-075,Corporate,950000,16500000,100,0,Within Credit Period,18.05,Finance Manager,Active
+PAY-076,EPC Contractor,950000,24400000,30,45,Against Proforma Invoice,15.28,Finance Head,Active
+PAY-077,OEM,700000,21600000,20,30,Against Proforma Invoice,13.66,Finance Manager,Active
+PAY-078,Government,450000,22500000,50,60,Within Credit Period,20.54,Finance Head,Active
+PAY-079,Dealer,300000,6300000,50,15,Within Credit Period,20.24,Finance Manager,Active
+PAY-080,Distributor,200000,19100000,100,0,Against Proforma Invoice,18.05,Finance Manager,Active
+PAY-081,Corporate,500000,19100000,100,0,Before Dispatch,21.13,Finance Manager,Active
+PAY-082,EPC Contractor,900000,15600000,50,45,Milestone Based,20.09,Finance Head,Active
+PAY-083,OEM,650000,21600000,50,30,Before Dispatch,18.27,Finance Manager,Active
+PAY-084,Government,200000,2300000,0,45,Before Dispatch,14.4,Finance Head,Active
+PAY-085,Dealer,400000,4700000,10,30,Before Dispatch,20.29,Finance Manager,Active
+PAY-086,Distributor,850000,1800000,20,15,Within Credit Period,21.77,Finance Manager,Active
+PAY-087,Corporate,850000,23100000,0,60,Against Proforma Invoice,20.91,Finance Head,Active
+PAY-088,EPC Contractor,350000,14000000,50,45,Within Credit Period,20.32,Finance Head,Active
+PAY-089,OEM,600000,11600000,0,45,Within Credit Period,23.59,Finance Head,Active
+PAY-090,Government,400000,6100000,0,7,Milestone Based,21.96,Finance Manager,Active
+PAY-091,Dealer,550000,20300000,100,0,Against Proforma Invoice,21.31,Finance Manager,Active
+PAY-092,Distributor,700000,5500000,10,30,Before Dispatch,14.24,Finance Manager,Active
+PAY-093,Corporate,150000,10600000,10,60,Before Dispatch,17.14,Finance Head,Active
+PAY-094,EPC Contractor,200000,5100000,50,30,Within Credit Period,12.07,Finance Manager,Active
+PAY-095,OEM,50000,4900000,30,15,Within Credit Period,19.16,Finance Manager,Active
+PAY-096,Government,950000,22500000,100,0,Within Credit Period,17.89,Finance Manager,Active
+PAY-097,Dealer,550000,2800000,50,60,Within Credit Period,18.3,Finance Head,Active
+PAY-098,Distributor,100000,21100000,10,60,Against Proforma Invoice,16.99,Finance Head,Active
+PAY-099,Corporate,100000,9900000,50,45,Against Proforma Invoice,22.6,Finance Head,Active
+PAY-100,EPC Contractor,500000,9400000,100,0,Within Credit Period,15.52,Finance Manager,Active

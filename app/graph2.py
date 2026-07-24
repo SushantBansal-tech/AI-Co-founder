@@ -235,12 +235,14 @@ def with_rag_context(
     agent_name: str,
     rag_adapter: LangGraphRAGAdapter,
     handler,
+    top_k: int = 5,
 ):
     async def wrapped(state: CompletePipelineState) -> dict:
         try:
             rag_context = await rag_adapter.get_context(
                 agent_name=agent_name,
                 state=state,
+                top_k=top_k,
             )
         except Exception as exc:
             return {
@@ -296,6 +298,198 @@ def build_all_nodes(session_factory, rag_adapter, client):
     def _pricing(d): return pe.PricingResult(**d) if d else None
     def _feasibility(d): return fe.FeasibilityResult(**d) if d else None
     def _qualification(d): return qual.QualificationResult(**d) if d else None
+
+
+
+    def _rag_rows(
+        rag_context: AgentRAGContext,
+        document_type: str,
+        document_name: str | None = None,
+    ):
+        """Yield complete pipe-delimited rows from retrieved CSV chunks."""
+        seen: set[tuple[str, ...]] = set()
+        for chunk in rag_context.chunks:
+            if chunk.document_type != document_type:
+                continue
+            if (
+                document_name
+                and chunk.metadata.get("document_name") != document_name
+            ):
+                continue
+            for line in chunk.text.splitlines():
+                columns = tuple(part.strip() for part in line.split("|"))
+                if columns and columns not in seen:
+                    seen.add(columns)
+                    yield columns
+
+    def _inventory_from_rag(rag_context: AgentRAGContext):
+        inventory_index = {}
+        for row in _rag_rows(rag_context, "inventory"):
+            if len(row) != 10 or row[0] == "product_code":
+                continue
+            try:
+                item = inv.InventoryItem(
+                    product_code=row[0],
+                    product_name=row[1],
+                    available_qty=float(row[5]),
+                    unit="MT",
+                    warehouse_location=row[2],
+                    last_updated=row[9],
+                )
+            except (TypeError, ValueError):
+                continue
+            inventory_index[item.product_code] = item
+        return inventory_index
+
+    def _capacity_from_rag(rag_context: AgentRAGContext):
+        capacity_index = {}
+        for row in _rag_rows(rag_context, "production_capacity"):
+            if len(row) != 10 or row[0] == "product_code":
+                continue
+            try:
+                # The uploaded file exposes available daily capacity. The
+                # feasibility engine expects available weekly capacity.
+                available_weekly_capacity = float(row[5]) * 7
+                capacity_index[row[0]] = {
+                    "weekly_capacity_mt": available_weekly_capacity,
+                    "lead_time_days": int(float(row[7])),
+                    "min_order_qty_mt": 0.0,
+                }
+            except (TypeError, ValueError):
+                continue
+        return capacity_index
+
+    def _delivery_from_rag(rag_context: AgentRAGContext):
+        delivery_index = {}
+        for row in _rag_rows(rag_context, "delivery_policy"):
+            if len(row) != 11 or row[0] == "zone_code":
+                continue
+            try:
+                delivery_index[row[1].lower()] = {
+                    "zone": row[3],
+                    "transit_days": int(float(row[6])),
+                }
+            except (TypeError, ValueError):
+                  continue
+        return delivery_index
+
+    def _pricing_documents_from_rag(
+        rag_context: AgentRAGContext,
+    ):
+        """Build the pricing engine's structured inputs from Qdrant chunks."""
+        docs = pd.PricingDocuments()
+
+        for row in _rag_rows(
+            rag_context,
+            "pricing_sheet",
+            "price_list.csv",
+        ):
+            if len(row) != 10 or row[0] == "product_code":
+                continue
+            try:
+                if row[9].lower() != "active":
+                    continue
+                docs.price_list[row[0]] = pd.PriceListEntry(
+                    product_code=row[0],
+                    base_price_per_mt=float(row[3]),
+                    currency=row[4],
+                    valid_until=row[6],
+                )
+            except (TypeError, ValueError):
+                continue
+
+        # Raw-material master data cannot be safely converted to a finished
+        # product cost without a BOM. This normalized file must contain:
+        # product_code, product_name, rm_cost_per_mt,
+        # manufacturing_overhead_pct.
+        for row in _rag_rows(
+            rag_context,
+            "pricing_sheet",
+            "product_cost.csv",
+        ):
+            if len(row) != 4 or row[0] == "product_code":
+                continue
+            try:
+                docs.rm_costs[row[0]] = pd.RMCostEntry(
+                    product_code=row[0],
+                    rm_cost_per_mt=float(row[2]),
+                    manufacturing_overhead_pct=float(row[3]),
+                )
+            except (TypeError, ValueError):
+                continue
+
+        transport_by_zone: dict[str, list[float]] = {}
+        for row in _rag_rows(
+            rag_context,
+            "pricing_sheet",
+            "transport.csv",
+        ):
+            if len(row) != 12 or row[0] == "transport_rate_id":
+                continue
+            try:
+                if row[11].lower() != "active":
+                    continue
+                transport_by_zone.setdefault(row[3], []).append(
+                    float(row[6])
+                )
+            except (TypeError, ValueError):
+                continue
+
+        # The pricing engine uses qualification values "new"/"existing".
+        # Keep those exact values in this normalized policy file.
+        for row in _rag_rows(
+            rag_context,
+            "discount_policy",
+            "discount_policy_normalized.csv",
+        ):
+            if len(row) != 5 or row[0] == "customer_type":
+                continue
+            try:
+                docs.discount_bands.append(
+                    pd.DiscountBand(
+                        customer_type=row[0],
+                        order_value_min=float(row[1]),
+                        order_value_max=float(row[2]),
+                        max_discount_pct=float(row[3]),
+                        approval_limit_pct=float(row[4]),
+                    )
+                )
+            except (TypeError, ValueError):
+                continue
+
+        for row in _rag_rows(
+            rag_context,
+            "margin_policy",
+            "margin_rules.csv",
+        ):
+            if len(row) != 10 or row[0] == "rule_id":
+                continue
+            try:
+                if row[9].lower() != "active":
+                    continue
+                docs.margin_rules[row[1]] = pd.MarginRule(
+                    product_code=row[1],
+                    min_margin_pct=float(row[3]),
+                    target_margin_pct=float(row[4]),
+                )
+            except (TypeError, ValueError):
+                continue
+
+        for row in _rag_rows(
+            rag_context,
+            "tax_policy",
+            "gst_rates.csv",
+        ):
+            if len(row) != 10 or row[0] == "gst_rule_id":
+                continue
+            try:
+                if row[9].lower() != "active":
+                    continue
+                docs.gst_rates[row[2]] = float(row[4])
+            except (TypeError, ValueError):
+                continue
+
+        return docs
 
     # ══════════════════════════════════════════════════════════════════
     # ENTRY ROUTER — decides which sub-pipeline runs this invocation
@@ -434,13 +628,28 @@ def build_all_nodes(session_factory, rag_adapter, client):
             )
             ql = _qualification(state.get("qualification"))
 
+            inventory_index = _inventory_from_rag(rag_context)
+            capacity_index = _capacity_from_rag(rag_context)
+            delivery_index = _delivery_from_rag(rag_context)
+
+            if not inventory_index:
+                raise ValueError(
+                    "No valid inventory rows were retrieved from Qdrant"
+                )
+
+            inventory_result = inv.check_inventory(
+                req_,
+                ext,
+                inventory_index,
+            )
+
             result = fe.check_feasibility(
                 extraction=ext,
                 requirement=req_,
                 qualification=ql,
-                inventory=inv.parse_inventory_csv(inv.SAMPLE_INVENTORY_CSV),
-                capacity_index=fe.parse_capacity_csv(fe.SAMPLE_CAPACITY_CSV),
-                delivery_index=fe.parse_delivery_csv(fe.SAMPLE_DELIVERY_CSV),
+                inventory=inventory_result,
+                capacity_index=capacity_index,
+                delivery_index=delivery_index,
                 client=client,
                 rag_context=rag_context,
             )
@@ -476,7 +685,7 @@ def build_all_nodes(session_factory, rag_adapter, client):
                 requirement=req_,
                 qualification=ql,
                 feasibility=fs,
-                docs=pd.load_pricing_documents(),
+                docs=_pricing_documents_from_rag(rag_context),
                 client=client,
                 rag_context=rag_context,
             )
@@ -1039,11 +1248,13 @@ def build_all_nodes(session_factory, rag_adapter, client):
             agent_name="feasibility_agent",
             rag_adapter=rag_adapter,
             handler=check_feasibility,
+            top_k=15,
         ),
         "compute_pricing": with_rag_context(
             agent_name="pricing_agent",
             rag_adapter=rag_adapter,
             handler=compute_pricing,
+            top_k=30,
         ),
         "generate_quotation": with_rag_context(
             agent_name="quotation_agent",
@@ -1195,7 +1406,12 @@ def route_after_dispatch_handoff(state: CompletePipelineState) -> str:
 # GRAPH BUILDER
 # ═══════════════════════════════════════════════════════════════════════════
 
-def build_complete_graph(session_factory, rag_adapter, client):
+def build_complete_graph(
+    session_factory,
+    rag_adapter,
+    client,
+    checkpointer=None,
+):
     nodes = build_all_nodes(session_factory, rag_adapter, client)
     g     = StateGraph(CompletePipelineState)
 
@@ -1299,7 +1515,7 @@ def build_complete_graph(session_factory, rag_adapter, client):
     # ── Shared: approval gate always ends pipeline ────────────────────
     g.add_edge("request_approval", END)
 
-    return g.compile()
+    return g.compile(checkpointer=checkpointer)
 
 
 # ═══════════════════════════════════════════════════════════════════════════

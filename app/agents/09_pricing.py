@@ -230,12 +230,12 @@ def _parse_gst_rates(csv_text: str) -> dict[str, float]:
 # ---------------------------------------------------------------------------
 
 def load_pricing_documents(
-    price_list_csv:   str = SAMPLE_PRICE_LIST_CSV,
-    rm_cost_csv:      str = SAMPLE_RM_COST_CSV,
-    transport_csv:    str = SAMPLE_TRANSPORT_CSV,
-    discount_csv:     str = SAMPLE_DISCOUNT_CSV,
-    margin_csv:       str = SAMPLE_MARGIN_CSV,
-    gst_csv:          str = SAMPLE_GST_CSV,
+    price_list_csv:   str = SAMPLE_PRICE_LIST_CSV,     #done
+    rm_cost_csv:      str = SAMPLE_RM_COST_CSV,        #done
+    transport_csv:    str = SAMPLE_TRANSPORT_CSV,      #done
+    discount_csv:     str = SAMPLE_DISCOUNT_CSV,       #done
+    margin_csv:       str = SAMPLE_MARGIN_CSV,         #done
+    gst_csv:          str = SAMPLE_GST_CSV,            #done
 ) -> PricingDocuments:
     return PricingDocuments(
         price_list      = _parse_price_list(price_list_csv),
@@ -266,8 +266,11 @@ def get_discount_band(
 
 def get_gst_rate(docs: PricingDocuments, product_category: str) -> float:
     """Returns GST rate; defaults to 18% if category not found."""
-    return docs.gst_rates.get(product_category, 18.0)
-
+    if product_category not in docs.gst_rates:
+        raise ValueError(
+        f"GST rule not found for category {product_category}"
+    )
+    return docs.gst_rates[product_category]
 
 # ---------------------------------------------------------------------------
 # Demo

@@ -1,0 +1,101 @@
+﻿transport_rate_id,destination_city,destination_state,zone,distance_km,vehicle_type,rate_per_mt_inr,minimum_charge_inr,handling_charge_inr,estimated_transit_days,preferred_transporter,status
+TR-001,Bengaluru,Karnataka,South,1550,14-ft Truck,2303,20997,1928,9,Transporter Gamma,Active
+TR-002,Chennai,Tamil Nadu,South,914,19-ft Truck,3720,11108,2786,10,Transporter Alpha,Active
+TR-003,Hyderabad,Telangana,South,2172,32-ft Multi-Axle,2429,20307,2882,6,Transporter Alpha,Active
+TR-004,Mumbai,Maharashtra,West,479,Trailer,852,20945,2070,4,Transporter Gamma,Active
+TR-005,Pune,Maharashtra,West,633,Tata Ace,1273,13751,3499,9,Transporter Beta,Active
+TR-006,Ahmedabad,Gujarat,West,496,14-ft Truck,3386,9730,2936,10,Transporter Beta,Active
+TR-007,Delhi,Delhi,North,392,19-ft Truck,4281,19723,1824,1,Transporter Beta,Active
+TR-008,Noida,Uttar Pradesh,North,560,32-ft Multi-Axle,2702,16612,1871,10,Transporter Alpha,Active
+TR-009,Gurugram,Haryana,North,1913,Trailer,3355,13098,2962,1,Transporter Beta,Active
+TR-010,Jaipur,Rajasthan,North,1062,Tata Ace,3944,3098,3054,4,Transporter Gamma,Active
+TR-011,Kolkata,West Bengal,East,319,14-ft Truck,785,16883,1411,2,Transporter Gamma,Active
+TR-012,Bhubaneswar,Odisha,East,266,19-ft Truck,4428,5261,1933,1,Transporter Beta,Active
+TR-013,Raipur,Chhattisgarh,Central,1694,32-ft Multi-Axle,1337,7437,3136,7,Transporter Beta,Active
+TR-014,Indore,Madhya Pradesh,Central,1586,Trailer,2437,15369,1538,2,Transporter Gamma,Active
+TR-015,Nagpur,Maharashtra,Central,564,Tata Ace,3276,14395,485,3,Transporter Gamma,Active
+TR-016,Bengaluru,Karnataka,South,1629,14-ft Truck,2766,7172,2981,4,Transporter Alpha,Active
+TR-017,Chennai,Tamil Nadu,South,113,19-ft Truck,1822,18171,2758,9,Transporter Beta,Active
+TR-018,Hyderabad,Telangana,South,2198,32-ft Multi-Axle,2153,10525,1013,8,Transporter Beta,Active
+TR-019,Mumbai,Maharashtra,West,655,Trailer,1729,9176,2969,2,Transporter Alpha,Active
+TR-020,Pune,Maharashtra,West,1737,Tata Ace,3118,3512,985,4,Transporter Alpha,Active
+TR-021,Ahmedabad,Gujarat,West,433,14-ft Truck,3032,4100,1828,10,Transporter Gamma,Active
+TR-022,Delhi,Delhi,North,219,19-ft Truck,1602,4449,1647,8,Transporter Alpha,Active
+TR-023,Noida,Uttar Pradesh,North,909,32-ft Multi-Axle,3689,4849,573,9,Transporter Beta,Active
+TR-024,Gurugram,Haryana,North,979,Trailer,3941,21877,1306,10,Transporter Gamma,Active
+TR-025,Jaipur,Rajasthan,North,1333,Tata Ace,1570,12888,586,9,Transporter Alpha,Active
+TR-026,Kolkata,West Bengal,East,1713,14-ft Truck,1830,12016,249,9,Transporter Gamma,Active
+TR-027,Bhubaneswar,Odisha,East,737,19-ft Truck,3164,16998,2276,8,Transporter Alpha,Active
+TR-028,Raipur,Chhattisgarh,Central,1430,32-ft Multi-Axle,4456,24080,2749,7,Transporter Gamma,Active
+TR-029,Indore,Madhya Pradesh,Central,1325,Trailer,3452,16642,1672,3,Transporter Beta,Active
+TR-030,Nagpur,Maharashtra,Central,1561,Tata Ace,1353,20626,1939,4,Transporter Alpha,Active
+TR-031,Bengaluru,Karnataka,South,1251,14-ft Truck,4112,7730,3300,8,Transporter Alpha,Active
+TR-032,Chennai,Tamil Nadu,South,1710,19-ft Truck,2306,21261,2170,3,Transporter Beta,Active
+TR-033,Hyderabad,Telangana,South,1014,32-ft Multi-Axle,1644,9662,1352,2,Transporter Beta,Active
+TR-034,Mumbai,Maharashtra,West,1539,Trailer,978,20551,2967,4,Transporter Alpha,Active
+TR-035,Pune,Maharashtra,West,1119,Tata Ace,2144,22823,2469,1,Transporter Alpha,Active
+TR-036,Ahmedabad,Gujarat,West,790,14-ft Truck,3895,22253,2966,9,Transporter Alpha,Active
+TR-037,Delhi,Delhi,North,1983,19-ft Truck,1455,13910,1241,1,Transporter Alpha,Active
+TR-038,Noida,Uttar Pradesh,North,798,32-ft Multi-Axle,3637,6844,3059,8,Transporter Alpha,Active
+TR-039,Gurugram,Haryana,North,857,Trailer,2224,10842,2261,6,Transporter Beta,Active
+TR-040,Jaipur,Rajasthan,North,1579,Tata Ace,2509,20486,2657,6,Transporter Beta,Active
+TR-041,Kolkata,West Bengal,East,1091,14-ft Truck,2073,19803,2036,8,Transporter Alpha,Active
+TR-042,Bhubaneswar,Odisha,East,1943,19-ft Truck,3719,13493,832,6,Transporter Beta,Active
+TR-043,Raipur,Chhattisgarh,Central,1715,32-ft Multi-Axle,787,21432,906,3,Transporter Alpha,Active
+TR-044,Indore,Madhya Pradesh,Central,1088,Trailer,2866,22137,2372,7,Transporter Beta,Active
+TR-045,Nagpur,Maharashtra,Central,644,Tata Ace,1403,13809,942,7,Transporter Gamma,Active
+TR-046,Bengaluru,Karnataka,South,1026,14-ft Truck,2645,21043,2681,6,Transporter Beta,Active
+TR-047,Chennai,Tamil Nadu,South,2021,19-ft Truck,3563,24027,3029,8,Transporter Beta,Active
+TR-048,Hyderabad,Telangana,South,709,32-ft Multi-Axle,3601,14540,693,3,Transporter Gamma,Active
+TR-049,Mumbai,Maharashtra,West,2020,Trailer,1353,20764,2628,1,Transporter Gamma,Active
+TR-050,Pune,Maharashtra,West,158,Tata Ace,4036,5435,3350,1,Transporter Alpha,Active
+TR-051,Ahmedabad,Gujarat,West,1709,14-ft Truck,1163,23666,947,2,Transporter Gamma,Active
+TR-052,Delhi,Delhi,North,638,19-ft Truck,637,10167,2071,8,Transporter Beta,Active
+TR-053,Noida,Uttar Pradesh,North,267,32-ft Multi-Axle,3130,23897,2731,10,Transporter Beta,Active
+TR-054,Gurugram,Haryana,North,2018,Trailer,664,3216,2179,9,Transporter Beta,Active
+TR-055,Jaipur,Rajasthan,North,68,Tata Ace,668,20347,2958,5,Transporter Gamma,Active
+TR-056,Kolkata,West Bengal,East,1194,14-ft Truck,670,19456,3330,7,Transporter Alpha,Active
+TR-057,Bhubaneswar,Odisha,East,458,19-ft Truck,4360,6156,2147,3,Transporter Alpha,Active
+TR-058,Raipur,Chhattisgarh,Central,806,32-ft Multi-Axle,3138,20250,1033,6,Transporter Beta,Active
+TR-059,Indore,Madhya Pradesh,Central,1645,Trailer,923,15224,1663,8,Transporter Gamma,Active
+TR-060,Nagpur,Maharashtra,Central,1016,Tata Ace,3455,10400,1228,2,Transporter Gamma,Active
+TR-061,Bengaluru,Karnataka,South,149,14-ft Truck,982,16280,1553,7,Transporter Gamma,Active
+TR-062,Chennai,Tamil Nadu,South,1969,19-ft Truck,829,23864,38,3,Transporter Alpha,Active
+TR-063,Hyderabad,Telangana,South,2067,32-ft Multi-Axle,4062,17218,2641,6,Transporter Gamma,Active
+TR-064,Mumbai,Maharashtra,West,410,Trailer,4265,20306,174,4,Transporter Alpha,Active
+TR-065,Pune,Maharashtra,West,1967,Tata Ace,1710,4525,304,5,Transporter Gamma,Active
+TR-066,Ahmedabad,Gujarat,West,154,14-ft Truck,1334,13305,64,4,Transporter Gamma,Active
+TR-067,Delhi,Delhi,North,610,19-ft Truck,3681,16051,315,5,Transporter Alpha,Active
+TR-068,Noida,Uttar Pradesh,North,1004,32-ft Multi-Axle,2921,15751,2773,9,Transporter Beta,Active
+TR-069,Gurugram,Haryana,North,1592,Trailer,3694,7585,3237,2,Transporter Gamma,Active
+TR-070,Jaipur,Rajasthan,North,1436,Tata Ace,819,6200,1790,4,Transporter Alpha,Active
+TR-071,Kolkata,West Bengal,East,1415,14-ft Truck,3078,23115,2439,7,Transporter Beta,Active
+TR-072,Bhubaneswar,Odisha,East,141,19-ft Truck,3197,11956,3209,8,Transporter Beta,Active
+TR-073,Raipur,Chhattisgarh,Central,954,32-ft Multi-Axle,2057,21121,1537,7,Transporter Alpha,Active
+TR-074,Indore,Madhya Pradesh,Central,1576,Trailer,951,23270,1209,4,Transporter Gamma,Active
+TR-075,Nagpur,Maharashtra,Central,321,Tata Ace,936,11780,631,7,Transporter Gamma,Active
+TR-076,Bengaluru,Karnataka,South,651,14-ft Truck,3629,15767,1297,6,Transporter Alpha,Active
+TR-077,Chennai,Tamil Nadu,South,394,19-ft Truck,621,13101,1821,6,Transporter Beta,Active
+TR-078,Hyderabad,Telangana,South,438,32-ft Multi-Axle,1142,5860,767,7,Transporter Beta,Active
+TR-079,Mumbai,Maharashtra,West,2118,Trailer,2271,6384,107,2,Transporter Beta,Active
+TR-080,Pune,Maharashtra,West,401,Tata Ace,3045,22596,3213,6,Transporter Beta,Active
+TR-081,Ahmedabad,Gujarat,West,70,14-ft Truck,1795,16559,1588,2,Transporter Gamma,Active
+TR-082,Delhi,Delhi,North,1014,19-ft Truck,2942,20075,694,7,Transporter Alpha,Active
+TR-083,Noida,Uttar Pradesh,North,588,32-ft Multi-Axle,1701,12867,1099,8,Transporter Alpha,Active
+TR-084,Gurugram,Haryana,North,279,Trailer,1284,17243,1130,7,Transporter Beta,Active
+TR-085,Jaipur,Rajasthan,North,2003,Tata Ace,3805,5520,1479,5,Transporter Alpha,Active
+TR-086,Kolkata,West Bengal,East,2050,14-ft Truck,3032,23207,800,8,Transporter Alpha,Active
+TR-087,Bhubaneswar,Odisha,East,574,19-ft Truck,1847,3221,1620,6,Transporter Gamma,Active
+TR-088,Raipur,Chhattisgarh,Central,1576,32-ft Multi-Axle,3893,13798,1803,6,Transporter Beta,Active
+TR-089,Indore,Madhya Pradesh,Central,577,Trailer,1830,13507,2470,4,Transporter Beta,Active
+TR-090,Nagpur,Maharashtra,Central,1306,Tata Ace,1327,16049,1307,5,Transporter Gamma,Active
+TR-091,Bengaluru,Karnataka,South,2031,14-ft Truck,2958,10943,1334,7,Transporter Beta,Active
+TR-092,Chennai,Tamil Nadu,South,1629,19-ft Truck,2095,6731,2309,4,Transporter Gamma,Active
+TR-093,Hyderabad,Telangana,South,756,32-ft Multi-Axle,3392,21025,110,8,Transporter Gamma,Active
+TR-094,Mumbai,Maharashtra,West,878,Trailer,2395,12546,3404,2,Transporter Beta,Active
+TR-095,Pune,Maharashtra,West,2065,Tata Ace,1170,23753,1240,4,Transporter Beta,Active
+TR-096,Ahmedabad,Gujarat,West,651,14-ft Truck,3529,16865,3232,7,Transporter Alpha,Active
+TR-097,Delhi,Delhi,North,1859,19-ft Truck,3049,18703,2384,7,Transporter Gamma,Active
+TR-098,Noida,Uttar Pradesh,North,2095,32-ft Multi-Axle,4382,16706,2226,1,Transporter Beta,Active
+TR-099,Gurugram,Haryana,North,368,Trailer,1047,11134,2693,6,Transporter Alpha,Active
+TR-100,Jaipur,Rajasthan,North,201,Tata Ace,2906,24136,2774,7,Transporter Beta,Active

@@ -39,13 +39,15 @@ class AgentQueryBuilder:
             product = product.get("name") or product.get("product_code") or str(product)
         quantity = extraction.get("quantity", "")
         specifications = extraction.get("specifications", "")
+        delivery_location = extraction.get("delivery_location", "")
+        delivery_date = extraction.get("delivery_date", "")
         company = extraction.get("company_name") or state.get("company_name", "")
         raw_text = state.get("raw_text") or state.get("raw_message") or ""
 
         queries = {
             "requirement_understanding": f"Product catalog and technical match for {product}. Specifications: {specifications}. Quantity: {quantity}. Request: {raw_text}",
             "customer_qualification": f"Customer history, quotations, orders and payment behaviour for {company}. Product: {product}",
-            "internal_feasibility": f"Inventory, production capacity and delivery feasibility for {product}, quantity {quantity}. Requirement: {requirement}",
+            "internal_feasibility": f"Inventory, production capacity and delivery feasibility for {product}, quantity {quantity}, delivery location {delivery_location}, required delivery {delivery_date}. Requirement: {requirement}",
             "cost_and_pricing": f"Base price, discounts, tax, freight and minimum margin for {product}, quantity {quantity}, customer {company}",
             "quotation_generation": f"Quotation template, payment, tax and delivery terms for {product}. Pricing: {state.get('pricing') or state.get('pricing_result')}",
             "follow_up_management": f"Previous quotations, orders and customer follow-up history for {company}",

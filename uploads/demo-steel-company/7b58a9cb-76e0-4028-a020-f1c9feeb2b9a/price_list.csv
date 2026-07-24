@@ -1,0 +1,101 @@
+﻿product_code,product_name,unit,base_price_inr,currency,effective_from,effective_to,minimum_order_qty,freight_basis,status
+MSB-001,Steel Billet Model 001,MT,91446,INR,2026-01-01,2026-12-31,6,Ex-Works,Active
+MSP-002,Steel Plate Model 002,MT,84834,INR,2026-01-01,2026-12-31,18,Freight Extra,Active
+SHT-003,Steel Sheet Model 003,MT,65161,INR,2026-01-01,2026-12-31,17,Freight Extra,Active
+COI-004,Steel Coil Model 004,MT,81421,INR,2026-01-01,2026-12-31,3,FOR Destination,Active
+TMT-005,Reinforcement Bar Model 005,MT,40544,INR,2026-01-01,2026-12-31,14,Ex-Works,Active
+IBE-006,I Beam Model 006,MT,95260,INR,2026-01-01,2026-12-31,3,FOR Destination,Active
+CHN-007,Channel Section Model 007,MT,91267,INR,2026-01-01,2026-12-31,19,FOR Destination,Active
+ANG-008,Structural Angle Model 008,MT,89747,INR,2026-01-01,2026-12-31,10,Ex-Works,Active
+FLT-009,Flat Bar Model 009,MT,88088,INR,2026-01-01,2026-12-31,1,FOR Destination,Active
+RND-010,Round Bar Model 010,MT,57527,INR,2026-01-01,2026-12-31,20,FOR Destination,Active
+PIP-011,Steel Pipe Model 011,MT,82428,INR,2026-01-01,2026-12-31,3,FOR Destination,Active
+HSS-012,Hollow Section Model 012,MT,48875,INR,2026-01-01,2026-12-31,8,FOR Destination,Active
+SSP-013,Stainless Steel Model 013,MT,87487,INR,2026-01-01,2026-12-31,17,Ex-Works,Active
+FIT-014,Pipe Fitting Model 014,Nos,6634,INR,2026-01-01,2026-12-31,10,Freight Extra,Active
+GRT-015,Industrial Grating Model 015,SQM,5712,INR,2026-01-01,2026-12-31,8,FOR Destination,Active
+MSB-016,Steel Billet Model 016,MT,57037,INR,2026-01-01,2026-12-31,3,Freight Extra,Active
+MSP-017,Steel Plate Model 017,MT,49945,INR,2026-01-01,2026-12-31,17,Freight Extra,Active
+SHT-018,Steel Sheet Model 018,MT,60415,INR,2026-01-01,2026-12-31,25,FOR Destination,Active
+COI-019,Steel Coil Model 019,MT,81019,INR,2026-01-01,2026-12-31,24,Freight Extra,Active
+TMT-020,Reinforcement Bar Model 020,MT,54358,INR,2026-01-01,2026-12-31,8,Ex-Works,Active
+IBE-021,I Beam Model 021,MT,54194,INR,2026-01-01,2026-12-31,9,Ex-Works,Active
+CHN-022,Channel Section Model 022,MT,57740,INR,2026-01-01,2026-12-31,20,Ex-Works,Active
+ANG-023,Structural Angle Model 023,MT,44876,INR,2026-01-01,2026-12-31,6,Freight Extra,Active
+FLT-024,Flat Bar Model 024,MT,99764,INR,2026-01-01,2026-12-31,15,Freight Extra,Active
+RND-025,Round Bar Model 025,MT,93838,INR,2026-01-01,2026-12-31,22,Freight Extra,Active
+PIP-026,Steel Pipe Model 026,MT,77363,INR,2026-01-01,2026-12-31,21,FOR Destination,Active
+HSS-027,Hollow Section Model 027,MT,54786,INR,2026-01-01,2026-12-31,15,Ex-Works,Active
+SSP-028,Stainless Steel Model 028,MT,96462,INR,2026-01-01,2026-12-31,15,Freight Extra,Active
+FIT-029,Pipe Fitting Model 029,Nos,5111,INR,2026-01-01,2026-12-31,9,Freight Extra,Active
+GRT-030,Industrial Grating Model 030,SQM,1070,INR,2026-01-01,2026-12-31,12,Freight Extra,Active
+MSB-031,Steel Billet Model 031,MT,44724,INR,2026-01-01,2026-12-31,10,FOR Destination,Active
+MSP-032,Steel Plate Model 032,MT,94233,INR,2026-01-01,2026-12-31,2,Ex-Works,Active
+SHT-033,Steel Sheet Model 033,MT,83331,INR,2026-01-01,2026-12-31,10,Ex-Works,Active
+COI-034,Steel Coil Model 034,MT,46835,INR,2026-01-01,2026-12-31,20,Freight Extra,Active
+TMT-035,Reinforcement Bar Model 035,MT,101462,INR,2026-01-01,2026-12-31,13,FOR Destination,Active
+IBE-036,I Beam Model 036,MT,107655,INR,2026-01-01,2026-12-31,24,Ex-Works,Active
+CHN-037,Channel Section Model 037,MT,93947,INR,2026-01-01,2026-12-31,19,Freight Extra,Active
+ANG-038,Structural Angle Model 038,MT,59672,INR,2026-01-01,2026-12-31,11,Freight Extra,Active
+FLT-039,Flat Bar Model 039,MT,97341,INR,2026-01-01,2026-12-31,17,Ex-Works,Active
+RND-040,Round Bar Model 040,MT,43109,INR,2026-01-01,2026-12-31,15,Ex-Works,Active
+PIP-041,Steel Pipe Model 041,MT,80015,INR,2026-01-01,2026-12-31,23,Ex-Works,Active
+HSS-042,Hollow Section Model 042,MT,101132,INR,2026-01-01,2026-12-31,21,Ex-Works,Active
+SSP-043,Stainless Steel Model 043,MT,40130,INR,2026-01-01,2026-12-31,8,Freight Extra,Active
+FIT-044,Pipe Fitting Model 044,Nos,7322,INR,2026-01-01,2026-12-31,15,Freight Extra,Active
+GRT-045,Industrial Grating Model 045,SQM,2750,INR,2026-01-01,2026-12-31,12,FOR Destination,Active
+MSB-046,Steel Billet Model 046,MT,72079,INR,2026-01-01,2026-12-31,13,FOR Destination,Active
+MSP-047,Steel Plate Model 047,MT,79350,INR,2026-01-01,2026-12-31,22,Freight Extra,Active
+SHT-048,Steel Sheet Model 048,MT,41863,INR,2026-01-01,2026-12-31,21,Freight Extra,Active
+COI-049,Steel Coil Model 049,MT,78863,INR,2026-01-01,2026-12-31,3,FOR Destination,Active
+TMT-050,Reinforcement Bar Model 050,MT,47387,INR,2026-01-01,2026-12-31,18,Freight Extra,Active
+IBE-051,I Beam Model 051,MT,85667,INR,2026-01-01,2026-12-31,10,FOR Destination,Active
+CHN-052,Channel Section Model 052,MT,54709,INR,2026-01-01,2026-12-31,11,Ex-Works,Active
+ANG-053,Structural Angle Model 053,MT,53537,INR,2026-01-01,2026-12-31,12,FOR Destination,Active
+FLT-054,Flat Bar Model 054,MT,86374,INR,2026-01-01,2026-12-31,5,Freight Extra,Active
+RND-055,Round Bar Model 055,MT,46104,INR,2026-01-01,2026-12-31,10,Freight Extra,Active
+PIP-056,Steel Pipe Model 056,MT,84372,INR,2026-01-01,2026-12-31,21,FOR Destination,Active
+HSS-057,Hollow Section Model 057,MT,51750,INR,2026-01-01,2026-12-31,22,Freight Extra,Active
+SSP-058,Stainless Steel Model 058,MT,103995,INR,2026-01-01,2026-12-31,3,Freight Extra,Active
+FIT-059,Pipe Fitting Model 059,Nos,7087,INR,2026-01-01,2026-12-31,17,FOR Destination,Active
+GRT-060,Industrial Grating Model 060,SQM,448,INR,2026-01-01,2026-12-31,12,FOR Destination,Active
+MSB-061,Steel Billet Model 061,MT,58627,INR,2026-01-01,2026-12-31,7,FOR Destination,Active
+MSP-062,Steel Plate Model 062,MT,98736,INR,2026-01-01,2026-12-31,7,Ex-Works,Active
+SHT-063,Steel Sheet Model 063,MT,53030,INR,2026-01-01,2026-12-31,5,Ex-Works,Active
+COI-064,Steel Coil Model 064,MT,73770,INR,2026-01-01,2026-12-31,4,Freight Extra,Active
+TMT-065,Reinforcement Bar Model 065,MT,105748,INR,2026-01-01,2026-12-31,24,Freight Extra,Active
+IBE-066,I Beam Model 066,MT,39947,INR,2026-01-01,2026-12-31,22,FOR Destination,Active
+CHN-067,Channel Section Model 067,MT,52176,INR,2026-01-01,2026-12-31,20,FOR Destination,Active
+ANG-068,Structural Angle Model 068,MT,55218,INR,2026-01-01,2026-12-31,6,Ex-Works,Active
+FLT-069,Flat Bar Model 069,MT,56697,INR,2026-01-01,2026-12-31,24,FOR Destination,Active
+RND-070,Round Bar Model 070,MT,40726,INR,2026-01-01,2026-12-31,14,FOR Destination,Active
+PIP-071,Steel Pipe Model 071,MT,66133,INR,2026-01-01,2026-12-31,15,Freight Extra,Active
+HSS-072,Hollow Section Model 072,MT,72346,INR,2026-01-01,2026-12-31,25,Freight Extra,Active
+SSP-073,Stainless Steel Model 073,MT,93841,INR,2026-01-01,2026-12-31,8,Freight Extra,Active
+FIT-074,Pipe Fitting Model 074,Nos,4068,INR,2026-01-01,2026-12-31,10,FOR Destination,Active
+GRT-075,Industrial Grating Model 075,SQM,3328,INR,2026-01-01,2026-12-31,12,Freight Extra,Active
+MSB-076,Steel Billet Model 076,MT,109766,INR,2026-01-01,2026-12-31,15,FOR Destination,Active
+MSP-077,Steel Plate Model 077,MT,71932,INR,2026-01-01,2026-12-31,25,FOR Destination,Active
+SHT-078,Steel Sheet Model 078,MT,100916,INR,2026-01-01,2026-12-31,17,FOR Destination,Active
+COI-079,Steel Coil Model 079,MT,56241,INR,2026-01-01,2026-12-31,7,Freight Extra,Active
+TMT-080,Reinforcement Bar Model 080,MT,53140,INR,2026-01-01,2026-12-31,9,Ex-Works,Active
+IBE-081,I Beam Model 081,MT,97991,INR,2026-01-01,2026-12-31,12,Freight Extra,Active
+CHN-082,Channel Section Model 082,MT,48446,INR,2026-01-01,2026-12-31,23,Freight Extra,Active
+ANG-083,Structural Angle Model 083,MT,51341,INR,2026-01-01,2026-12-31,10,Ex-Works,Active
+FLT-084,Flat Bar Model 084,MT,56012,INR,2026-01-01,2026-12-31,9,FOR Destination,Active
+RND-085,Round Bar Model 085,MT,102286,INR,2026-01-01,2026-12-31,5,FOR Destination,Active
+PIP-086,Steel Pipe Model 086,MT,47021,INR,2026-01-01,2026-12-31,8,FOR Destination,Active
+HSS-087,Hollow Section Model 087,MT,80820,INR,2026-01-01,2026-12-31,1,FOR Destination,Active
+SSP-088,Stainless Steel Model 088,MT,41980,INR,2026-01-01,2026-12-31,13,Freight Extra,Active
+FIT-089,Pipe Fitting Model 089,Nos,6276,INR,2026-01-01,2026-12-31,8,FOR Destination,Active
+GRT-090,Industrial Grating Model 090,SQM,1487,INR,2026-01-01,2026-12-31,12,Ex-Works,Active
+MSB-091,Steel Billet Model 091,MT,38694,INR,2026-01-01,2026-12-31,11,Ex-Works,Active
+MSP-092,Steel Plate Model 092,MT,78947,INR,2026-01-01,2026-12-31,5,Ex-Works,Active
+SHT-093,Steel Sheet Model 093,MT,40020,INR,2026-01-01,2026-12-31,10,FOR Destination,Active
+COI-094,Steel Coil Model 094,MT,53191,INR,2026-01-01,2026-12-31,25,Freight Extra,Active
+TMT-095,Reinforcement Bar Model 095,MT,96487,INR,2026-01-01,2026-12-31,15,Freight Extra,Active
+IBE-096,I Beam Model 096,MT,35688,INR,2026-01-01,2026-12-31,3,Ex-Works,Active
+CHN-097,Channel Section Model 097,MT,68544,INR,2026-01-01,2026-12-31,7,Ex-Works,Active
+ANG-098,Structural Angle Model 098,MT,106932,INR,2026-01-01,2026-12-31,24,Freight Extra,Active
+FLT-099,Flat Bar Model 099,MT,104176,INR,2026-01-01,2026-12-31,14,Ex-Works,Active
+RND-100,Round Bar Model 100,MT,72762,INR,2026-01-01,2026-12-31,8,FOR Destination,Active
