@@ -1,4 +1,5 @@
 import re
+import uuid
 
 from qdrant_client import QdrantClient, models
 
@@ -7,6 +8,7 @@ from app.documents.models import DocumentChunk, RetrievedChunk
 
 class DocumentVectorStore:
     COLLECTION_NAME = "sales_agent_documents"
+    CUSTOMER_MEMORY_COLLECTION = "customer_semantic_memory"
 
     def __init__(
         self,
@@ -19,6 +21,7 @@ class DocumentVectorStore:
         self.embedding_dimension = embedding_dimension
 
         self._ensure_collection()
+        self._ensure_customer_memory_collection()
 
     def _ensure_collection(self) -> None:
         if self.client.collection_exists(self.COLLECTION_NAME):
@@ -44,6 +47,64 @@ class DocumentVectorStore:
                 field_name=field_name,
                 field_schema=models.PayloadSchemaType.KEYWORD,
             )
+
+    def _ensure_customer_memory_collection(self) -> None:
+        if not self.client.collection_exists(self.CUSTOMER_MEMORY_COLLECTION):
+            self.client.create_collection(
+                collection_name=self.CUSTOMER_MEMORY_COLLECTION,
+                vectors_config=models.VectorParams(
+                    size=self.embedding_dimension,
+                    distance=models.Distance.COSINE,
+                ),
+            )
+        for field_name in (
+            "business_id", "customer_id", "thread_id",
+            "interaction_id", "content_type",
+        ):
+            try:
+                self.client.create_payload_index(
+                    collection_name=self.CUSTOMER_MEMORY_COLLECTION,
+                    field_name=field_name,
+                    field_schema=models.PayloadSchemaType.KEYWORD,
+                )
+            except Exception:
+                # Local Qdrant can report an existing payload index.
+                pass
+
+    def upsert_customer_note(
+        self,
+        *,
+        vector: list[float],
+        business_id: str,
+        customer_id: str,
+        content: str,
+        content_type: str,
+        thread_id: str | None = None,
+        interaction_id: str | None = None,
+        occurred_at: str | None = None,
+        note_id: str | None = None,
+    ) -> str:
+        point_id = note_id or str(uuid.uuid4())
+        self.client.upsert(
+            collection_name=self.CUSTOMER_MEMORY_COLLECTION,
+            points=[
+                models.PointStruct(
+                    id=point_id,
+                    vector=vector,
+                    payload={
+                        "business_id": business_id,
+                        "customer_id": customer_id,
+                        "thread_id": thread_id,
+                        "interaction_id": interaction_id,
+                        "content_type": content_type,
+                        "content": content,
+                        "occurred_at": occurred_at,
+                    },
+                )
+            ],
+            wait=True,
+        )
+        return point_id
 
     def upsert_chunks(
         self,

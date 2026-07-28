@@ -24,16 +24,28 @@ from typing import ClassVar
 from pydantic import BaseModel
 from sqlalchemy import (
     String, Text, Numeric, Integer, Date, DateTime,
-    ForeignKey, Enum as SAEnum, select, or_
+    ForeignKey, Enum as SAEnum, select
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from app.database.base import Base
+
+from app.database.models.customer import (
+    Customer,
+    OrderHistory,
+    OrderStatus,
+    PaymentBehavior,
+    PaymentRecord,
+    QuotationHistory,
+    QuotationStatus,
+)
+
 
 import sys, os
 sys.path.insert(0, os.path.dirname(__file__))
 from importlib import import_module
 ia = import_module("01_Inquiry")  # for Base, log_action, InquiryExtraction
-Base      = ia.Base
+#Base      = ia.Base
 log_action = ia.log_action
 InquiryExtraction = ia.InquiryExtraction
 
@@ -47,102 +59,102 @@ class CustomerType(str, Enum):
     EXISTING = "existing"
 
 
-class PaymentBehavior(str, Enum):
-    EXCELLENT = "excellent"   # always on time
-    GOOD      = "good"        # occasional delay < 15 days
-    AVERAGE   = "average"     # regular delays 15-30 days
-    POOR      = "poor"        # frequent delays > 30 days or defaults
-    UNKNOWN   = "unknown"     # no history yet
+# class PaymentBehavior(str, Enum):
+#     EXCELLENT = "excellent"   # always on time
+#     GOOD      = "good"        # occasional delay < 15 days
+#     AVERAGE   = "average"     # regular delays 15-30 days
+#     POOR      = "poor"        # frequent delays > 30 days or defaults
+#     UNKNOWN   = "unknown"     # no history yet
 
 
-class OrderStatus(str, Enum):
-    DELIVERED = "delivered"
-    IN_TRANSIT = "in_transit"
-    CANCELLED  = "cancelled"
-    PENDING    = "pending"
+# class OrderStatus(str, Enum):
+#     DELIVERED = "delivered"
+#     IN_TRANSIT = "in_transit"
+#     CANCELLED  = "cancelled"
+#     PENDING    = "pending"
 
 
-class QuotationStatus(str, Enum):
-    WON       = "won"
-    LOST      = "lost"
-    PENDING   = "pending"
-    EXPIRED   = "expired"
+# class QuotationStatus(str, Enum):
+#     WON       = "won"
+#     LOST      = "lost"
+#     PENDING   = "pending"
+#     EXPIRED   = "expired"
 
 
 # ---------------------------------------------------------------------------
 # DB Models (extend Base from inquiry_agent so all tables share one schema)
 # ---------------------------------------------------------------------------
 
-class Customer(Base):
-    __tablename__ = "customers"
+# class Customer(Base):
+#     __tablename__ = "customers"
 
-    id: Mapped[str] = mapped_column(String(36), primary_key=True,
-                                     default=lambda: str(uuid.uuid4()))
-    company_name: Mapped[str]  = mapped_column(String(255), index=True)
-    contact_person: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    phone: Mapped[Optional[str]] = mapped_column(String(50),  nullable=True)
-    city: Mapped[Optional[str]]  = mapped_column(String(100), nullable=True)
-    gstin: Mapped[Optional[str]] = mapped_column(String(20),  nullable=True)
+#     id: Mapped[str] = mapped_column(String(36), primary_key=True,
+#                                      default=lambda: str(uuid.uuid4()))
+#     company_name: Mapped[str]  = mapped_column(String(255), index=True)
+#     contact_person: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+#     email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+#     phone: Mapped[Optional[str]] = mapped_column(String(50),  nullable=True)
+#     city: Mapped[Optional[str]]  = mapped_column(String(100), nullable=True)
+#     gstin: Mapped[Optional[str]] = mapped_column(String(20),  nullable=True)
 
-    credit_limit: Mapped[Decimal]    = mapped_column(Numeric(15, 2), default=0)
-    outstanding_amount: Mapped[Decimal] = mapped_column(Numeric(15, 2), default=0)
-    payment_behavior: Mapped[str] = mapped_column(
-        SAEnum(PaymentBehavior), default=PaymentBehavior.UNKNOWN
-    )
-    notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+#     credit_limit: Mapped[Decimal]    = mapped_column(Numeric(15, 2), default=0)
+#     outstanding_amount: Mapped[Decimal] = mapped_column(Numeric(15, 2), default=0)
+#     payment_behavior: Mapped[str] = mapped_column(
+#         SAEnum(PaymentBehavior), default=PaymentBehavior.UNKNOWN
+#     )
+#     notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow,
-                                                  onupdate=datetime.utcnow)
+#     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+#     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow,
+#                                                   onupdate=datetime.utcnow)
 
-    orders:     Mapped[list["OrderHistory"]]     = relationship("OrderHistory",     back_populates="customer", lazy="select")
-    quotations: Mapped[list["QuotationHistory"]] = relationship("QuotationHistory", back_populates="customer", lazy="select")
-    payments:   Mapped[list["PaymentRecord"]]    = relationship("PaymentRecord",    back_populates="customer", lazy="select")
-
-
-class OrderHistory(Base):
-    __tablename__ = "order_history"
-
-    id: Mapped[str]          = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    customer_id: Mapped[str] = mapped_column(String(36), ForeignKey("customers.id"), index=True)
-    order_number: Mapped[str] = mapped_column(String(50))
-    product: Mapped[str]      = mapped_column(String(255))
-    quantity: Mapped[str]     = mapped_column(String(100))
-    order_value: Mapped[Decimal] = mapped_column(Numeric(15, 2))
-    status: Mapped[str]       = mapped_column(SAEnum(OrderStatus))
-    order_date: Mapped[date]  = mapped_column(Date)
-
-    customer: Mapped["Customer"] = relationship("Customer", back_populates="orders")
+#     orders:     Mapped[list["OrderHistory"]]     = relationship("OrderHistory",     back_populates="customer", lazy="select")
+#     quotations: Mapped[list["QuotationHistory"]] = relationship("QuotationHistory", back_populates="customer", lazy="select")
+#     payments:   Mapped[list["PaymentRecord"]]    = relationship("PaymentRecord",    back_populates="customer", lazy="select")
 
 
-class QuotationHistory(Base):
-    __tablename__ = "quotation_history"
+# class OrderHistory(Base):
+#     __tablename__ = "order_history"
 
-    id: Mapped[str]          = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    customer_id: Mapped[str] = mapped_column(String(36), ForeignKey("customers.id"), index=True)
-    quotation_number: Mapped[str]   = mapped_column(String(50))
-    product: Mapped[str]            = mapped_column(String(255))
-    quoted_value: Mapped[Decimal]   = mapped_column(Numeric(15, 2))
-    status: Mapped[str]             = mapped_column(SAEnum(QuotationStatus))
-    quotation_date: Mapped[date]    = mapped_column(Date)
-    lost_reason: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+#     id: Mapped[str]          = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+#     customer_id: Mapped[str] = mapped_column(String(36), ForeignKey("customers.id"), index=True)
+#     order_number: Mapped[str] = mapped_column(String(50))
+#     product: Mapped[str]      = mapped_column(String(255))
+#     quantity: Mapped[str]     = mapped_column(String(100))
+#     order_value: Mapped[Decimal] = mapped_column(Numeric(15, 2))
+#     status: Mapped[str]       = mapped_column(SAEnum(OrderStatus))
+#     order_date: Mapped[date]  = mapped_column(Date)
 
-    customer: Mapped["Customer"] = relationship("Customer", back_populates="quotations")
+#     customer: Mapped["Customer"] = relationship("Customer", back_populates="orders")
 
 
-class PaymentRecord(Base):
-    __tablename__ = "payment_records"
+# class QuotationHistory(Base):
+#     __tablename__ = "quotation_history"
 
-    id: Mapped[str]          = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    customer_id: Mapped[str] = mapped_column(String(36), ForeignKey("customers.id"), index=True)
-    invoice_number: Mapped[str]  = mapped_column(String(50))
-    invoice_amount: Mapped[Decimal] = mapped_column(Numeric(15, 2))
-    due_date: Mapped[date]   = mapped_column(Date)
-    paid_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
-    delay_days: Mapped[int]  = mapped_column(Integer, default=0)  # 0 = on time, >0 = late
+#     id: Mapped[str]          = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+#     customer_id: Mapped[str] = mapped_column(String(36), ForeignKey("customers.id"), index=True)
+#     quotation_number: Mapped[str]   = mapped_column(String(50))
+#     product: Mapped[str]            = mapped_column(String(255))
+#     quoted_value: Mapped[Decimal]   = mapped_column(Numeric(15, 2))
+#     status: Mapped[str]             = mapped_column(SAEnum(QuotationStatus))
+#     quotation_date: Mapped[date]    = mapped_column(Date)
+#     lost_reason: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
-    customer: Mapped["Customer"] = relationship("Customer", back_populates="payments")
+#     customer: Mapped["Customer"] = relationship("Customer", back_populates="quotations")
+
+
+# class PaymentRecord(Base):
+#     __tablename__ = "payment_records"
+
+#     id: Mapped[str]          = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+#     customer_id: Mapped[str] = mapped_column(String(36), ForeignKey("customers.id"), index=True)
+#     invoice_number: Mapped[str]  = mapped_column(String(50))
+#     invoice_amount: Mapped[Decimal] = mapped_column(Numeric(15, 2))
+#     due_date: Mapped[date]   = mapped_column(Date)
+#     paid_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+#     delay_days: Mapped[int]  = mapped_column(Integer, default=0)  # 0 = on time, >0 = late
+
+#     customer: Mapped["Customer"] = relationship("Customer", back_populates="payments")
 
 
 # ---------------------------------------------------------------------------
@@ -180,48 +192,24 @@ class CustomerProfile(BaseModel):
 # Lookup logic
 # ---------------------------------------------------------------------------
 
-def _normalize(s: Optional[str]) -> str:
-    return (s or "").lower().strip()
-
-
-async def lookup_customer(
+async def build_customer_profile(
     session: AsyncSession,
-    extraction: InquiryExtraction,
+    customer_id: str,
+    business_id: str,
+    is_new: bool = False,
 ) -> CustomerProfile:
     """
-    Tries to find an existing customer by:
-      1. Exact company_name match (case-insensitive)
-      2. email or phone match if available
-
-    Returns a CustomerProfile with full history if found,
-    or a thin NEW profile if not.
+    Builds history and financial signals for an identity-resolved customer.
     """
-    company = _normalize(extraction.company_name)
-    email   = _normalize(extraction.contact_person)  # contact_person may carry email
-
-    # Build search conditions
-    conditions = []
-    if company:
-        conditions.append(
-            # SQLite LIKE is case-insensitive for ASCII; use LOWER() for safety
-            Customer.company_name.ilike(f"%{company}%")
+    customer = await session.scalar(
+        select(Customer).where(
+            Customer.id == customer_id,
+            Customer.business_id == business_id,
+            Customer.status.in_(("active", "provisional")),
         )
-
-    stmt = select(Customer)
-    if conditions:
-        stmt = stmt.where(or_(*conditions))
-    stmt = stmt.limit(1)
-
-    result = await session.execute(stmt)
-    customer = result.scalar_one_or_none()
-
+    )
     if customer is None:
-        # Brand new customer — no history
-        return CustomerProfile(
-            customer_type=CustomerType.NEW,
-            company_name=extraction.company_name or "Unknown",
-            contact_person=extraction.contact_person,
-        )
+        raise ValueError("Resolved customer was not found.")
 
     # ---- Pull history ----
     orders_result = await session.execute(
@@ -260,7 +248,7 @@ async def lookup_customer(
         credit_util = float(customer.outstanding_amount) / float(customer.credit_limit) * 100
 
     return CustomerProfile(
-        customer_type=CustomerType.EXISTING,
+        customer_type=CustomerType.NEW if is_new else CustomerType.EXISTING,
         customer_id=customer.id,
         company_name=customer.company_name,
         contact_person=customer.contact_person,
@@ -292,6 +280,34 @@ async def lookup_customer(
     )
 
 
+async def lookup_customer(
+    session: AsyncSession,
+    extraction: InquiryExtraction,
+    business_id: str = "demo-steel-company",
+) -> CustomerProfile:
+    """Backward-compatible identity lookup without direct fuzzy matching."""
+    from app.customers.identity_resolver import resolve_customer_identity
+
+    resolution = await resolve_customer_identity(
+        session,
+        business_id=business_id,
+        lead_id=None,
+        company_name=extraction.company_name,
+        contact_person=extraction.contact_person,
+        email=extraction.customer_email,
+        phone=extraction.customer_phone,
+        gstin=extraction.customer_gstin,
+        sender_identifier=None,
+    )
+    await session.commit()
+    return await build_customer_profile(
+        session,
+        customer_id=resolution.customer.id,
+        business_id=business_id,
+        is_new=resolution.resolution in {"created", "needs_review"},
+    )
+
+
 # ---------------------------------------------------------------------------
 # Seed helper (demo only — creates a known existing customer)
 # ---------------------------------------------------------------------------
@@ -299,6 +315,7 @@ async def lookup_customer(
 async def _seed_demo_customer(session: AsyncSession):
     cust = Customer(
         id=str(uuid.uuid4()),
+        business_id="demo-steel-company",
         company_name="Apex Steel Pvt Ltd",
         contact_person="Ramesh Kumar",
         email="ramesh@apexsteel.in",
@@ -313,30 +330,30 @@ async def _seed_demo_customer(session: AsyncSession):
     await session.flush()
 
     session.add_all([
-        OrderHistory(customer_id=cust.id, order_number="ORD-2024-001",
+        OrderHistory(business_id=cust.business_id, customer_id=cust.id, order_number="ORD-2024-001",
                      product="MS Billet IS2062", quantity="300 MT",
                      order_value=Decimal("4500000"), status=OrderStatus.DELIVERED,
                      order_date=date(2024, 8, 10)),
-        OrderHistory(customer_id=cust.id, order_number="ORD-2024-002",
+        OrderHistory(business_id=cust.business_id, customer_id=cust.id, order_number="ORD-2024-002",
                      product="MS Plate IS2062", quantity="50 MT",
                      order_value=Decimal("950000"), status=OrderStatus.DELIVERED,
                      order_date=date(2024, 11, 5)),
     ])
     session.add_all([
-        QuotationHistory(customer_id=cust.id, quotation_number="QT-2024-010",
+        QuotationHistory(business_id=cust.business_id, customer_id=cust.id, quotation_number="QT-2024-010",
                          product="MS Billet IS2062", quoted_value=Decimal("4500000"),
                          status=QuotationStatus.WON, quotation_date=date(2024, 8, 1)),
-        QuotationHistory(customer_id=cust.id, quotation_number="QT-2024-018",
+        QuotationHistory(business_id=cust.business_id, customer_id=cust.id, quotation_number="QT-2024-018",
                          product="MS Angle IS2062", quoted_value=Decimal("600000"),
                          status=QuotationStatus.LOST, quotation_date=date(2024, 9, 20),
                          lost_reason="Competitor offered lower price"),
     ])
     session.add_all([
-        PaymentRecord(customer_id=cust.id, invoice_number="INV-2024-031",
+        PaymentRecord(business_id=cust.business_id, customer_id=cust.id, invoice_number="INV-2024-031",
                       invoice_amount=Decimal("4500000"),
                       due_date=date(2024, 9, 10), paid_date=date(2024, 9, 14),
                       delay_days=4),
-        PaymentRecord(customer_id=cust.id, invoice_number="INV-2024-045",
+        PaymentRecord(business_id=cust.business_id, customer_id=cust.id, invoice_number="INV-2024-045",
                       invoice_amount=Decimal("950000"),
                       due_date=date(2024, 12, 5), paid_date=date(2024, 12, 7),
                       delay_days=2),

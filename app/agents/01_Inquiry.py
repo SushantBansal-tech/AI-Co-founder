@@ -12,6 +12,15 @@ from sqlalchemy import String, Text, JSON, DateTime, Enum as SAEnum
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from google import genai
+from app.database.base import Base
+
+from app.database.models import (
+    AuditLog,
+    InquirySource,
+    Lead,
+    LeadStatus,
+)
+
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -20,12 +29,12 @@ load_dotenv()  # Load environment variables from .env file
 # 1. NORMALIZED INQUIRY INPUT
 # ============================================================
 
-class InquirySource(str, Enum):
-    EMAIL = "email"
-    WHATSAPP = "whatsapp"
-    WEB_FORM = "web_form"
-    CRM = "crm"
-    UPLOADED_DOCUMENT = "uploaded_document"
+# class InquirySource(str, Enum):
+#     EMAIL = "email"
+#     WHATSAPP = "whatsapp"
+#     WEB_FORM = "web_form"
+#     CRM = "crm"
+#     UPLOADED_DOCUMENT = "uploaded_document"
 
 
 class RawInquiry(BaseModel):
@@ -58,6 +67,9 @@ class InquiryExtraction(BaseModel):
     customer_name: Optional[str] = None
     company_name: Optional[str] = None
     contact_person: Optional[str] = None
+    customer_email: Optional[str] = None
+    customer_phone: Optional[str] = None
+    customer_gstin: Optional[str] = None
     product_requested: Optional[str] = None
     quantity: Optional[str] = None
     specifications: Optional[str] = None
@@ -82,6 +94,7 @@ You are extracting structured data from an industrial B2B sales inquiry.
 
 Extract only what is clearly present in the text.
 Do not guess or invent missing values.
+Extract email, phone and GSTIN only when explicitly present.
 
 Inquiry text:
 ---
@@ -102,6 +115,9 @@ def extract_inquiry(raw: RawInquiry, client: genai.Client) -> InquiryExtraction:
                     "customer_name": {"type": "string", "nullable": True},
                     "company_name": {"type": "string", "nullable": True},
                     "contact_person": {"type": "string", "nullable": True},
+                    "customer_email": {"type": "string", "nullable": True},
+                    "customer_phone": {"type": "string", "nullable": True},
+                    "customer_gstin": {"type": "string", "nullable": True},
                     "product_requested": {"type": "string", "nullable": True},
                     "quantity": {"type": "string", "nullable": True},
                     "specifications": {"type": "string", "nullable": True},
@@ -208,66 +224,66 @@ def compose_followup_message(
 # 4. DATABASE MODELS
 # ============================================================
 
-class LeadStatus(str, Enum):
-    AWAITING_INFO = "awaiting_info"
-    NEW = "new"
-    WON = "won"
+# class LeadStatus(str, Enum):
+#     AWAITING_INFO = "awaiting_info"
+#     NEW = "new"
+#     WON = "won"
 
 
-class Base(DeclarativeBase):
-    pass
+# class Base(DeclarativeBase):
+#     pass
 
 
-class Lead(Base):
-    __tablename__ = "leads"
+# class Lead(Base):
+#     __tablename__ = "leads"
 
-    id: Mapped[str] = mapped_column(
-        String(36),
-        primary_key=True,
-        default=lambda: str(uuid.uuid4())
-    )
+#     id: Mapped[str] = mapped_column(
+#         String(36),
+#         primary_key=True,
+#         default=lambda: str(uuid.uuid4())
+#     )
 
-    inquiry_id: Mapped[str] = mapped_column(String(36), index=True)
-    source: Mapped[str] = mapped_column(SAEnum(InquirySource))
-    sender_identifier: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+#     inquiry_id: Mapped[str] = mapped_column(String(36), index=True)
+#     source: Mapped[str] = mapped_column(SAEnum(InquirySource))
+#     sender_identifier: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
-    customer_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    company_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    contact_person: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    product_requested: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    quantity: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
-    specifications: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    delivery_location: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    delivery_date: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
-    payment_expectation: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+#     customer_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+#     company_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+#     contact_person: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+#     product_requested: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+#     quantity: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+#     specifications: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+#     delivery_location: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+#     delivery_date: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+#     payment_expectation: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
-    status: Mapped[str] = mapped_column(SAEnum(LeadStatus), default=LeadStatus.NEW)
-    missing_fields: Mapped[list] = mapped_column(JSON, default=list)
-    raw_text: Mapped[str] = mapped_column(Text)
+#     status: Mapped[str] = mapped_column(SAEnum(LeadStatus), default=LeadStatus.NEW)
+#     missing_fields: Mapped[list] = mapped_column(JSON, default=list)
+#     raw_text: Mapped[str] = mapped_column(Text)
 
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow
-    )
+#     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+#     updated_at: Mapped[datetime] = mapped_column(
+#         DateTime,
+#         default=datetime.utcnow,
+#         onupdate=datetime.utcnow
+#     )
 
 
-class AuditLog(Base):
-    __tablename__ = "audit_logs"
+# class AuditLog(Base):
+#     __tablename__ = "audit_logs"
 
-    id: Mapped[str] = mapped_column(
-        String(36),
-        primary_key=True,
-        default=lambda: str(uuid.uuid4())
-    )
+#     id: Mapped[str] = mapped_column(
+#         String(36),
+#         primary_key=True,
+#         default=lambda: str(uuid.uuid4())
+#     )
 
-    entity_type: Mapped[str] = mapped_column(String(50))
-    entity_id: Mapped[str] = mapped_column(String(36), index=True)
-    action: Mapped[str] = mapped_column(String(100))
-    actor: Mapped[str] = mapped_column(String(100))
-    details: Mapped[dict] = mapped_column(JSON, default=dict)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+#     entity_type: Mapped[str] = mapped_column(String(50))
+#     entity_id: Mapped[str] = mapped_column(String(36), index=True)
+#     action: Mapped[str] = mapped_column(String(100))
+#     actor: Mapped[str] = mapped_column(String(100))
+#     details: Mapped[dict] = mapped_column(JSON, default=dict)
+#     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 
 async def log_action(
@@ -292,7 +308,9 @@ async def log_action(
 async def create_lead(
     session: AsyncSession,
     raw: RawInquiry,
-    extraction: InquiryExtraction
+    extraction: InquiryExtraction,
+    business_id: str = "demo-steel-company",
+    thread_id: Optional[str] = None,
 ) -> Lead:
 
     status = (
@@ -302,6 +320,8 @@ async def create_lead(
     )
 
     lead = Lead(
+        business_id=business_id,
+        thread_id=thread_id or extraction.inquiry_id,
         inquiry_id=extraction.inquiry_id,
         source=raw.source,
         sender_identifier=raw.sender_identifier,

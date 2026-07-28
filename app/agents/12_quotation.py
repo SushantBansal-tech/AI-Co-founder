@@ -35,15 +35,20 @@ from pydantic import BaseModel
 from sqlalchemy import String, Text, DateTime, Enum as SAEnum, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from app.database.models.quotation import (
+    QuotationRecord,
+    QuotationStatus,
+)
+from app.database.base import Base
 
 sys.path.insert(0, os.path.dirname(__file__))
 ia    = import_module("01_Inquiry")  # for Base, log_action, InquiryExtraction
 qb    = import_module("11_quotation")
 
-Base            = ia.Base
+# Base            = ia.Base
 log_action      = ia.log_action
 QuotationDraft  = qb.QuotationDraft
-QuotationStatus = qb.QuotationStatus
+# QuotationStatus = qb.QuotationStatus
 QuotationLineItem = qb.QuotationLineItem
 
 
@@ -51,26 +56,26 @@ QuotationLineItem = qb.QuotationLineItem
 # DB model
 # -----------------------------------------------------------------------
 
-class QuotationRecord(Base):
-    __tablename__ = "quotations"
+# class QuotationRecord(Base):
+#     __tablename__ = "quotations"
 
-    id: Mapped[str] = mapped_column(String(36), primary_key=True,
-                                     default=lambda: str(uuid.uuid4()))
-    quotation_number: Mapped[str] = mapped_column(String(30), unique=True, index=True)
-    inquiry_id: Mapped[str]       = mapped_column(String(36), index=True)
-    status: Mapped[str]           = mapped_column(SAEnum(QuotationStatus))
-    buyer_company: Mapped[str]    = mapped_column(String(255))
-    total_inc_gst: Mapped[float]  = mapped_column(default=0.0)
-    requires_approval: Mapped[bool] = mapped_column(Boolean, default=False)
-    draft_json: Mapped[str]       = mapped_column(Text)   # full QuotationDraft JSON
-    html_content: Mapped[str]     = mapped_column(Text)   # rendered HTML
-    approved_by: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
-    rejection_reason: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    sent_via: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
-    sent_to: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    created_at: Mapped[datetime]  = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime]  = mapped_column(DateTime, default=datetime.utcnow,
-                                                   onupdate=datetime.utcnow)
+#     id: Mapped[str] = mapped_column(String(36), primary_key=True,
+#                                      default=lambda: str(uuid.uuid4()))
+#     quotation_number: Mapped[str] = mapped_column(String(30), unique=True, index=True)
+#     inquiry_id: Mapped[str]       = mapped_column(String(36), index=True)
+#     status: Mapped[str]           = mapped_column(SAEnum(QuotationStatus))
+#     buyer_company: Mapped[str]    = mapped_column(String(255))
+#     total_inc_gst: Mapped[float]  = mapped_column(default=0.0)
+#     requires_approval: Mapped[bool] = mapped_column(Boolean, default=False)
+#     draft_json: Mapped[str]       = mapped_column(Text)   # full QuotationDraft JSON
+#     html_content: Mapped[str]     = mapped_column(Text)   # rendered HTML
+#     approved_by: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+#     rejection_reason: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+#     sent_via: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+#     sent_to: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+#     created_at: Mapped[datetime]  = mapped_column(DateTime, default=datetime.utcnow)
+#     updated_at: Mapped[datetime]  = mapped_column(DateTime, default=datetime.utcnow,
+                                                  #  onupdate=datetime.utcnow)
 
 
 # -----------------------------------------------------------------------
@@ -352,8 +357,14 @@ async def save_quotation(
     session: AsyncSession,
     draft: QuotationDraft,
     html: str,
+    business_id: str = "demo-steel-company",
+    customer_id: Optional[str] = None,
+    thread_id: str = "",
 ) -> QuotationRecord:
     record = QuotationRecord(
+        business_id=business_id,
+        customer_id=customer_id,
+        thread_id=thread_id or draft.inquiry_id,
         quotation_number=draft.quotation_number,
         inquiry_id=draft.inquiry_id,
         status=draft.status,

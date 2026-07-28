@@ -37,6 +37,7 @@ from importlib import import_module
 
 from pydantic import BaseModel, Field
 from app.rag.models import AgentRAGContext
+from app.database.models.quotation import QuotationStatus
 
 sys.path.insert(0, os.path.dirname(__file__))
 ia        = import_module("01_Inquiry")  # for Base, log_action, InquiryExtraction
@@ -103,12 +104,12 @@ STANDARD_TNC = [
 # Output models
 # -----------------------------------------------------------------------
 
-class QuotationStatus(str, Enum):
-    DRAFT            = "draft"             # assembled, not yet reviewed
-    PENDING_APPROVAL = "pending_approval"  # flagged, waiting for human
-    APPROVED         = "approved"          # human approved, ready to send
-    SENT             = "sent"              # dispatched to customer
-    REJECTED         = "rejected"          # human rejected the quotation
+# class QuotationStatus(str, Enum):
+#     DRAFT            = "draft"             # assembled, not yet reviewed
+#     PENDING_APPROVAL = "pending_approval"  # flagged, waiting for human
+#     APPROVED         = "approved"          # human approved, ready to send
+#     SENT             = "sent"              # dispatched to customer
+#     REJECTED         = "rejected"          # human rejected the quotation
 
 
 class QuotationLineItem(BaseModel):

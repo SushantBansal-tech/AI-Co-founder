@@ -2,3 +2,6 @@
 .doubts
 .sales_os.db
 .codex_tmp
+.compose.yml
+.vscode
+.dockerignore

@@ -40,12 +40,16 @@ from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.ext.asyncio import (
     create_async_engine, async_sessionmaker, AsyncSession,
 )
-
+from app.database.base import Base
+from app.database.models.handoff import (
+    HandoffRecord,
+    HandoffRecordStatus,
+)
 sys.path.insert(0, os.path.dirname(__file__))
 ia  = import_module("01_Inquiry")  # for Base, log_action
 hb  = import_module("20_handoff")
 
-Base              = ia.Base
+#Base              = ia.Base
 log_action        = ia.log_action
 DepartmentType    = hb.DepartmentType
 HandoffPackage    = hb.HandoffPackage
@@ -54,47 +58,47 @@ HandoffSummary    = hb.HandoffSummary
 
 # ── HandoffRecord status ──────────────────────────────────────────────────
 
-class HandoffRecordStatus(str, Enum):
-    PENDING       = "pending"       # created, not yet sent
-    SENT          = "sent"          # notification dispatched
-    ACKNOWLEDGED  = "acknowledged"  # dept confirmed receipt
-    IN_PROGRESS   = "in_progress"   # dept started working
-    COMPLETED     = "completed"     # dept finished their task
+# class HandoffRecordStatus(str, Enum):
+#     PENDING       = "pending"       # created, not yet sent
+#     SENT          = "sent"          # notification dispatched
+#     ACKNOWLEDGED  = "acknowledged"  # dept confirmed receipt
+#     IN_PROGRESS   = "in_progress"   # dept started working
+#     COMPLETED     = "completed"     # dept finished their task
 
 
-# ── DB model ──────────────────────────────────────────────────────────────
+# # ── DB model ──────────────────────────────────────────────────────────────
 
-class HandoffRecord(Base):
-    __tablename__ = "handoff_records"
+# class HandoffRecord(Base):
+#     __tablename__ = "handoff_records"
 
-    id: Mapped[str]            = mapped_column(
-        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
-    )
-    handoff_id: Mapped[str]    = mapped_column(String(36), index=True)
-    sales_order_id: Mapped[str] = mapped_column(String(36), index=True)
-    po_number: Mapped[str]     = mapped_column(String(100))
-    quotation_number: Mapped[str] = mapped_column(String(30))
-    buyer_company: Mapped[str] = mapped_column(String(255))
+#     id: Mapped[str]            = mapped_column(
+#         String(36), primary_key=True, default=lambda: str(uuid.uuid4())
+#     )
+#     handoff_id: Mapped[str]    = mapped_column(String(36), index=True)
+#     sales_order_id: Mapped[str] = mapped_column(String(36), index=True)
+#     po_number: Mapped[str]     = mapped_column(String(100))
+#     quotation_number: Mapped[str] = mapped_column(String(30))
+#     buyer_company: Mapped[str] = mapped_column(String(255))
 
-    department: Mapped[str]    = mapped_column(String(30), index=True)
-    priority: Mapped[str]      = mapped_column(String(5))
-    job_reference: Mapped[str] = mapped_column(String(50))
-    subject: Mapped[str]       = mapped_column(String(255))
+#     department: Mapped[str]    = mapped_column(String(30), index=True)
+#     priority: Mapped[str]      = mapped_column(String(5))
+#     job_reference: Mapped[str] = mapped_column(String(50))
+#     subject: Mapped[str]       = mapped_column(String(255))
 
-    package_json: Mapped[str]  = mapped_column(Text)    # full HandoffPackage JSON
-    notification_channel: Mapped[str] = mapped_column(String(50), default="email")
-    notification_recipient: Mapped[str] = mapped_column(String(255), default="")
+#     package_json: Mapped[str]  = mapped_column(Text)    # full HandoffPackage JSON
+#     notification_channel: Mapped[str] = mapped_column(String(50), default="email")
+#     notification_recipient: Mapped[str] = mapped_column(String(255), default="")
 
-    status: Mapped[str]        = mapped_column(String(30), default=HandoffRecordStatus.PENDING)
-    sent_at: Mapped[Optional[datetime]]         = mapped_column(DateTime, nullable=True)
-    acknowledged_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
-    completed_at: Mapped[Optional[datetime]]    = mapped_column(DateTime, nullable=True)
-    acknowledged_by: Mapped[Optional[str]]      = mapped_column(String(100), nullable=True)
+#     status: Mapped[str]        = mapped_column(String(30), default=HandoffRecordStatus.PENDING)
+#     sent_at: Mapped[Optional[datetime]]         = mapped_column(DateTime, nullable=True)
+#     acknowledged_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+#     completed_at: Mapped[Optional[datetime]]    = mapped_column(DateTime, nullable=True)
+#     acknowledged_by: Mapped[Optional[str]]      = mapped_column(String(100), nullable=True)
 
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
-    )
+#     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+#     updated_at: Mapped[datetime] = mapped_column(
+#         DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+#     )
 
 
 # ── Department → channel + recipient mapping ──────────────────────────────
@@ -251,11 +255,17 @@ def notify_department(
 async def save_all_handoff_records(
     session: AsyncSession,
     summary: HandoffSummary,
+    business_id: str,
+    customer_id: Optional[str],
+    thread_id: str,
 ) -> list[HandoffRecord]:
     records = []
     for pkg in summary.packages:
         cfg = DEPT_CHANNELS.get(pkg.department.value, {})
         record = HandoffRecord(
+            business_id=business_id,
+            customer_id=customer_id,
+            thread_id=thread_id,
             handoff_id=summary.handoff_id,
             sales_order_id=summary.sales_order_id,
             po_number=summary.po_number,
@@ -351,6 +361,9 @@ async def dispatch_all(
     session: AsyncSession,
     summary: HandoffSummary,
     client: Optional[genai.Client] = None,
+    business_id: str = "demo-steel-company",
+    customer_id: Optional[str] = None,
+    thread_id: str = "",
 ) -> list[HandoffRecord]:
     """
     1. Save all 5 department records to DB
@@ -359,7 +372,13 @@ async def dispatch_all(
     4. Mark each record as SENT
     5. Return all records
     """
-    records    = await save_all_handoff_records(session, summary)
+    records = await save_all_handoff_records(
+        session,
+        summary,
+        business_id=business_id,
+        customer_id=customer_id,
+        thread_id=thread_id or summary.sales_order_id,
+    )
     cover_note = generate_cover_note(summary, client)
 
     print(f"\n{'='*60}")

@@ -106,6 +106,11 @@ class CompletePipelineState(TypedDict):
 
     # ── Multi-tenant business scope ───────────────────────────────────
     business_id: str
+    thread_id: str
+    customer_id: Optional[str]
+    customer_resolution: Optional[dict]
+    customer_match_review_id: Optional[str]
+    customer_360: Optional[dict]
 
     # ── Entry control ──────────────────────────────────────────────────
     trigger: str
@@ -298,6 +303,71 @@ def build_all_nodes(session_factory, rag_adapter, client):
     def _pricing(d): return pe.PricingResult(**d) if d else None
     def _feasibility(d): return fe.FeasibilityResult(**d) if d else None
     def _qualification(d): return qual.QualificationResult(**d) if d else None
+
+    async def _record_outgoing(
+        state: CompletePipelineState,
+        message: str,
+        message_type: str,
+    ) -> None:
+        from app.events.interactions import record_interaction
+        from app.events.service import record_business_event
+
+        async with session_factory() as session:
+            interaction = await record_interaction(
+                session,
+                business_id=state["business_id"],
+                customer_id=state.get("customer_id"),
+                lead_id=state.get("lead_id"),
+                thread_id=state.get("thread_id"),
+                direction="outgoing",
+                channel=state.get("outbound_channel") or state.get("source") or "email",
+                message_type=message_type,
+                recipient=(
+                    state.get("outbound_recipient")
+                    or state.get("sender_identifier")
+                ),
+                content=message,
+                status="sent",
+            )
+            await record_business_event(
+                session,
+                business_id=state["business_id"],
+                customer_id=state.get("customer_id"),
+                lead_id=state.get("lead_id"),
+                thread_id=state.get("thread_id"),
+                event_type="message.sent",
+                actor_id="sales_graph",
+                entity_type="interaction",
+                entity_id=interaction.id,
+                data={"message_type": message_type},
+            )
+            await session.commit()
+
+
+    async def _record_transition(
+        state: CompletePipelineState,
+        event_type: str,
+        actor_id: str,
+        data: dict | None = None,
+        entity_type: str = "pipeline",
+        entity_id: str | None = None,
+    ) -> None:
+        from app.events.service import record_business_event
+
+        async with session_factory() as session:
+            await record_business_event(
+                session,
+                business_id=state["business_id"],
+                customer_id=state.get("customer_id"),
+                lead_id=state.get("lead_id"),
+                thread_id=state.get("thread_id"),
+                event_type=event_type,
+                actor_id=actor_id,
+                entity_type=entity_type,
+                entity_id=entity_id,
+                data=data,
+            )
+            await session.commit()
 
 
     async def _structured_document_context(
@@ -548,7 +618,13 @@ def build_all_nodes(session_factory, rag_adapter, client):
                                      missing_fields=list(ia.REQUIRED_FIELDS))
 
             async with session_factory() as session:
-                lead = await ia.create_lead(session, raw, extraction)
+                lead = await ia.create_lead(
+                    session,
+                    raw,
+                    extraction,
+                    business_id=state["business_id"],
+                    thread_id=state["thread_id"],
+                )
 
             return {
                 "inquiry_id":       raw.inquiry_id,
@@ -570,6 +646,9 @@ def build_all_nodes(session_factory, rag_adapter, client):
             msg = ia.compose_followup_message(ext, raw, client)
             if msg:
                 _mock_send(state["source"], state.get("sender_identifier", ""), msg.message_text)
+                await _record_outgoing(
+                    state, msg.message_text, "inquiry_followup"
+                )
             async with session_factory() as session:
                 await ia.log_action(session, "lead", state.get("lead_id",""),
                                     "missing_fields_followup_sent", "inquiry_agent",
@@ -610,6 +689,87 @@ def build_all_nodes(session_factory, rag_adapter, client):
 
 #for customer match         
 
+    async def resolve_customer_identity(state: CompletePipelineState) -> dict:
+        try:
+            from app.customers.identity_resolver import (
+                resolve_customer_identity as resolve_identity,
+            )
+            from sqlalchemy import update
+
+            ext = ia.InquiryExtraction(**(state.get("extraction") or {}))
+            async with session_factory() as session:
+                resolution = await resolve_identity(
+                    session,
+                    business_id=state["business_id"],
+                    lead_id=state.get("lead_id"),
+                    company_name=ext.company_name,
+                    contact_person=ext.contact_person,
+                    email=ext.customer_email,
+                    phone=ext.customer_phone,
+                    gstin=ext.customer_gstin,
+                    sender_identifier=state.get("sender_identifier"),
+                )
+                await session.execute(
+                    update(ia.Lead)
+                    .where(ia.Lead.id == state.get("lead_id"))
+                    .values(customer_id=resolution.customer.id)
+                )
+                from app.events.service import record_business_event
+                await record_business_event(
+                    session,
+                    business_id=state["business_id"],
+                    customer_id=resolution.customer.id,
+                    lead_id=state.get("lead_id"),
+                    thread_id=state.get("thread_id"),
+                    event_type="customer.resolved",
+                    actor_id="customer_identity_resolver",
+                    entity_type="customer",
+                    entity_id=resolution.customer.id,
+                    data={
+                        "resolution": resolution.resolution,
+                        "confidence": resolution.confidence,
+                        "review_id": resolution.review_id,
+                    },
+                )
+                await session.commit()
+
+            return {
+                "customer_id": resolution.customer.id,
+                "customer_resolution": {
+                    "resolution": resolution.resolution,
+                    "confidence": resolution.confidence,
+                    "matched_signals": resolution.matched_signals,
+                    "conflicting_signals": resolution.conflicting_signals,
+                },
+                "customer_match_review_id": resolution.review_id,
+                "stages_completed": ["customer_identity_resolved"],
+            }
+        except Exception as exc:
+            return {
+                "error": f"resolve_customer_identity: {exc}",
+                "stages_completed": [],
+            }
+
+    async def load_customer_360(state: CompletePipelineState) -> dict:
+        try:
+            from app.customers.customer_360 import get_customer_360
+
+            async with session_factory() as session:
+                customer_360 = await get_customer_360(
+                    session,
+                    business_id=state["business_id"],
+                    customer_id=state["customer_id"],
+                )
+            return {
+                "customer_360": customer_360,
+                "stages_completed": ["customer_360_loaded"],
+            }
+        except Exception as exc:
+            return {
+                "error": f"load_customer_360: {exc}",
+                "stages_completed": [],
+            }
+
     async def qualify_customer(
         state: CompletePipelineState,
         rag_context: AgentRAGContext,
@@ -618,16 +778,39 @@ def build_all_nodes(session_factory, rag_adapter, client):
             ext = ia.InquiryExtraction(**(state.get("extraction") or {}))
 
             async with session_factory() as session:
-                profile = await lk.lookup_customer(session, ext)
+                profile = await lk.build_customer_profile(
+                    session,
+                    customer_id=state["customer_id"],
+                    business_id=state["business_id"],
+                    is_new=(
+                        (state.get("customer_resolution") or {}).get("resolution")
+                        in {"created", "needs_review"}
+                    ),
+                )
 
             result = qual.qualify_lead(
                 ext.inquiry_id,
                 profile,
                 client,
                 rag_context=rag_context,
+                customer_360=state.get("customer_360"),
+            )
+            await _record_transition(
+                state,
+                "qualification.completed",
+                "qualification_agent",
+                {
+                    "credit_risk": result.credit_risk_flag,
+                    "customer_360_summary": (
+                        state.get("customer_360") or {}
+                    ).get("summary", {}),
+                },
+                "lead",
+                state.get("lead_id"),
             )
 
             return {
+                "customer_id": profile.customer_id,
                 "customer_profile": profile.model_dump(),
                 "qualification": result.model_dump(),
                 "needs_human_approval": result.credit_risk_flag,
@@ -655,6 +838,7 @@ def build_all_nodes(session_factory, rag_adapter, client):
                 req,
                 cat,
             )
+
             ql = _qualification(state.get("qualification"))
 
             structured_context = await _structured_document_context(
@@ -700,6 +884,14 @@ def build_all_nodes(session_factory, rag_adapter, client):
                 delivery_index=delivery_index,
                 client=client,
                 rag_context=rag_context,
+            )
+            await _record_transition(
+                state,
+                "feasibility.completed",
+                "feasibility_agent",
+                {"requires_human_review": result.requires_human_review},
+                "lead",
+                state.get("lead_id"),
             )
 
             return {
@@ -755,6 +947,19 @@ def build_all_nodes(session_factory, rag_adapter, client):
                 client=client,
                 rag_context=rag_context,
             )
+            await _record_transition(
+                state,
+                "pricing.completed",
+                "pricing_agent",
+                {
+                    "pricing_possible": result.pricing_possible,
+                    "requires_human_approval": (
+                        result.requires_human_approval
+                    ),
+                },
+                "lead",
+                state.get("lead_id"),
+            )
 
             if not result.pricing_possible:
                 return {
@@ -802,7 +1007,22 @@ def build_all_nodes(session_factory, rag_adapter, client):
             html = qr.render_quotation_html(draft)
 
             async with session_factory() as session:
-                rec = await qr.save_quotation(session, draft, html)
+                rec = await qr.save_quotation(
+                    session,
+                    draft,
+                    html,
+                    business_id=state["business_id"],
+                    customer_id=state.get("customer_id"),
+                    thread_id=state["thread_id"],
+                )
+            await _record_transition(
+                state,
+                "quotation.created",
+                "quotation_agent",
+                {"quotation_number": draft.quotation_number},
+                "quotation",
+                rec.id,
+            )
 
             return {
                 "quotation_id": rec.id,
@@ -853,11 +1073,15 @@ def build_all_nodes(session_factory, rag_adapter, client):
             channel   = state.get("outbound_channel","email")
             recipient = state.get("outbound_recipient","")
             _mock_send(channel, recipient, msg)
+            await _record_outgoing(state, msg, "followup")
             async with session_factory() as session:
                 draft = _draft(state.get("final_draft_json"))
                 schedule = ft.FOLLOW_UP_SCHEDULE[min(state.get("followup_attempt",1)-1,3)]
                 await ft.create_followup_record(
                     session,
+                    business_id=state["business_id"],
+                    customer_id=state.get("customer_id"),
+                    thread_id=state["thread_id"],
                     quotation_id=state.get("quotation_id",""),
                     quotation_number=state.get("quotation_number",""),
                     inquiry_id=state.get("inquiry_id",""),
@@ -972,9 +1196,13 @@ def build_all_nodes(session_factory, rag_adapter, client):
 
             async with session_factory() as session:
                 ver_rec = await rv.save_quotation_version(
-                    session, state.get("quotation_id",""),
+                    session,
+                    state.get("quotation_id",""),
                     state.get("quotation_number",""), revised, analysis,
                     "customer_counteroffer_accepted", "negotiation_agent",
+                    business_id=state["business_id"],
+                    customer_id=state.get("customer_id"),
+                    thread_id=state["thread_id"],
                 )
             return {
                 "revised_draft_json":  revised.model_dump_json(),
@@ -1058,6 +1286,7 @@ def build_all_nodes(session_factory, rag_adapter, client):
             channel   = state.get("outbound_channel","email")
             recipient = state.get("outbound_recipient","")
             _mock_send(channel, recipient, msg)
+            await _record_outgoing(state, msg, "pipeline_message")
             async with session_factory() as session:
                 await ia.log_action(session, "pipeline", state.get("inquiry_id",""),
                                     "message_dispatched", "pipeline",
@@ -1079,6 +1308,9 @@ def build_all_nodes(session_factory, rag_adapter, client):
             async with session_factory() as session:
                 po_rec = await poe.save_po_to_db(
                     session, ext,
+                    business_id=state["business_id"],
+                    customer_id=state.get("customer_id"),
+                    thread_id=state["thread_id"],
                     quotation_id=state.get("quotation_id"),
                     quotation_number=state.get("quotation_number"),
                     inquiry_id=state.get("inquiry_id"),
@@ -1157,6 +1389,7 @@ def build_all_nodes(session_factory, rag_adapter, client):
             msg = state.get("outbound_message","")
             _mock_send(state.get("outbound_channel","email"),
                        state.get("outbound_recipient",""), msg)
+            await _record_outgoing(state, msg, "po_correction")
             return {
                 "pipeline_status":   "awaiting_revised_po",
                 "stages_completed":  ["po_correction_sent"],
@@ -1178,6 +1411,14 @@ def build_all_nodes(session_factory, rag_adapter, client):
                                     {"quotation_number":state.get("quotation_number"),
                                      "po_id":state.get("po_id")})
                 await session.commit()
+            await _record_transition(
+                state,
+                "order.won",
+                "po_agent",
+                {"po_id": state.get("po_id")},
+                "lead",
+                state.get("lead_id"),
+            )
             return {
                 "order_won":        True,
                 "pipeline_status":  "won",
@@ -1192,6 +1433,9 @@ def build_all_nodes(session_factory, rag_adapter, client):
             ext = poe.POExtraction(**ext_dict) if ext_dict else None
             async with session_factory() as session:
                 so = poe.SalesOrder(
+                    business_id=state["business_id"],
+                    customer_id=state.get("customer_id"),
+                    thread_id=state["thread_id"],
                     inquiry_id=state.get("inquiry_id",""),
                     quotation_id=state.get("quotation_id",""),
                     po_id=state.get("po_id",""),
@@ -1254,7 +1498,14 @@ def build_all_nodes(session_factory, rag_adapter, client):
             summary_data = json.loads(state.get("handoff_summary_json") or "{}")
             summary      = hb.HandoffSummary(**summary_data)
             async with session_factory() as session:
-                records = await hd.dispatch_all(session, summary, client)
+                records = await hd.dispatch_all(
+                    session,
+                    summary,
+                    client,
+                    business_id=state["business_id"],
+                    customer_id=state.get("customer_id"),
+                    thread_id=state["thread_id"],
+                )
             return {
                 "departments_notified": [r.department for r in records
                                          if r.status == hd.HandoffRecordStatus.SENT],
@@ -1277,6 +1528,17 @@ def build_all_nodes(session_factory, rag_adapter, client):
                                      "handoff_id":      state.get("handoff_id"),
                                      "completed_at":    datetime.utcnow().isoformat()})
                 await session.commit()
+            await _record_transition(
+                state,
+                "handoff.completed",
+                "handoff_agent",
+                {
+                    "sales_order_id": state.get("sales_order_id"),
+                    "departments": state.get("departments_notified", []),
+                },
+                "handoff",
+                state.get("handoff_id"),
+            )
             return {
                 "pipeline_status":  "handed_off",
                 "stages_completed": ["pipeline_finalized"],
@@ -1297,6 +1559,12 @@ def build_all_nodes(session_factory, rag_adapter, client):
                                     "human_approval_requested","pipeline",
                                     {"stage":stage,"reasons":reasons})
                 await session.commit()
+            await _record_transition(
+                state,
+                "approval.requested",
+                "sales_graph",
+                {"stage": stage, "reasons": reasons},
+            )
             return {
                 "pipeline_status":  f"awaiting_approval:{stage}",
                 "stages_completed": [f"approval_requested:{stage}"],
@@ -1315,6 +1583,8 @@ def build_all_nodes(session_factory, rag_adapter, client):
             rag_adapter=rag_adapter,
             handler=match_requirement,
         ),
+        "resolve_customer_identity": resolve_customer_identity,
+        "load_customer_360": load_customer_360,
         "qualify_customer": with_rag_context(
             agent_name="qualification_agent",
             rag_adapter=rag_adapter,
@@ -1411,6 +1681,14 @@ def route_from_trigger(state: CompletePipelineState) -> str:
 def route_after_extraction(state: CompletePipelineState) -> str:
     if state.get("error"): return END
     return "send_inquiry_followup" if state.get("needs_followup") else "match_requirement"
+
+
+def route_after_identity_resolution(state: CompletePipelineState) -> str:
+    return END if state.get("error") else "load_customer_360"
+
+
+def route_after_customer_360(state: CompletePipelineState) -> str:
+    return END if state.get("error") else "qualify_customer"
 
 def route_after_qualification(state: CompletePipelineState) -> str:
     if state.get("error"): return END
@@ -1519,7 +1797,17 @@ def build_complete_graph(
         END: END,
     })
     g.add_edge("send_inquiry_followup", END)
-    g.add_edge("match_requirement",     "qualify_customer")
+    g.add_edge("match_requirement", "resolve_customer_identity")
+    g.add_conditional_edges(
+        "resolve_customer_identity",
+        route_after_identity_resolution,
+        {"load_customer_360": "load_customer_360", END: END},
+    )
+    g.add_conditional_edges(
+        "load_customer_360",
+        route_after_customer_360,
+        {"qualify_customer": "qualify_customer", END: END},
+    )
     g.add_conditional_edges("qualify_customer", route_after_qualification, {
         "request_approval":  "request_approval",
         "check_feasibility": "check_feasibility",
@@ -1616,6 +1904,11 @@ def make_initial_state(
     """
     base = {
         "business_id":        business_id,
+        "thread_id":          "",
+        "customer_id":        None,
+        "customer_resolution": None,
+        "customer_match_review_id": None,
+        "customer_360": None,
         "trigger":            trigger,
         "approved_stage":     None,
         "pipeline_status":    "new",

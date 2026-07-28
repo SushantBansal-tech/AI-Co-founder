@@ -34,6 +34,12 @@ from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.ext.asyncio import (
     create_async_engine, async_sessionmaker, AsyncSession,
 )
+from app.database.models.followup import (
+    FollowUpRecord,
+    FollowUpStatus,
+    FollowUpType,
+)
+from app.database.base import Base
 
 sys.path.insert(0, os.path.dirname(__file__))
 ia = import_module("01_Inquiry")
@@ -43,56 +49,56 @@ log_action = ia.log_action
 
 # ── Enums ─────────────────────────────────────────────────────────────────
 
-class FollowUpStatus(str, Enum):
-    SCHEDULED             = "scheduled"
-    SENT                  = "sent"
-    CUSTOMER_REPLIED      = "customer_replied"
-    OBJECTION_DETECTED    = "objection_detected"
-    NEGOTIATION_ACTIVE    = "negotiation_active"
-    CLOSED_WON            = "closed_won"
-    CLOSED_LOST           = "closed_lost"
-    EXPIRED               = "expired"
+# class FollowUpStatus(str, Enum):
+#     SCHEDULED             = "scheduled"
+#     SENT                  = "sent"
+#     CUSTOMER_REPLIED      = "customer_replied"
+#     OBJECTION_DETECTED    = "objection_detected"
+#     NEGOTIATION_ACTIVE    = "negotiation_active"
+#     CLOSED_WON            = "closed_won"
+#     CLOSED_LOST           = "closed_lost"
+#     EXPIRED               = "expired"
 
 
-class FollowUpType(str, Enum):
-    REMINDER_1            = "reminder_1"      # gentle, day 3
-    REMINDER_2            = "reminder_2"      # moderate, day 7
-    REMINDER_3            = "reminder_3"      # urgent, day 14
-    VALIDITY_EXPIRY       = "validity_expiry" # final, day 25
-    OBJECTION_RESPONSE    = "objection_response"
-    NEGOTIATION_FOLLOWUP  = "negotiation_followup"
+# class FollowUpType(str, Enum):
+#     REMINDER_1            = "reminder_1"      # gentle, day 3
+#     REMINDER_2            = "reminder_2"      # moderate, day 7
+#     REMINDER_3            = "reminder_3"      # urgent, day 14
+#     VALIDITY_EXPIRY       = "validity_expiry" # final, day 25
+#     OBJECTION_RESPONSE    = "objection_response"
+#     NEGOTIATION_FOLLOWUP  = "negotiation_followup"
 
 
 # ── DB Model ──────────────────────────────────────────────────────────────
 
-class FollowUpRecord(Base):
-    __tablename__ = "followup_records"
+# class FollowUpRecord(Base):
+#     __tablename__ = "followup_records"
 
-    id: Mapped[str]            = mapped_column(String(36), primary_key=True,
-                                                default=lambda: str(uuid.uuid4()))
-    quotation_id: Mapped[str]  = mapped_column(String(36), index=True)
-    quotation_number: Mapped[str] = mapped_column(String(30), index=True)
-    inquiry_id: Mapped[str]    = mapped_column(String(36), index=True)
-    buyer_company: Mapped[str] = mapped_column(String(255))
-    channel: Mapped[str]       = mapped_column(String(20))   # "email" | "whatsapp"
-    recipient: Mapped[str]     = mapped_column(String(255))  # email or phone
+#     id: Mapped[str]            = mapped_column(String(36), primary_key=True,
+#                                                 default=lambda: str(uuid.uuid4()))
+#     quotation_id: Mapped[str]  = mapped_column(String(36), index=True)
+#     quotation_number: Mapped[str] = mapped_column(String(30), index=True)
+#     inquiry_id: Mapped[str]    = mapped_column(String(36), index=True)
+#     buyer_company: Mapped[str] = mapped_column(String(255))
+#     channel: Mapped[str]       = mapped_column(String(20))   # "email" | "whatsapp"
+#     recipient: Mapped[str]     = mapped_column(String(255))  # email or phone
 
-    attempt_number: Mapped[int] = mapped_column(Integer, default=1)
-    followup_type: Mapped[str]  = mapped_column(SAEnum(FollowUpType))
-    tone: Mapped[str]           = mapped_column(String(20), default="gentle")
-    message_text: Mapped[str]   = mapped_column(Text)
+#     attempt_number: Mapped[int] = mapped_column(Integer, default=1)
+#     followup_type: Mapped[str]  = mapped_column(SAEnum(FollowUpType))
+#     tone: Mapped[str]           = mapped_column(String(20), default="gentle")
+#     message_text: Mapped[str]   = mapped_column(Text)
 
-    sent_at: Mapped[Optional[datetime]]   = mapped_column(DateTime, nullable=True)
-    status: Mapped[str]  = mapped_column(SAEnum(FollowUpStatus), default=FollowUpStatus.SCHEDULED)
+#     sent_at: Mapped[Optional[datetime]]   = mapped_column(DateTime, nullable=True)
+#     status: Mapped[str]  = mapped_column(SAEnum(FollowUpStatus), default=FollowUpStatus.SCHEDULED)
 
-    # Customer reply (filled when reply arrives)
-    customer_reply: Mapped[Optional[str]]      = mapped_column(Text, nullable=True)
-    reply_received_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
-    objection_type: Mapped[Optional[str]]      = mapped_column(String(50), nullable=True)
+#     # Customer reply (filled when reply arrives)
+#     customer_reply: Mapped[Optional[str]]      = mapped_column(Text, nullable=True)
+#     reply_received_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+#     objection_type: Mapped[Optional[str]]      = mapped_column(String(50), nullable=True)
 
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow,
-                                                  onupdate=datetime.utcnow)
+#     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+#     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow,
+                                                #   onupdate=datetime.utcnow)
 
 
 # ── Follow-up schedule ────────────────────────────────────────────────────
@@ -197,8 +203,14 @@ async def create_followup_record(
     followup_type: FollowUpType,
     tone: str,
     message_text: str,
+    business_id: str = "demo-steel-company",
+    customer_id: Optional[str] = None,
+    thread_id: str = "",
 ) -> FollowUpRecord:
     record = FollowUpRecord(
+        business_id=business_id,
+        customer_id=customer_id,
+        thread_id=thread_id or inquiry_id,
         quotation_id=quotation_id,
         quotation_number=quotation_number,
         inquiry_id=inquiry_id,

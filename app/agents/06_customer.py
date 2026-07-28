@@ -23,6 +23,7 @@ Run:
 import os
 import sys
 import asyncio
+import json
 from enum import Enum
 from typing import Optional
 from importlib import import_module
@@ -289,6 +290,7 @@ def generate_rationale(
     priority: Priority,
     client: Optional[genai.Client],
     rag_context: Optional[AgentRAGContext] = None,
+    customer_360: Optional[dict] = None,
 ) -> str:
     signals = "\n".join(f"  • {r}" for r in breakdown.reasons)
     fallback = (
@@ -314,6 +316,13 @@ def generate_rationale(
             "Use these records only as supporting evidence. Do not override "
             "structured balances, credit limits, or payment data."
         )
+    if customer_360:
+        prompt += (
+            "\n\nCUSTOMER 360 SUMMARY:\n"
+            f"{json.dumps(customer_360.get('summary', {}), default=str)}\n"
+            f"Preferences: {json.dumps(customer_360.get('preferences', {}), default=str)}\n"
+            "Use this structured history to improve the recommendation."
+        )
     try:
         response = client.models.generate_content(
             model="gemini-3.1-flash-lite", contents=prompt
@@ -332,6 +341,7 @@ def qualify_lead(
     profile: CustomerProfile,
     client: Optional[genai.Client] = None,
     rag_context: Optional[AgentRAGContext] = None,
+    customer_360: Optional[dict] = None,
 ) -> QualificationResult:
 
     breakdown   = compute_score(profile)
@@ -339,7 +349,13 @@ def qualify_lead(
     priority    = assign_priority(temperature, profile)
     credit_risk, credit_reason = check_credit_risk(profile)
     rationale   = generate_rationale(
-        profile, breakdown, temperature, priority, client, rag_context
+        profile,
+        breakdown,
+        temperature,
+        priority,
+        client,
+        rag_context,
+        customer_360,
     )
 
     # Human review is needed for credit risk OR cold leads with large order signals

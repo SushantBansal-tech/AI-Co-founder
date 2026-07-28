@@ -14,3 +14,7 @@ aiosqlite
 google-genai
 chromadb
 python-dotenv
+asyncpg
+alembic 
+psycopg[binary,pool] 
+langgraph-checkpoint-postgres

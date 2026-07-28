@@ -1,5 +1,7 @@
+import asyncio
 import json
 import os
+import sys
 from contextlib import asynccontextmanager
 from importlib import import_module
 from typing import Literal
@@ -11,17 +13,39 @@ from fastapi import (
     File,
     Form,
     HTTPException,
+    Header,
     UploadFile,
 )
+from fastapi.encoders import jsonable_encoder
 from google import genai
-from langgraph.checkpoint.memory import MemorySaver
+#from langgraph.checkpoint.memory import MemorySaver
 from pydantic import BaseModel, Field
-from sqlalchemy.ext.asyncio import (
-    AsyncSession,
-    async_sessionmaker,
-    create_async_engine,
+from sqlalchemy import select
+# from sqlalchemy.ext.asyncio import (
+#     AsyncSession,
+#     async_sessionmaker,
+#     create_async_engine,
+# )
+from app.database import (
+    Base,
+    Customer,
+    CustomerMatchReview,
+    CustomerMatchReviewStatus,
+    SessionFactory,
+    dispose_database_engine,
+    engine as database_engine,
 )
-
+from app.customers.merge_service import resolve_customer_match_review
+from app.customers.customer_360 import get_customer_360
+from app.events.interactions import record_interaction
+from app.events.service import record_business_event
+from app.idempotency.service import (
+    IdempotencyConflict,
+    IdempotencyInProgress,
+    claim_request,
+    complete_request,
+    fail_request,
+)
 from app.documents.embeddings import LocalEmbeddingService
 from app.documents.models import (
     DocumentType,
@@ -37,6 +61,15 @@ from app.graph2 import (
 from app.rag.langgraph_adapter import LangGraphRAGAdapter
 from app.rag.query_builder import canonical_agent_name
 from app.rag.service import RAGContextService
+from langgraph.checkpoint.postgres.aio import (
+    AsyncPostgresSaver,
+)
+
+
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(
+        asyncio.WindowsSelectorEventLoopPolicy()
+    )
 
 
 # Load GEMINI_API_KEY and other environment variables from .env.
@@ -53,11 +86,10 @@ vector_store: DocumentVectorStore | None = None
 ingestion_service: DocumentIngestionService | None = None
 rag_service: RAGContextService | None = None
 rag_adapter: LangGraphRAGAdapter | None = None
-
-database_engine = None
-Session = None
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///sales_os.db")
 
 sales_graph = None
+graph_checkpointer_context = None
 graph_checkpointer = None
 gemini_client = None
 
@@ -113,6 +145,28 @@ class ApprovalRequest(BaseModel):
     ]
 
 
+class CustomerMatchDecisionRequest(BaseModel):
+    business_id: str = Field(min_length=1)
+    action: Literal["merge", "keep_separate", "dismiss"]
+    resolved_by: str = Field(min_length=1)
+    notes: str | None = None
+
+
+class CustomerNoteRequest(BaseModel):
+    business_id: str = Field(min_length=1)
+    content: str = Field(min_length=1)
+    content_type: Literal[
+        "call_summary",
+        "meeting_note",
+        "email_summary",
+        "objection_summary",
+        "relationship_note",
+        "product_interest",
+    ]
+    thread_id: str | None = None
+    interaction_id: str | None = None
+
+
 # ---------------------------------------------------------------------------
 # FastAPI lifespan
 # ---------------------------------------------------------------------------
@@ -124,12 +178,11 @@ async def lifespan(app: FastAPI):
     global ingestion_service
     global rag_service
     global rag_adapter
-    global database_engine
-    global Session
+   # global database_engine
     global sales_graph
     global graph_checkpointer
     global gemini_client
-
+    global graph_checkpointer_context
     # ------------------------------------------------------------------
     # 1. Initialize the local embedding model.
     # ------------------------------------------------------------------
@@ -190,15 +243,17 @@ async def lifespan(app: FastAPI):
     # 6. Initialize the local SQLite database.
     # ------------------------------------------------------------------
 
-    database_engine = create_async_engine(
-        "sqlite+aiosqlite:///sales_os.db",
-    )
+    # database_engine = create_async_engine(
+    #     "sqlite+aiosqlite:///sales_os.db",
 
-    Session = async_sessionmaker(
-        database_engine,
-        class_=AsyncSession,
-        expire_on_commit=False,
-    )
+        
+    # )
+
+    # Session = async_sessionmaker(
+    #     database_engine,
+    #     class_=AsyncSession,
+    #     expire_on_commit=False,
+    # )
 
     # ------------------------------------------------------------------
     # 7. Build the complete LangGraph.
@@ -207,10 +262,31 @@ async def lifespan(app: FastAPI):
     # their SQLAlchemy models on the shared Base metadata.
     # ------------------------------------------------------------------
 
-    graph_checkpointer = MemorySaver()
+    #graph_checkpointer = MemorySaver()
+    langgraph_database_url = os.getenv(
+    "LANGGRAPH_DATABASE_URL"
+    )
+
+    if not langgraph_database_url:
+     raise RuntimeError(
+        "LANGGRAPH_DATABASE_URL is required."
+    )
+
+    graph_checkpointer_context = (
+       AsyncPostgresSaver.from_conn_string(
+        langgraph_database_url
+     )
+    )
+
+    graph_checkpointer = (
+    await graph_checkpointer_context.__aenter__()
+    )
+
+    await graph_checkpointer.setup()
+
 
     sales_graph = build_complete_graph(
-        session_factory=Session,
+        session_factory=SessionFactory,
         rag_adapter=rag_adapter,
         client=gemini_client,
         checkpointer=graph_checkpointer,
@@ -220,11 +296,12 @@ async def lifespan(app: FastAPI):
     # 8. Create all registered database tables.
     # ------------------------------------------------------------------
 
-    inquiry_module = import_module("01_Inquiry")
+    # inquiry_module = import_module("01_Inquiry")
 
-    async with database_engine.begin() as connection:
+    if DATABASE_URL.startswith("sqlite"):
+     async with database_engine.begin() as connection:
         await connection.run_sync(
-            inquiry_module.Base.metadata.create_all
+            Base.metadata.create_all
         )
 
     try:
@@ -238,8 +315,13 @@ async def lifespan(app: FastAPI):
         if vector_store is not None:
             vector_store.client.close()
 
+        if graph_checkpointer_context is not None:
+            await graph_checkpointer_context.__aexit__(
+                None, None, None
+            )
+
         if database_engine is not None:
-            await database_engine.dispose()
+            await dispose_database_engine()
 
 
 # ---------------------------------------------------------------------------
@@ -283,7 +365,7 @@ async def healthz():
         ),
         "database": (
             "ready"
-            if Session is not None
+            if SessionFactory is not None
             else "not_initialized"
         ),
     }
@@ -300,6 +382,9 @@ async def upload_document(
     allowed_agents_json: str = Form(...),
     version: str = Form("1.0"),
     file: UploadFile = File(...),
+    idempotency_key: str = Header(
+        ..., alias="Idempotency-Key", min_length=8, max_length=200
+    ),
 ):
     if ingestion_service is None:
         raise HTTPException(
@@ -307,7 +392,22 @@ async def upload_document(
             detail="Document ingestion service is not initialized.",
         )
 
+    claim = None
     try:
+        claim = await claim_request(
+            business_id=business_id,
+            endpoint="/documents/upload",
+            idempotency_key=idempotency_key,
+            payload={
+                "business_id": business_id,
+                "document_type": document_type.value,
+                "allowed_agents_json": allowed_agents_json,
+                "version": version,
+                "filename": file.filename,
+            },
+        )
+        if claim.is_cached:
+            return claim.cached_response
         allowed_agents = json.loads(
             allowed_agents_json
         )
@@ -354,9 +454,17 @@ async def upload_document(
             metadata=metadata,
         )
 
-        return result
+        response = jsonable_encoder(result)
+        await complete_request(claim.event_id, response)
+        return response
 
+    except IdempotencyConflict as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except IdempotencyInProgress as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
     except (ValueError, json.JSONDecodeError) as exc:
+        if claim and not claim.is_cached:
+            await fail_request(claim.event_id, exc)
         raise HTTPException(
             status_code=400,
             detail=str(exc),
@@ -474,12 +582,27 @@ def _validate_thread_business(
 @app.post("/inquiries/process")
 async def process_inquiry(
     request: InquiryRequest,
+    idempotency_key: str = Header(
+        ..., alias="Idempotency-Key", min_length=8, max_length=200
+    ),
 ):
     if sales_graph is None:
         raise HTTPException(
             status_code=503,
             detail="Sales graph is not initialized.",
         )
+
+    try:
+        claim = await claim_request(
+            business_id=request.business_id,
+            endpoint="/inquiries/process",
+            idempotency_key=idempotency_key,
+            payload=request.model_dump(),
+        )
+    except (IdempotencyConflict, IdempotencyInProgress) as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    if claim.is_cached:
+        return claim.cached_response
 
     initial_state = make_initial_state(
         trigger="inquiry",
@@ -491,19 +614,55 @@ async def process_inquiry(
 
     thread_id = str(uuid4())
     config = _graph_config(thread_id)
+    initial_state["thread_id"] = thread_id
 
     try:
+        async with SessionFactory() as session:
+            interaction = await record_interaction(
+                session,
+                business_id=request.business_id,
+                thread_id=thread_id,
+                direction="incoming",
+                channel=request.source,
+                message_type="inquiry",
+                external_message_id=f"inquiry:{idempotency_key}",
+                sender=request.sender_identifier,
+                content=request.raw_text,
+                status="received",
+            )
+            await record_business_event(
+                session,
+                business_id=request.business_id,
+                thread_id=thread_id,
+                event_type="inquiry.received",
+                source="api",
+                actor_type="customer",
+                actor_id=request.sender_identifier,
+                entity_type="interaction",
+                entity_id=interaction.id,
+                data={"channel": request.source},
+            )
+            await session.commit()
+
         result = await sales_graph.ainvoke(
             initial_state,
             config=config,
         )
 
-        return {
+        response = {
             "thread_id": thread_id,
             "state": result,
         }
+        await complete_request(
+            claim.event_id,
+            jsonable_encoder(response),
+            thread_id=thread_id,
+            interaction_id=interaction.id,
+        )
+        return response
 
     except Exception as exc:
+        await fail_request(claim.event_id, exc)
         raise HTTPException(
             status_code=500,
             detail=f"Sales graph execution failed: {exc}",
@@ -517,6 +676,9 @@ async def process_inquiry(
 @app.post("/pipeline/events")
 async def process_pipeline_event(
     request: PipelineEventRequest,
+    idempotency_key: str = Header(
+        ..., alias="Idempotency-Key", min_length=8, max_length=200
+    ),
 ):
     current_state = await _load_thread_state(
         request.thread_id
@@ -574,17 +736,73 @@ async def process_pipeline_event(
         event_state["po_raw_text"] = request.po_raw_text
 
     try:
+        claim = await claim_request(
+            business_id=request.business_id,
+            endpoint="/pipeline/events",
+            idempotency_key=idempotency_key,
+            payload=request.model_dump(),
+            thread_id=request.thread_id,
+        )
+    except (IdempotencyConflict, IdempotencyInProgress) as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    if claim.is_cached:
+        return claim.cached_response
+
+    try:
+        incoming_content = (
+            request.customer_reply_text
+            or request.po_raw_text
+            or f"Pipeline trigger: {request.trigger}"
+        )
+        async with SessionFactory() as session:
+            interaction = await record_interaction(
+                session,
+                business_id=request.business_id,
+                customer_id=current_state.get("customer_id"),
+                lead_id=current_state.get("lead_id"),
+                thread_id=request.thread_id,
+                direction="incoming",
+                channel=request.outbound_channel,
+                message_type=request.trigger,
+                external_message_id=(
+                    f"pipeline_event:{idempotency_key}"
+                ),
+                sender=request.outbound_recipient,
+                content=incoming_content,
+                status="received",
+            )
+            await record_business_event(
+                session,
+                business_id=request.business_id,
+                customer_id=current_state.get("customer_id"),
+                lead_id=current_state.get("lead_id"),
+                thread_id=request.thread_id,
+                event_type=f"{request.trigger}.received",
+                source="api",
+                actor_type="customer",
+                entity_type="interaction",
+                entity_id=interaction.id,
+            )
+            await session.commit()
         result = await sales_graph.ainvoke(
             event_state,
             config=_graph_config(request.thread_id),
         )
-        return {
+        response = {
             "thread_id": request.thread_id,
             "state": result,
         }
+        await complete_request(
+            claim.event_id,
+            jsonable_encoder(response),
+            thread_id=request.thread_id,
+            interaction_id=interaction.id,
+        )
+        return response
     except HTTPException:
         raise
     except Exception as exc:
+        await fail_request(claim.event_id, exc)
         raise HTTPException(
             status_code=500,
             detail=f"Pipeline event execution failed: {exc}",
@@ -598,6 +816,9 @@ async def process_pipeline_event(
 @app.post("/pipeline/approve")
 async def approve_pipeline_stage(
     request: ApprovalRequest,
+    idempotency_key: str = Header(
+        ..., alias="Idempotency-Key", min_length=8, max_length=200
+    ),
 ):
     current_state = await _load_thread_state(
         request.thread_id
@@ -654,6 +875,19 @@ async def approve_pipeline_stage(
                 },
             )
 
+    try:
+        claim = await claim_request(
+            business_id=request.business_id,
+            endpoint="/pipeline/approve",
+            idempotency_key=idempotency_key,
+            payload=request.model_dump(),
+            thread_id=request.thread_id,
+        )
+    except (IdempotencyConflict, IdempotencyInProgress) as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    if claim.is_cached:
+        return claim.cached_response
+
     approval_state = {
         "business_id": request.business_id,
         "trigger": "approved",
@@ -668,15 +902,245 @@ async def approve_pipeline_stage(
             approval_state,
             config=_graph_config(request.thread_id),
         )
-        return {
+        response = {
             "thread_id": request.thread_id,
             "approved_stage": request.approved_stage,
             "state": result,
         }
+        async with SessionFactory() as session:
+            await record_business_event(
+                session,
+                business_id=request.business_id,
+                customer_id=current_state.get("customer_id"),
+                lead_id=current_state.get("lead_id"),
+                thread_id=request.thread_id,
+                event_type="approval.granted",
+                source="human",
+                actor_type="employee",
+                actor_id="api_user",
+                data={"stage": request.approved_stage},
+            )
+            await session.commit()
+        await complete_request(
+            claim.event_id,
+            jsonable_encoder(response),
+            thread_id=request.thread_id,
+        )
+        return response
     except HTTPException:
         raise
     except Exception as exc:
+        await fail_request(claim.event_id, exc)
         raise HTTPException(
             status_code=500,
             detail=f"Pipeline approval failed: {exc}",
+        ) from exc
+
+
+# ---------------------------------------------------------------------------
+# Customer identity review and controlled deduplication
+# ---------------------------------------------------------------------------
+
+def _customer_review_payload(
+    review: CustomerMatchReview,
+    provisional: Customer | None,
+    candidate: Customer | None,
+) -> dict:
+    return {
+        "id": review.id,
+        "business_id": review.business_id,
+        "lead_id": review.lead_id,
+        "confidence": review.confidence,
+        "matched_signals": review.matched_signals,
+        "conflicting_signals": review.conflicting_signals,
+        "status": (
+            review.status.value
+            if hasattr(review.status, "value")
+            else review.status
+        ),
+        "provisional_customer": (
+            {
+                "id": provisional.id,
+                "company_name": provisional.company_name,
+                "email": provisional.email,
+                "phone": provisional.phone,
+                "gstin": provisional.gstin,
+            }
+            if provisional
+            else None
+        ),
+        "candidate_customer": (
+            {
+                "id": candidate.id,
+                "company_name": candidate.company_name,
+                "email": candidate.email,
+                "phone": candidate.phone,
+                "gstin": candidate.gstin,
+            }
+            if candidate
+            else None
+        ),
+        "resolved_by": review.resolved_by,
+        "resolution_notes": review.resolution_notes,
+        "resolved_at": review.resolved_at,
+        "created_at": review.created_at,
+    }
+
+
+@app.get("/customers/match-reviews")
+async def list_customer_match_reviews(
+    business_id: str,
+    status: CustomerMatchReviewStatus = CustomerMatchReviewStatus.PENDING,
+):
+    async with SessionFactory() as session:
+        reviews = (
+            await session.execute(
+                select(CustomerMatchReview)
+                .where(
+                    CustomerMatchReview.business_id == business_id,
+                    CustomerMatchReview.status == status,
+                )
+                .order_by(CustomerMatchReview.created_at.desc())
+            )
+        ).scalars().all()
+
+        payload = []
+        for review in reviews:
+            provisional = await session.get(
+                Customer, review.provisional_customer_id
+            )
+            candidate = await session.get(
+                Customer, review.candidate_customer_id
+            )
+            payload.append(
+                _customer_review_payload(review, provisional, candidate)
+            )
+        return {"items": payload, "count": len(payload)}
+
+
+@app.post("/customers/match-reviews/{review_id}/resolve")
+async def resolve_customer_match(
+    review_id: str,
+    request: CustomerMatchDecisionRequest,
+    idempotency_key: str = Header(
+        ..., alias="Idempotency-Key", min_length=8, max_length=200
+    ),
+):
+    try:
+        claim = await claim_request(
+            business_id=request.business_id,
+            endpoint=f"/customers/match-reviews/{review_id}/resolve",
+            idempotency_key=idempotency_key,
+            payload=request.model_dump(),
+        )
+    except (IdempotencyConflict, IdempotencyInProgress) as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    if claim.is_cached:
+        return claim.cached_response
+
+    async with SessionFactory() as session:
+        try:
+            review = await resolve_customer_match_review(
+                session,
+                review_id=review_id,
+                business_id=request.business_id,
+                action=request.action,
+                resolved_by=request.resolved_by,
+                notes=request.notes,
+            )
+            provisional = await session.get(
+                Customer, review.provisional_customer_id
+            )
+            candidate = await session.get(
+                Customer, review.candidate_customer_id
+            )
+            response = _customer_review_payload(
+                review, provisional, candidate
+            )
+            await complete_request(
+                claim.event_id, jsonable_encoder(response)
+            )
+            return response
+        except ValueError as exc:
+            await fail_request(claim.event_id, exc)
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@app.get("/customers/{customer_id}/360")
+async def customer_360(
+    customer_id: str,
+    business_id: str,
+):
+    async with SessionFactory() as session:
+        try:
+            return await get_customer_360(
+                session,
+                business_id=business_id,
+                customer_id=customer_id,
+            )
+        except ValueError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/customers/{customer_id}/notes")
+async def add_customer_semantic_note(
+    customer_id: str,
+    request: CustomerNoteRequest,
+    idempotency_key: str = Header(
+        ..., alias="Idempotency-Key", min_length=8, max_length=200
+    ),
+):
+    if vector_store is None or embedding_service is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Semantic-memory services are not initialized.",
+        )
+    async with SessionFactory() as session:
+        customer = await session.scalar(
+            select(Customer).where(
+                Customer.id == customer_id,
+                Customer.business_id == request.business_id,
+            )
+        )
+        if customer is None:
+            raise HTTPException(status_code=404, detail="Customer not found.")
+
+    try:
+        claim = await claim_request(
+            business_id=request.business_id,
+            endpoint=f"/customers/{customer_id}/notes",
+            idempotency_key=idempotency_key,
+            payload=request.model_dump(),
+            thread_id=request.thread_id,
+        )
+    except (IdempotencyConflict, IdempotencyInProgress) as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    if claim.is_cached:
+        return claim.cached_response
+
+    try:
+        from app.customers.semantic_memory import save_customer_note
+
+        note_id = await save_customer_note(
+            vector_store=vector_store,
+            embedding_service=embedding_service,
+            business_id=request.business_id,
+            customer_id=customer_id,
+            content=request.content,
+            content_type=request.content_type,
+            thread_id=request.thread_id,
+            interaction_id=request.interaction_id,
+        )
+        response = {"note_id": note_id, "customer_id": customer_id}
+        await complete_request(
+            claim.event_id,
+            response,
+            thread_id=request.thread_id,
+            interaction_id=request.interaction_id,
+        )
+        return response
+    except Exception as exc:
+        await fail_request(claim.event_id, exc)
+        raise HTTPException(
+            status_code=500, detail=f"Unable to save customer note: {exc}"
         ) from exc

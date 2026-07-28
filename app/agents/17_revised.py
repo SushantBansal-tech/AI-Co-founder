@@ -36,17 +36,24 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine, async_sessionmaker, AsyncSession,
 )
 
+from app.database.base import Base
+
+from app.database.models.quotation import (
+    QuotationStatus,
+    QuotationVersion,
+)
+
 sys.path.insert(0, os.path.dirname(__file__))
 ia  = import_module("01_Inquiry")
 qb  = import_module("11_quotation")
 qr  = import_module("12_quotation")
 ne  = import_module("16_negotion")
 
-Base              = ia.Base
+#Base              = ia.Base
 log_action        = ia.log_action
 QuotationDraft    = qb.QuotationDraft
 QuotationLineItem = qb.QuotationLineItem
-QuotationStatus   = qb.QuotationStatus
+#QuotationStatus   = qb.QuotationStatus
 render_quotation_html = qr.render_quotation_html
 NegotiationDecision = ne.NegotiationDecision
 NegotiationAnalysis = ne.NegotiationAnalysis
@@ -54,33 +61,33 @@ NegotiationAnalysis = ne.NegotiationAnalysis
 
 # ── QuotationVersion DB model ─────────────────────────────────────────────
 
-class QuotationVersion(Base):
-    __tablename__ = "quotation_versions"
+# class QuotationVersion(Base):
+#     __tablename__ = "quotation_versions"
 
-    id: Mapped[str]              = mapped_column(String(36), primary_key=True,
-                                                  default=lambda: str(uuid.uuid4()))
-    quotation_id: Mapped[str]    = mapped_column(String(36), index=True)
-    quotation_number: Mapped[str] = mapped_column(String(30), index=True)
-    version_number: Mapped[int]  = mapped_column(Integer)     # 1 = original, 2+ = revisions
+#     id: Mapped[str]              = mapped_column(String(36), primary_key=True,
+#                                                   default=lambda: str(uuid.uuid4()))
+#     quotation_id: Mapped[str]    = mapped_column(String(36), index=True)
+#     quotation_number: Mapped[str] = mapped_column(String(30), index=True)
+#     version_number: Mapped[int]  = mapped_column(Integer)     # 1 = original, 2+ = revisions
 
-    # Pricing snapshot for this version
-    price_per_mt_ex_gst: Mapped[float]
-    discount_pct: Mapped[float]
-    subtotal_ex_gst: Mapped[float]
-    gst_amount: Mapped[float]
-    total_inc_gst: Mapped[float]
+#     # Pricing snapshot for this version
+#     price_per_mt_ex_gst: Mapped[float]
+#     discount_pct: Mapped[float]
+#     subtotal_ex_gst: Mapped[float]
+#     gst_amount: Mapped[float]
+#     total_inc_gst: Mapped[float]
 
-    # Audit
-    change_reason: Mapped[str]  = mapped_column(String(255))
-    # "initial" | "customer_counteroffer" | "manager_approved" | "manager_override"
-    changed_by: Mapped[str]     = mapped_column(String(100))  # "auto" | manager name
-    negotiation_decision: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
-    customer_offered_price: Mapped[Optional[float]] = mapped_column(nullable=True)
+#     # Audit
+#     change_reason: Mapped[str]  = mapped_column(String(255))
+#     # "initial" | "customer_counteroffer" | "manager_approved" | "manager_override"
+#     changed_by: Mapped[str]     = mapped_column(String(100))  # "auto" | manager name
+#     negotiation_decision: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
+#     customer_offered_price: Mapped[Optional[float]] = mapped_column(nullable=True)
 
-    draft_json: Mapped[str]     = mapped_column(Text)          # full QuotationDraft JSON
-    html_content: Mapped[str]   = mapped_column(Text)          # rendered HTML for this version
+#     draft_json: Mapped[str]     = mapped_column(Text)          # full QuotationDraft JSON
+#     html_content: Mapped[str]   = mapped_column(Text)          # rendered HTML for this version
 
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+#     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 
 # ── Pydantic snapshot for passing between agents ──────────────────────────
@@ -208,6 +215,9 @@ async def save_quotation_version(
     analysis: Optional[NegotiationAnalysis],
     change_reason: str,
     changed_by: str = "auto",
+    business_id: str = "demo-steel-company",
+    customer_id: Optional[str] = None,
+    thread_id: str = "",
 ) -> QuotationVersion:
 
     version_num = await get_next_version_number(session, quotation_id)
@@ -223,6 +233,9 @@ async def save_quotation_version(
     )
 
     record = QuotationVersion(
+        business_id=business_id,
+        customer_id=customer_id,
+        thread_id=thread_id or quotation_id,
         quotation_id=quotation_id,
         quotation_number=quotation_number,
         version_number=version_num,
