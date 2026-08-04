@@ -291,6 +291,7 @@ def generate_rationale(
     client: Optional[genai.Client],
     rag_context: Optional[AgentRAGContext] = None,
     customer_360: Optional[dict] = None,
+    sales_context: Optional[dict] = None,
 ) -> str:
     signals = "\n".join(f"  • {r}" for r in breakdown.reasons)
     fallback = (
@@ -323,6 +324,16 @@ def generate_rationale(
             f"Preferences: {json.dumps(customer_360.get('preferences', {}), default=str)}\n"
             "Use this structured history to improve the recommendation."
         )
+    if sales_context and sales_context.get("semantic_memories"):
+        memories = "\n".join(
+            f"- {item.get('content', '')}"
+            for item in sales_context["semantic_memories"][:5]
+        )
+        prompt += (
+            "\n\nRELEVANT RELATIONSHIP MEMORY:\n"
+            f"{memories}\n"
+            "Treat these as contextual notes, not authoritative balances or prices."
+        )
     try:
         response = client.models.generate_content(
             model="gemini-3.1-flash-lite", contents=prompt
@@ -342,6 +353,7 @@ def qualify_lead(
     client: Optional[genai.Client] = None,
     rag_context: Optional[AgentRAGContext] = None,
     customer_360: Optional[dict] = None,
+    sales_context: Optional[dict] = None,
 ) -> QualificationResult:
 
     breakdown   = compute_score(profile)
@@ -356,6 +368,7 @@ def qualify_lead(
         client,
         rag_context,
         customer_360,
+        sales_context,
     )
 
     # Human review is needed for credit risk OR cold leads with large order signals

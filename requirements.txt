@@ -18,3 +18,4 @@ asyncpg
 alembic 
 psycopg[binary,pool] 
 langgraph-checkpoint-postgres
+httpx

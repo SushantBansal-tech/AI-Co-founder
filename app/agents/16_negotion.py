@@ -96,6 +96,14 @@ class NegotiationAnalysis(BaseModel):
     # Human approval
     requires_human_approval: bool = False
     human_approval_reason: Optional[str] = None
+    inputs_complete: bool = True
+    resulting_margin_pct: float = 0.0
+    authority_limit_pct: float = 0.0
+    credit_exposure_after_order: float = 0.0
+    available_stock: float = 0.0
+    production_utilization_pct: Optional[float] = None
+    policy_version: str = "pricing_snapshot"
+    decision_reasons: list[str] = Field(default_factory=list)
 
 
 # ── Step 1: Extract price from customer message ───────────────────────────
@@ -175,11 +183,13 @@ def evaluate_counteroffer(
     customer_price_per_mt: float,
     pricing: PricingResult,
     rag_context: Optional[AgentRAGContext] = None,
+    decision_context: Optional[dict] = None,
 ) -> NegotiationAnalysis:
     """
     100% deterministic — no LLM.
     Uses PricingResult to establish all reference prices, then computes decision.
     """
+    decision_context = decision_context or {}
     qty             = pricing.quantity_mt
     current_price   = pricing.final_price_per_mt_ex_gst
     floor_price     = pricing.floor_price_per_mt
@@ -264,6 +274,29 @@ def evaluate_counteroffer(
 
     human_needed = decision in (NegotiationDecision.NEEDS_APPROVAL, NegotiationDecision.BELOW_FLOOR)
     human_reason = reason if human_needed else None
+    inputs_complete = bool(
+        pricing.pricing_possible and qty > 0 and list_price > 0
+        and floor_price > 0 and pricing.total_cost_per_mt > 0
+    )
+    resulting_margin = (
+        round((customer_price_per_mt - pricing.total_cost_per_mt) * 100 / customer_price_per_mt, 2)
+        if customer_price_per_mt > 0 else 0.0
+    )
+    credit_exposure = float(decision_context.get("credit_exposure_after_order") or 0)
+    credit_limit = float(decision_context.get("credit_limit") or 0)
+    decision_reasons = [reason]
+    if not inputs_complete:
+        decision = NegotiationDecision.NEEDS_APPROVAL
+        auto_approve = False
+        human_needed = True
+        human_reason = "Negotiation inputs are incomplete; automatic authority is disabled."
+        decision_reasons.append(human_reason)
+    if credit_limit and credit_exposure > credit_limit:
+        decision = NegotiationDecision.NEEDS_APPROVAL
+        auto_approve = False
+        human_needed = True
+        human_reason = "Proposed order exceeds the customer's current credit authority."
+        decision_reasons.append(human_reason)
 
     return NegotiationAnalysis(
         customer_price_per_mt=customer_price_per_mt,
@@ -285,6 +318,14 @@ def evaluate_counteroffer(
         revised_total_inc_gst=rev_total,
         requires_human_approval=human_needed,
         human_approval_reason=human_reason,
+        inputs_complete=inputs_complete,
+        resulting_margin_pct=resulting_margin,
+        authority_limit_pct=approval_limit,
+        credit_exposure_after_order=credit_exposure,
+        available_stock=float(decision_context.get("available_stock") or 0),
+        production_utilization_pct=decision_context.get("production_utilization_pct"),
+        policy_version=str(decision_context.get("policy_version") or "pricing_snapshot"),
+        decision_reasons=decision_reasons,
     )
 
 

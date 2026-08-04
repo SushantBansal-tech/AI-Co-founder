@@ -8,6 +8,7 @@ from app.database import (
     BusinessEvent,
     Customer,
     CustomerIdentity,
+    CustomerNote,
     FollowUpRecord,
     Interaction,
     OrderHistory,
@@ -79,6 +80,17 @@ async def get_customer_360(
             .limit(20)
         )
     ).scalars().all()
+    imported_orders = (
+        await session.execute(
+            select(OrderHistory)
+            .where(
+                OrderHistory.business_id == business_id,
+                OrderHistory.customer_id == customer_id,
+            )
+            .order_by(OrderHistory.order_date.desc())
+            .limit(20)
+        )
+    ).scalars().all()
     payments = (
         await session.execute(
             select(PaymentRecord).where(
@@ -98,12 +110,30 @@ async def get_customer_360(
             .limit(30)
         )
     ).scalars().all()
+    notes = (
+        await session.execute(
+            select(CustomerNote)
+            .where(
+                CustomerNote.business_id == business_id,
+                CustomerNote.customer_id == customer_id,
+                CustomerNote.status == "active",
+            )
+            .order_by(CustomerNote.occurred_at.desc())
+            .limit(20)
+        )
+    ).scalars().all()
 
-    total_order_value = sum(float(order.total_value or 0) for order in orders)
+    total_order_value = (
+        sum(float(order.total_value or 0) for order in orders)
+        + sum(float(order.order_value or 0) for order in imported_orders)
+    )
     product_counts = Counter(
         order.product_description or order.product_code
         for order in orders
         if order.product_description or order.product_code
+    )
+    product_counts.update(
+        order.product for order in imported_orders if order.product
     )
     channel_counts = Counter(item.channel for item in interactions)
     delays = [payment.delay_days or 0 for payment in payments]
@@ -134,6 +164,8 @@ async def get_customer_360(
             "phone": customer.phone,
             "gstin": customer.gstin,
             "city": customer.city,
+            "state": customer.state,
+            "customer_type": customer.customer_type,
             "status": customer.status,
             "credit_limit": float(customer.credit_limit or 0),
             "outstanding_amount": float(customer.outstanding_amount or 0),
@@ -152,11 +184,14 @@ async def get_customer_360(
             "total_quotations": quote_total,
             "won_quotations": int(history_won or 0),
             "quotation_win_rate": round(win_rate, 2),
-            "total_orders": len(orders),
+            "total_orders": max(
+                len(orders) + len(imported_orders),
+                customer.imported_previous_orders_count or 0,
+            ),
             "total_order_value": round(total_order_value, 2),
             "average_order_value": round(
-                total_order_value / len(orders), 2
-            ) if orders else 0,
+                total_order_value / (len(orders) + len(imported_orders)), 2
+            ) if (orders or imported_orders) else 0,
             "average_payment_delay_days": round(
                 sum(delays) / len(delays), 2
             ) if delays else 0,
@@ -209,6 +244,17 @@ async def get_customer_360(
             }
             for item in orders
         ],
+        "imported_orders": [
+            {
+                "id": item.id,
+                "order_number": item.order_number,
+                "product": item.product,
+                "quantity": item.quantity,
+                "order_value": float(item.order_value),
+                "order_date": item.order_date.isoformat(),
+            }
+            for item in imported_orders
+        ],
         "recent_events": [
             {
                 "event_type": item.event_type,
@@ -216,5 +262,15 @@ async def get_customer_360(
                 "occurred_at": item.occurred_at.isoformat(),
             }
             for item in events
+        ],
+        "customer_notes": [
+            {
+                "id": item.id,
+                "content_type": item.content_type,
+                "content": item.content,
+                "thread_id": item.thread_id,
+                "occurred_at": item.occurred_at.isoformat(),
+            }
+            for item in notes
         ],
     }

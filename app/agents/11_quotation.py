@@ -246,15 +246,19 @@ def build_quotation(
     qualification: QualificationResult,
     customer:      CustomerProfile,
     rag_context:   Optional[AgentRAGContext] = None,
+    payment_terms: Optional[tuple[str, str]] = None,
 ) -> QuotationDraft:
 
     # ── Payment terms ──────────────────────────────────────────────────
-    policies = _load_payment_policies(SAMPLE_PAYMENT_TERMS_CSV)
-    terms_code, terms_text = _get_payment_terms(
-        policies,
-        customer_type=qualification.customer_type,
-        order_value=pricing.total_invoice_value,
-    )
+    if payment_terms is not None:
+        terms_code, terms_text = payment_terms
+    else:
+        policies = _load_payment_policies(SAMPLE_PAYMENT_TERMS_CSV)
+        terms_code, terms_text = _get_payment_terms(
+            policies,
+            customer_type=qualification.customer_type,
+            order_value=pricing.total_invoice_value,
+        )
 
     # ── Validity ──────────────────────────────────────────────────────
     valid_date = (datetime.now() + timedelta(days=QUOTATION_VALIDITY_DAYS)).strftime("%d-%m-%Y")

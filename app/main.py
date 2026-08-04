@@ -14,31 +14,45 @@ from fastapi import (
     Form,
     HTTPException,
     Header,
+    Query,
     UploadFile,
 )
 from fastapi.encoders import jsonable_encoder
 from google import genai
 #from langgraph.checkpoint.memory import MemorySaver
 from pydantic import BaseModel, Field
-from sqlalchemy import select
+from sqlalchemy import select, text, update
 # from sqlalchemy.ext.asyncio import (
 #     AsyncSession,
 #     async_sessionmaker,
 #     create_async_engine,
 # )
+load_dotenv()
 from app.database import (
     Base,
+    BusinessEvent,
     Customer,
     CustomerMatchReview,
     CustomerMatchReviewStatus,
+    FollowUpJob,
+    Interaction,
     SessionFactory,
     dispose_database_engine,
     engine as database_engine,
 )
 from app.customers.merge_service import resolve_customer_match_review
 from app.customers.customer_360 import get_customer_360
+from app.channels.service import ChannelIngestionService
+from app.channels.configuration import channel_configuration_errors
+from app.channels.email_adapter import EmailPollingService
+from app.channels.jobs import ChannelJobService
+from app.channels.outbound import ChannelOutboundDispatcher
+from app.channels.website import router as website_channel_router
+from app.channels.whatsapp import router as whatsapp_channel_router
 from app.events.interactions import record_interaction
 from app.events.service import record_business_event
+from app.followups.jobs import FollowUpJobService
+from app.followups.service import cancel_open_followup_jobs
 from app.idempotency.service import (
     IdempotencyConflict,
     IdempotencyInProgress,
@@ -54,6 +68,10 @@ from app.documents.models import (
 from app.documents.router import AgentDocumentRetriever
 from app.documents.service import DocumentIngestionService
 from app.documents.vector_store import DocumentVectorStore
+from app.structured_documents import (
+    StructuredDataRepository,
+    StructuredDocumentIngestionService,
+)
 from app.graph2 import (
     build_complete_graph,
     make_initial_state,
@@ -61,6 +79,11 @@ from app.graph2 import (
 from app.rag.langgraph_adapter import LangGraphRAGAdapter
 from app.rag.query_builder import canonical_agent_name
 from app.rag.service import RAGContextService
+from app.sales_context import (
+    CustomerMemoryService,
+    MemoryOutboxWorker,
+    SalesContextService,
+)
 from langgraph.checkpoint.postgres.aio import (
     AsyncPostgresSaver,
 )
@@ -73,7 +96,7 @@ if sys.platform == "win32":
 
 
 # Load GEMINI_API_KEY and other environment variables from .env.
-load_dotenv()
+#load_dotenv()
 
 
 # ---------------------------------------------------------------------------
@@ -92,6 +115,13 @@ sales_graph = None
 graph_checkpointer_context = None
 graph_checkpointer = None
 gemini_client = None
+channel_stop_event: asyncio.Event | None = None
+channel_background_tasks: list[asyncio.Task] = []
+channel_config_errors: list[str] = []
+followup_job_service: FollowUpJobService | None = None
+sales_context_service: SalesContextService | None = None
+customer_memory_service: CustomerMemoryService | None = None
+memory_outbox_worker: MemoryOutboxWorker | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -138,11 +168,18 @@ class ApprovalRequest(BaseModel):
     thread_id: str = Field(min_length=1)
     approved_stage: Literal[
         "qualification",
+        "requirement",
         "feasibility",
         "pricing",
         "negotiation",
         "po",
+        "po_revalidation",
     ]
+
+
+class PricingRetryRequest(BaseModel):
+    business_id: str = Field(min_length=1)
+    thread_id: str = Field(min_length=1)
 
 
 class CustomerMatchDecisionRequest(BaseModel):
@@ -167,6 +204,11 @@ class CustomerNoteRequest(BaseModel):
     interaction_id: str | None = None
 
 
+class FollowUpJobActionRequest(BaseModel):
+    business_id: str = Field(min_length=1)
+    reason: str | None = None
+
+
 # ---------------------------------------------------------------------------
 # FastAPI lifespan
 # ---------------------------------------------------------------------------
@@ -183,6 +225,13 @@ async def lifespan(app: FastAPI):
     global graph_checkpointer
     global gemini_client
     global graph_checkpointer_context
+    global channel_stop_event
+    global channel_background_tasks
+    global channel_config_errors
+    global followup_job_service
+    global sales_context_service
+    global customer_memory_service
+    global memory_outbox_worker
     # ------------------------------------------------------------------
     # 1. Initialize the local embedding model.
     # ------------------------------------------------------------------
@@ -202,10 +251,15 @@ async def lifespan(app: FastAPI):
     # 3. Initialize document ingestion.
     # ------------------------------------------------------------------
 
+    structured_ingestion = StructuredDocumentIngestionService(
+        SessionFactory
+    )
+    structured_data = StructuredDataRepository(SessionFactory)
     ingestion_service = DocumentIngestionService(
         embedding_service=embedding_service,
         vector_store=vector_store,
         upload_root="uploads",
+        structured_ingestion_service=structured_ingestion,
     )
 
     # ------------------------------------------------------------------
@@ -223,6 +277,19 @@ async def lifespan(app: FastAPI):
 
     rag_adapter = LangGraphRAGAdapter(
         rag_service=rag_service,
+    )
+
+    sales_context_service = SalesContextService(
+        session_factory=SessionFactory,
+        embedding_service=embedding_service,
+        vector_store=vector_store,
+    )
+    customer_memory_service = CustomerMemoryService(SessionFactory)
+    memory_outbox_worker = MemoryOutboxWorker(
+        session_factory=SessionFactory,
+        embedding_service=embedding_service,
+        vector_store=vector_store,
+        max_attempts=int(os.getenv("MEMORY_OUTBOX_MAX_ATTEMPTS", "5")),
     )
 
     # ------------------------------------------------------------------
@@ -290,18 +357,127 @@ async def lifespan(app: FastAPI):
         rag_adapter=rag_adapter,
         client=gemini_client,
         checkpointer=graph_checkpointer,
+        outbound_dispatcher=ChannelOutboundDispatcher(
+            session_factory=SessionFactory,
+        ),
+        structured_data=structured_data,
+        sales_context_service=sales_context_service,
     )
-
-    # ------------------------------------------------------------------
-    # 8. Create all registered database tables.
-    # ------------------------------------------------------------------
-
-    # inquiry_module = import_module("01_Inquiry")
+    app.state.channel_ingestion_service = ChannelIngestionService(
+        session_factory=SessionFactory,
+        sales_graph=sales_graph,
+        initial_state_factory=make_initial_state,
+    )
+    app.state.session_factory = SessionFactory
+    channel_job_service = ChannelJobService(
+        session_factory=SessionFactory,
+        ingestion_service=app.state.channel_ingestion_service,
+    )
+    app.state.channel_job_service = channel_job_service
+    followup_job_service = FollowUpJobService(
+        session_factory=SessionFactory,
+        sales_graph=sales_graph,
+    )
+    app.state.followup_job_service = followup_job_service
 
     if DATABASE_URL.startswith("sqlite"):
-     async with database_engine.begin() as connection:
-        await connection.run_sync(
-            Base.metadata.create_all
+        async with database_engine.begin() as connection:
+            await connection.run_sync(Base.metadata.create_all)
+
+    email_poller_enabled = os.getenv(
+        "EMAIL_POLLER_ENABLED", "false"
+    ).lower() in {"1", "true", "yes"}
+    channel_config_errors = await channel_configuration_errors(
+        session_factory=SessionFactory,
+        email_poller_enabled=email_poller_enabled,
+    )
+    if (
+        channel_config_errors
+        and os.getenv(
+            "CHANNEL_CONFIGURATION_STRICT", "false"
+        ).lower() in {"1", "true", "yes"}
+    ):
+        raise RuntimeError(
+            "Invalid channel configuration: "
+            + " ".join(channel_config_errors)
+        )
+
+    channel_stop_event = asyncio.Event()
+    channel_background_tasks = []
+    if os.getenv("CHANNEL_WORKER_ENABLED", "true").lower() in {
+        "1",
+        "true",
+        "yes",
+    }:
+        channel_background_tasks.append(
+            asyncio.create_task(
+                channel_job_service.run(channel_stop_event),
+                name="channel-inbound-worker",
+            )
+        )
+
+    if os.getenv("FOLLOWUP_WORKER_ENABLED", "true").lower() in {
+        "1",
+        "true",
+        "yes",
+    }:
+        channel_background_tasks.append(
+            asyncio.create_task(
+                followup_job_service.run(
+                    channel_stop_event,
+                    idle_seconds=float(
+                        os.getenv(
+                            "FOLLOWUP_WORKER_IDLE_SECONDS",
+                            "5",
+                        )
+                    ),
+                    stale_seconds=int(
+                        os.getenv(
+                            "FOLLOWUP_STALE_SECONDS",
+                            "300",
+                        )
+                    ),
+                    reconcile_seconds=float(
+                        os.getenv(
+                            "FOLLOWUP_RECONCILE_SECONDS",
+                            "600",
+                        )
+                    ),
+                ),
+                name="durable-followup-worker",
+            )
+        )
+
+    if os.getenv("MEMORY_WORKER_ENABLED", "true").lower() in {
+        "1", "true", "yes",
+    }:
+        channel_background_tasks.append(
+            asyncio.create_task(
+                memory_outbox_worker.run(
+                    channel_stop_event,
+                    idle_seconds=float(os.getenv("MEMORY_WORKER_IDLE_SECONDS", "2")),
+                    stale_seconds=int(os.getenv("MEMORY_OUTBOX_STALE_SECONDS", "300")),
+                ),
+                name="customer-memory-outbox-worker",
+            )
+        )
+
+    if email_poller_enabled and not channel_config_errors:
+        email_poller = EmailPollingService(
+            session_factory=SessionFactory,
+            job_service=channel_job_service,
+        )
+        app.state.email_polling_service = email_poller
+        channel_background_tasks.append(
+            asyncio.create_task(
+                email_poller.run(
+                    channel_stop_event,
+                    interval_seconds=float(
+                        os.getenv("EMAIL_POLL_INTERVAL_SECONDS", "30")
+                    ),
+                ),
+                name="email-imap-poller",
+            )
         )
 
     try:
@@ -311,6 +487,25 @@ async def lifespan(app: FastAPI):
         # --------------------------------------------------------------
         # Clean shutdown.
         # --------------------------------------------------------------
+
+        if channel_stop_event is not None:
+            channel_stop_event.set()
+        if channel_background_tasks:
+            try:
+                await asyncio.wait_for(
+                    asyncio.gather(
+                        *channel_background_tasks,
+                        return_exceptions=True,
+                    ),
+                    timeout=10,
+                )
+            except TimeoutError:
+                for task in channel_background_tasks:
+                    task.cancel()
+                await asyncio.gather(
+                    *channel_background_tasks,
+                    return_exceptions=True,
+                )
 
         if vector_store is not None:
             vector_store.client.close()
@@ -333,6 +528,8 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+app.include_router(website_channel_router)
+app.include_router(whatsapp_channel_router)
 
 
 # ---------------------------------------------------------------------------
@@ -341,8 +538,19 @@ app = FastAPI(
 
 @app.get("/healthz")
 async def healthz():
+    database_ready = False
+    try:
+        async with SessionFactory() as session:
+            await session.execute(text("SELECT 1"))
+        database_ready = True
+    except Exception:
+        database_ready = False
     return {
-        "status": "ok",
+        "status": (
+            "ok"
+            if database_ready and sales_graph is not None
+            else "degraded"
+        ),
         "qdrant": (
             "ready"
             if vector_store is not None
@@ -365,10 +573,232 @@ async def healthz():
         ),
         "database": (
             "ready"
-            if SessionFactory is not None
-            else "not_initialized"
+            if database_ready
+            else "unavailable"
         ),
+        "channels": {
+            "ready": not channel_config_errors,
+            "configuration_errors": channel_config_errors,
+            "email_poller_enabled": os.getenv(
+                "EMAIL_POLLER_ENABLED", "false"
+            ).lower() in {"1", "true", "yes"},
+            "worker_enabled": os.getenv(
+                "CHANNEL_WORKER_ENABLED", "true"
+            ).lower() in {"1", "true", "yes"},
+        },
+        "followups": {
+            "worker_enabled": os.getenv(
+                "FOLLOWUP_WORKER_ENABLED", "true"
+            ).lower() in {"1", "true", "yes"},
+            "worker_ready": followup_job_service is not None,
+        },
     }
+
+
+# ---------------------------------------------------------------------------
+# Durable follow-up job operations
+# ---------------------------------------------------------------------------
+
+def _followup_job_payload(job: FollowUpJob) -> dict:
+    return {
+        "id": job.id,
+        "business_id": job.business_id,
+        "thread_id": job.thread_id,
+        "quotation_id": job.quotation_id,
+        "quotation_number": job.quotation_number,
+        "attempt_number": job.attempt_number,
+        "followup_type": job.followup_type,
+        "tone": job.tone,
+        "channel": job.channel,
+        "recipient": job.recipient,
+        "scheduled_for": job.scheduled_for,
+        "next_attempt_at": job.next_attempt_at,
+        "status": job.status,
+        "attempt_count": job.attempt_count,
+        "max_attempts": job.max_attempts,
+        "provider_message_id": job.provider_message_id,
+        "last_error": job.last_error,
+        "completed_at": job.completed_at,
+        "cancelled_at": job.cancelled_at,
+        "cancellation_reason": job.cancellation_reason,
+    }
+
+
+@app.get("/followups/jobs")
+async def list_followup_jobs(
+    business_id: str = Query(min_length=1),
+    status_filter: str | None = Query(
+        default=None,
+        alias="status",
+    ),
+):
+    statement = select(FollowUpJob).where(
+        FollowUpJob.business_id == business_id
+    )
+    if status_filter:
+        statement = statement.where(
+            FollowUpJob.status == status_filter
+        )
+    statement = statement.order_by(
+        FollowUpJob.scheduled_for,
+        FollowUpJob.attempt_number,
+    )
+    async with SessionFactory() as session:
+        jobs = (
+            await session.execute(statement)
+        ).scalars().all()
+    return [
+        jsonable_encoder(_followup_job_payload(job))
+        for job in jobs
+    ]
+
+
+@app.get("/followups/jobs/{job_id}")
+async def get_followup_job(
+    job_id: str,
+    business_id: str = Query(min_length=1),
+):
+    async with SessionFactory() as session:
+        job = await session.scalar(
+            select(FollowUpJob).where(
+                FollowUpJob.id == job_id,
+                FollowUpJob.business_id == business_id,
+            )
+        )
+    if job is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Follow-up job not found.",
+        )
+    return jsonable_encoder(_followup_job_payload(job))
+
+
+async def _followup_action_claim(
+    *,
+    endpoint: str,
+    job_id: str,
+    request: FollowUpJobActionRequest,
+    idempotency_key: str,
+):
+    async with SessionFactory() as session:
+        exists = await session.scalar(
+            select(FollowUpJob.id).where(
+                FollowUpJob.id == job_id,
+                FollowUpJob.business_id == request.business_id,
+            )
+        )
+    if not exists:
+        raise HTTPException(
+            status_code=404,
+            detail="Follow-up job not found.",
+        )
+    try:
+        return await claim_request(
+            business_id=request.business_id,
+            endpoint=endpoint,
+            idempotency_key=idempotency_key,
+            payload={
+                "job_id": job_id,
+                **request.model_dump(),
+            },
+        )
+    except (IdempotencyConflict, IdempotencyInProgress) as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@app.post("/followups/jobs/{job_id}/cancel")
+async def cancel_followup_job(
+    job_id: str,
+    request: FollowUpJobActionRequest,
+    idempotency_key: str = Header(
+        ...,
+        alias="Idempotency-Key",
+        min_length=8,
+        max_length=200,
+    ),
+):
+    if followup_job_service is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Follow-up worker is not initialized.",
+        )
+    endpoint = f"/followups/jobs/{job_id}/cancel"
+    claim = await _followup_action_claim(
+        endpoint=endpoint,
+        job_id=job_id,
+        request=request,
+        idempotency_key=idempotency_key,
+    )
+    if claim.is_cached:
+        return claim.cached_response
+    changed = await followup_job_service.cancel_job(
+        job_id,
+        business_id=request.business_id,
+        reason=request.reason or "Cancelled by operator.",
+    )
+    if not changed:
+        await fail_request(
+            claim.event_id,
+            RuntimeError("Job is not cancellable."),
+        )
+        raise HTTPException(
+            status_code=409,
+            detail="Follow-up job is not cancellable.",
+        )
+    response = {"job_id": job_id, "status": "cancelled"}
+    await complete_request(
+        claim.event_id,
+        response,
+        response_status=200,
+    )
+    return response
+
+
+@app.post("/followups/jobs/{job_id}/retry")
+async def retry_followup_job(
+    job_id: str,
+    request: FollowUpJobActionRequest,
+    idempotency_key: str = Header(
+        ...,
+        alias="Idempotency-Key",
+        min_length=8,
+        max_length=200,
+    ),
+):
+    if followup_job_service is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Follow-up worker is not initialized.",
+        )
+    endpoint = f"/followups/jobs/{job_id}/retry"
+    claim = await _followup_action_claim(
+        endpoint=endpoint,
+        job_id=job_id,
+        request=request,
+        idempotency_key=idempotency_key,
+    )
+    if claim.is_cached:
+        return claim.cached_response
+    changed = await followup_job_service.retry_job(
+        job_id,
+        business_id=request.business_id,
+    )
+    if not changed:
+        await fail_request(
+            claim.event_id,
+            RuntimeError("Job is not retryable."),
+        )
+        raise HTTPException(
+            status_code=409,
+            detail="Follow-up job is not retryable.",
+        )
+    response = {"job_id": job_id, "status": "retry"}
+    await complete_request(
+        claim.event_id,
+        response,
+        response_status=200,
+    )
+    return response
 
 
 # ---------------------------------------------------------------------------
@@ -579,6 +1009,11 @@ def _validate_thread_business(
         )
 
 
+def _raise_graph_error(result: dict) -> None:
+    if result.get("error") and result.get("pipeline_status") == "failed":
+        raise RuntimeError(result["error"])
+
+
 @app.post("/inquiries/process")
 async def process_inquiry(
     request: InquiryRequest,
@@ -648,6 +1083,30 @@ async def process_inquiry(
             initial_state,
             config=config,
         )
+        _raise_graph_error(result)
+
+        async with SessionFactory() as session:
+            await session.execute(
+                update(Interaction)
+                .where(Interaction.id == interaction.id)
+                .values(
+                    customer_id=result.get("customer_id"),
+                    lead_id=result.get("lead_id"),
+                )
+            )
+            await session.execute(
+                update(BusinessEvent)
+                .where(
+                    BusinessEvent.business_id == request.business_id,
+                    BusinessEvent.thread_id == thread_id,
+                    BusinessEvent.customer_id.is_(None),
+                )
+                .values(
+                    customer_id=result.get("customer_id"),
+                    lead_id=result.get("lead_id"),
+                )
+            )
+            await session.commit()
 
         response = {
             "thread_id": thread_id,
@@ -689,7 +1148,7 @@ async def process_pipeline_event(
     )
 
     current_status = current_state.get("pipeline_status", "")
-    if current_status.startswith("awaiting_approval:"):
+    if current_status == "awaiting_approval" or current_status.startswith("awaiting_approval:"):
         raise HTTPException(
             status_code=409,
             detail=(
@@ -783,11 +1242,26 @@ async def process_pipeline_event(
                 entity_type="interaction",
                 entity_id=interaction.id,
             )
+            if request.trigger in {
+                "customer_reply",
+                "po_received",
+            }:
+                await cancel_open_followup_jobs(
+                    session,
+                    business_id=request.business_id,
+                    thread_id=request.thread_id,
+                    reason=(
+                        "Customer replied."
+                        if request.trigger == "customer_reply"
+                        else "Purchase order received."
+                    ),
+                )
             await session.commit()
         result = await sales_graph.ainvoke(
             event_state,
             config=_graph_config(request.thread_id),
         )
+        _raise_graph_error(result)
         response = {
             "thread_id": request.thread_id,
             "state": result,
@@ -813,6 +1287,65 @@ async def process_pipeline_event(
 # Human approval endpoint
 # ---------------------------------------------------------------------------
 
+@app.post("/pipeline/pricing/retry")
+async def retry_pipeline_pricing(
+    request: PricingRetryRequest,
+    idempotency_key: str = Header(
+        ..., alias="Idempotency-Key", min_length=8, max_length=200
+    ),
+):
+    current_state = await _load_thread_state(request.thread_id)
+    _validate_thread_business(current_state, request.business_id)
+    failure = current_state.get("failure") or {}
+    pricing_blocked = (
+        current_state.get("pipeline_status") == "blocked:pricing_data"
+        or (
+            current_state.get("pipeline_status") == "blocked"
+            and failure.get("code") == "PRICING_DATA_MISSING"
+        )
+    )
+    if not pricing_blocked:
+        raise HTTPException(
+            status_code=409,
+            detail="Pricing retry is only allowed when pricing master data is blocked.",
+        )
+    try:
+        claim = await claim_request(
+            business_id=request.business_id,
+            endpoint="/pipeline/pricing/retry",
+            idempotency_key=idempotency_key,
+            payload=request.model_dump(),
+            thread_id=request.thread_id,
+        )
+    except (IdempotencyConflict, IdempotencyInProgress) as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    if claim.is_cached:
+        return claim.cached_response
+    try:
+        result = await sales_graph.ainvoke(
+            {
+                "business_id": request.business_id,
+                "trigger": "retry_pricing",
+                "error": None,
+                "needs_human_approval": False,
+                "human_approval_stage": None,
+            },
+            config=_graph_config(request.thread_id),
+        )
+        _raise_graph_error(result)
+        response = {"thread_id": request.thread_id, "state": result}
+        await complete_request(
+            claim.event_id, jsonable_encoder(response),
+            thread_id=request.thread_id,
+        )
+        return response
+    except Exception as exc:
+        await fail_request(claim.event_id, exc)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Pricing retry failed: {exc}",
+        ) from exc
+
 @app.post("/pipeline/approve")
 async def approve_pipeline_stage(
     request: ApprovalRequest,
@@ -828,14 +1361,12 @@ async def approve_pipeline_stage(
         request.business_id,
     )
 
-    expected_status = (
-        f"awaiting_approval:{request.approved_stage}"
-    )
+    expected_status = f"awaiting_approval:{request.approved_stage}"
     current_status = current_state.get("pipeline_status")
     current_stage = current_state.get("human_approval_stage")
 
     if (
-        current_status != expected_status
+        current_status not in {expected_status, "awaiting_approval"}
         or current_stage != request.approved_stage
     ):
         raise HTTPException(
@@ -902,6 +1433,7 @@ async def approve_pipeline_stage(
             approval_state,
             config=_graph_config(request.thread_id),
         )
+        _raise_graph_error(result)
         response = {
             "thread_id": request.thread_id,
             "approved_stage": request.approved_stage,
@@ -1082,6 +1614,29 @@ async def customer_360(
             raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
+@app.get("/customers/{customer_id}/sales-context")
+async def customer_sales_context(
+    customer_id: str,
+    business_id: str,
+    agent_name: str = "customer_qualification",
+    query: str | None = None,
+    top_k: int = Query(default=5, ge=1, le=20),
+):
+    if sales_context_service is None:
+        raise HTTPException(status_code=503, detail="Sales context is not initialized.")
+    try:
+        context = await sales_context_service.get_context(
+            business_id=business_id,
+            customer_id=customer_id,
+            agent_name=canonical_agent_name(agent_name),
+            query=query,
+            top_k=top_k,
+        )
+        return context.model_dump()
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
 @app.post("/customers/{customer_id}/notes")
 async def add_customer_semantic_note(
     customer_id: str,
@@ -1090,7 +1645,7 @@ async def add_customer_semantic_note(
         ..., alias="Idempotency-Key", min_length=8, max_length=200
     ),
 ):
-    if vector_store is None or embedding_service is None:
+    if customer_memory_service is None:
         raise HTTPException(
             status_code=503,
             detail="Semantic-memory services are not initialized.",
@@ -1119,19 +1674,21 @@ async def add_customer_semantic_note(
         return claim.cached_response
 
     try:
-        from app.customers.semantic_memory import save_customer_note
-
-        note_id = await save_customer_note(
-            vector_store=vector_store,
-            embedding_service=embedding_service,
+        note_id, outbox_id = await customer_memory_service.create_note(
             business_id=request.business_id,
             customer_id=customer_id,
             content=request.content,
             content_type=request.content_type,
             thread_id=request.thread_id,
             interaction_id=request.interaction_id,
+            request_event_id=claim.event_id,
         )
-        response = {"note_id": note_id, "customer_id": customer_id}
+        response = {
+            "note_id": note_id,
+            "customer_id": customer_id,
+            "memory_outbox_id": outbox_id,
+            "memory_status": "queued",
+        }
         await complete_request(
             claim.event_id,
             response,

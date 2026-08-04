@@ -83,6 +83,8 @@ class DocumentVectorStore:
         interaction_id: str | None = None,
         occurred_at: str | None = None,
         note_id: str | None = None,
+        source_type: str | None = None,
+        source_id: str | None = None,
     ) -> str:
         point_id = note_id or str(uuid.uuid4())
         self.client.upsert(
@@ -99,12 +101,54 @@ class DocumentVectorStore:
                         "content_type": content_type,
                         "content": content,
                         "occurred_at": occurred_at,
+                        "source_type": source_type,
+                        "source_id": source_id,
                     },
                 )
             ],
             wait=True,
         )
         return point_id
+
+    def search_customer_memory(
+        self,
+        *,
+        query_vector: list[float],
+        business_id: str,
+        customer_id: str,
+        top_k: int = 5,
+        score_threshold: float = 0.30,
+    ) -> list[dict]:
+        """Search only one customer's memory inside one tenant."""
+        response = self.client.query_points(
+            collection_name=self.CUSTOMER_MEMORY_COLLECTION,
+            query=query_vector,
+            query_filter=models.Filter(must=[
+                models.FieldCondition(
+                    key="business_id",
+                    match=models.MatchValue(value=business_id),
+                ),
+                models.FieldCondition(
+                    key="customer_id",
+                    match=models.MatchValue(value=customer_id),
+                ),
+            ]),
+            limit=top_k,
+            score_threshold=score_threshold,
+            with_payload=True,
+        )
+        memories = []
+        for point in response.points:
+            payload = point.payload or {}
+            memories.append({
+                "memory_id": str(point.id),
+                "content": str(payload.get("content", "")),
+                "content_type": str(payload.get("content_type", "note")),
+                "score": float(point.score),
+                "occurred_at": payload.get("occurred_at"),
+                "thread_id": payload.get("thread_id"),
+            })
+        return memories
 
     def upsert_chunks(
         self,

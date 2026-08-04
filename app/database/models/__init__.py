@@ -1,5 +1,18 @@
 from app.database.models.activity import BusinessEvent, Interaction
+from app.database.models.channel import (
+    ChannelAttachment,
+    ChannelCursor,
+    ChannelInboundJob,
+    ChannelIngestion,
+    ChannelSource,
+)
 from app.database.models.idempotency import ProcessedEvent
+from app.database.models.memory import CustomerNote, MemoryOutbox
+from app.database.models.pipeline import (
+    InventoryReservation,
+    PipelineInstance,
+    QuotationDeliveryAttempt,
+)
 from app.database.models.customer import (
     Customer,
     CustomerIdentity,
@@ -16,6 +29,10 @@ from app.database.models.followup import (
     FollowUpRecord,
     FollowUpStatus,
     FollowUpType,
+)
+from app.database.models.followup_job import (
+    FollowUpJob,
+    FollowUpJobStatus,
 )
 from app.database.models.lead import (
     AuditLog,
@@ -38,11 +55,27 @@ from app.database.models.order import (
     PurchaseOrder,
     SalesOrder,
 )
+from app.database.models.structured import (
+    BusinessDocument, CatalogProductRecord, CustomerImportStaging,
+    DeliveryZoneRecord, DiscountBandRecord, GstRateRecord, InventoryRecord,
+    MarginRuleRecord, PaymentTermRuleRecord, ProductCostRecord,
+    ProductPriceRecord, ProductionCapacityRecord, TransportRateRecord,
+)
 
 __all__ = [
     "Interaction",
     "BusinessEvent",
     "ProcessedEvent",
+    "CustomerNote",
+    "MemoryOutbox",
+    "PipelineInstance",
+    "QuotationDeliveryAttempt",
+    "InventoryReservation",
+    "ChannelSource",
+    "ChannelIngestion",
+    "ChannelCursor",
+    "ChannelInboundJob",
+    "ChannelAttachment",
     # Lead
     "InquirySource",
     "LeadStatus",
@@ -70,6 +103,8 @@ __all__ = [
     "FollowUpStatus",
     "FollowUpType",
     "FollowUpRecord",
+    "FollowUpJob",
+    "FollowUpJobStatus",
     # Handoff
     "HandoffRecord",
     "HandoffRecordStatus",
@@ -77,5 +112,12 @@ __all__ = [
     "POStatus",
     "PurchaseOrder",
     "SalesOrder",
-    
+    "ChannelCursor",
+    "ChannelInboundJob",
+    "ChannelAttachment",
+    "BusinessDocument", "CatalogProductRecord", "InventoryRecord",
+    "ProductionCapacityRecord", "DeliveryZoneRecord", "ProductPriceRecord",
+    "ProductCostRecord", "TransportRateRecord", "DiscountBandRecord",
+    "MarginRuleRecord", "GstRateRecord", "PaymentTermRuleRecord",
+    "CustomerImportStaging",
 ]

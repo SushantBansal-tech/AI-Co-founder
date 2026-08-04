@@ -10,6 +10,7 @@ from sqlalchemy import (
     Integer,
     String,
     Text,
+    UniqueConstraint,
 )
 from sqlalchemy.orm import (
     Mapped,
@@ -41,6 +42,14 @@ class FollowUpType(str, Enum):
 
 class FollowUpRecord(Base):
     __tablename__ = "followup_records"
+    __table_args__ = (
+        UniqueConstraint(
+            "business_id",
+            "quotation_id",
+            "attempt_number",
+            name="uq_followup_record_quotation_attempt",
+        ),
+    )
 
     id: Mapped[str] = mapped_column(
         String(36),

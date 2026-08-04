@@ -19,7 +19,7 @@ from app.database.base import Base
 class InquirySource(str, Enum):
     EMAIL = "email"
     WHATSAPP = "whatsapp"
-    WEB = "web"
+    WEBSITE = "website"
     INDIAMART = "indiamart"
 
 

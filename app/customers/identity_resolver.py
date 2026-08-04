@@ -9,7 +9,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.customers.normalization import (
     normalize_company_name,
     normalize_email,
-    normalize_email_domain,
     normalize_gstin,
     normalize_phone,
 )
@@ -55,13 +54,13 @@ def _identity_values(
         values["gstin"] = (gstin or normalized_gstin, normalized_gstin, True)
     if normalized_email:
         values["email"] = (email or sender_identifier or normalized_email, normalized_email, True)
-        domain = normalize_email_domain(normalized_email)
-        if domain:
-            values["email_domain"] = (
-                email or sender_identifier or normalized_email,
-                domain,
-                False,
-            )
+        # domain = normalize_email_domain(normalized_email)
+        # if domain:
+        #     values["email_domain"] = (
+        #         email or sender_identifier or normalized_email,
+        #         domain,
+        #         False,
+        #     )
     if normalized_phone:
         values["phone"] = (phone or sender_identifier or normalized_phone, normalized_phone, True)
     if normalized_company:
@@ -131,7 +130,28 @@ async def _add_identities(
     values: dict[str, tuple[str, str, bool]],
     source: str,
 ) -> None:
-    for identity_type, (raw, normalized, verified) in values.items():
+    for identity_type, (
+        raw,
+        normalized,
+        verified,
+    ) in values.items():
+        existing_identity = await session.scalar(
+            select(CustomerIdentity).where(
+                CustomerIdentity.business_id
+                == customer.business_id,
+                CustomerIdentity.identity_type
+                == identity_type,
+                CustomerIdentity.normalized_value
+                == normalized,
+            )
+        )
+
+        if existing_identity is not None:
+            # Do not violate the unique identity constraint.
+            # The identity-resolution flow decides whether the
+            # customers should be matched or manually reviewed.
+            continue
+
         session.add(
             CustomerIdentity(
                 business_id=customer.business_id,
@@ -144,6 +164,7 @@ async def _add_identities(
                 source=source,
             )
         )
+
     await session.flush()
 
 

@@ -164,6 +164,11 @@ class Customer(Base):
         lazy="select",
     )
 
+    state: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    customer_type: Mapped[Optional[str]] = mapped_column(String(80), nullable=True, index=True)
+    imported_previous_orders_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    imported_lifetime_sales: Mapped[Decimal] = mapped_column(Numeric(18, 2), default=0, nullable=False)
+
 
 class CustomerIdentity(Base):
     __tablename__ = "customer_identities"
@@ -271,6 +276,10 @@ class OrderHistory(Base):
         String(100), nullable=False, index=True
     )
 
+    source_document_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("business_documents.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+
     customer_id: Mapped[str] = mapped_column(
         String(36),
         ForeignKey("customers.id"),
@@ -322,6 +331,10 @@ class QuotationHistory(Base):
 
     business_id: Mapped[str] = mapped_column(
         String(100), nullable=False, index=True
+    )
+
+    source_document_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("business_documents.id", ondelete="SET NULL"), nullable=True, index=True
     )
 
     customer_id: Mapped[str] = mapped_column(
@@ -376,6 +389,10 @@ class PaymentRecord(Base):
 
     business_id: Mapped[str] = mapped_column(
         String(100), nullable=False, index=True
+    )
+
+    source_document_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("business_documents.id", ondelete="SET NULL"), nullable=True, index=True
     )
 
     customer_id: Mapped[str] = mapped_column(

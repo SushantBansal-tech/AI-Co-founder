@@ -1,7 +1,8 @@
 import hashlib
 import json
+import os
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, Optional
 
 from sqlalchemy import select
@@ -43,9 +44,11 @@ async def claim_request(
     idempotency_key: str,
     payload: Any,
     thread_id: Optional[str] = None,
+    session_factory=SessionFactory,
+    stale_after_seconds: Optional[int] = None,
 ) -> IdempotencyClaim:
     digest = hash_request(payload)
-    async with SessionFactory() as session:
+    async with session_factory() as session:
         event = ProcessedEvent(
             business_id=business_id,
             endpoint=endpoint,
@@ -62,11 +65,13 @@ async def claim_request(
         except IntegrityError:
             await session.rollback()
             existing = await session.scalar(
-                select(ProcessedEvent).where(
+                select(ProcessedEvent)
+                .where(
                     ProcessedEvent.business_id == business_id,
                     ProcessedEvent.endpoint == endpoint,
                     ProcessedEvent.idempotency_key == idempotency_key,
                 )
+                .with_for_update()
             )
             if existing is None:
                 raise
@@ -80,6 +85,34 @@ async def claim_request(
                     cached_response=existing.response_body or {},
                     cached_status=existing.response_status or 200,
                 )
+            if existing.status == "failed":
+                existing.status = "processing"
+                existing.error_message = None
+                existing.completed_at = None
+                existing.locked_at = datetime.utcnow()
+                existing.thread_id = thread_id or existing.thread_id
+                await session.commit()
+                return IdempotencyClaim(event_id=existing.id)
+            stale_seconds = (
+                stale_after_seconds
+                if stale_after_seconds is not None
+                else int(os.getenv("IDEMPOTENCY_STALE_SECONDS", "900"))
+            )
+            stale_before = datetime.utcnow() - timedelta(
+                seconds=stale_seconds
+            )
+            if (
+                existing.status == "processing"
+                and existing.locked_at is not None
+                and existing.locked_at <= stale_before
+            ):
+                existing.status = "processing"
+                existing.error_message = None
+                existing.completed_at = None
+                existing.locked_at = datetime.utcnow()
+                existing.thread_id = thread_id or existing.thread_id
+                await session.commit()
+                return IdempotencyClaim(event_id=existing.id)
             raise IdempotencyInProgress(
                 "An identical request with this Idempotency-Key is processing."
             )
@@ -92,8 +125,9 @@ async def complete_request(
     response_status: int = 200,
     thread_id: Optional[str] = None,
     interaction_id: Optional[str] = None,
+    session_factory=SessionFactory,
 ) -> None:
-    async with SessionFactory() as session:
+    async with session_factory() as session:
         event = await session.get(ProcessedEvent, event_id)
         if event:
             event.status = "completed"
@@ -105,8 +139,13 @@ async def complete_request(
             await session.commit()
 
 
-async def fail_request(event_id: str, error: Exception) -> None:
-    async with SessionFactory() as session:
+async def fail_request(
+    event_id: str,
+    error: Exception,
+    *,
+    session_factory=SessionFactory,
+) -> None:
+    async with session_factory() as session:
         event = await session.get(ProcessedEvent, event_id)
         if event:
             event.status = "failed"

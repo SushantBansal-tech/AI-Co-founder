@@ -25,6 +25,7 @@
 
 import os
 
+from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -32,6 +33,9 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+# Database configuration must be loaded before this module creates the
+# process-wide engine. This keeps API, scripts, and Alembic on the same DB.
+load_dotenv()
 
 DEFAULT_DATABASE_URL = "sqlite+aiosqlite:///sales_os.db"
 

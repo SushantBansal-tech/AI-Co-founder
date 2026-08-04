@@ -10,7 +10,7 @@ class LocalEmbeddingService:
         model_name: str = "sentence-transformers/all-MiniLM-L6-v2",
     ) -> None:
         self.model = SentenceTransformer(model_name)
-        self.dimension = self.model.get_sentence_embedding_dimension()
+        self.dimension = self.model.get_embedding_dimension()
 
     def _encode_sync(
         self,

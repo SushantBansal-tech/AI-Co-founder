@@ -250,6 +250,31 @@ def notify_department(
     return True
 
 
+def build_department_message(
+    package: HandoffPackage,
+    cover_note: str,
+) -> str:
+    department = package.department.value
+    return (
+        f"{cover_note}\n\n"
+        f"{'='*50}\n"
+        f"DEPARTMENT: {department.upper()}\n"
+        f"Job Ref   : {package.job_reference}\n"
+        f"Priority  : {package.priority}\n"
+        f"Subject   : {package.subject}\n\n"
+        f"Summary:\n{package.summary}\n\n"
+        f"Action Items:\n"
+        + "\n".join(
+            f"  {index + 1}. {action}"
+            for index, action in enumerate(package.action_items)
+        )
+        + (
+            f"\n\nDeadline: "
+            f"{package.deadline or 'As per quotation'}"
+        )
+    )
+
+
 # ── DB operations ─────────────────────────────────────────────────────────
 
 async def save_all_handoff_records(
@@ -364,6 +389,7 @@ async def dispatch_all(
     business_id: str = "demo-steel-company",
     customer_id: Optional[str] = None,
     thread_id: str = "",
+    outbound_dispatcher=None,
 ) -> list[HandoffRecord]:
     """
     1. Save all 5 department records to DB
@@ -384,14 +410,40 @@ async def dispatch_all(
     print(f"\n{'='*60}")
     print(f"HANDOFF DISPATCH  —  {summary.handoff_id[:8]}")
     print(f"PO: {summary.po_number}  |  {summary.buyer_company}")
-    print(f"Total: ₹{summary.total_value:,.0f}  |  {len(summary.packages)} departments")
+    # Keep console diagnostics encoding-safe on Windows terminals. Customer
+    # and provider messages may still use the currency symbol.
+    print(
+        f"Total: INR {summary.total_value:,.0f}  |  "
+        f"{len(summary.packages)} departments"
+    )
     print(f"{'='*60}")
 
     for record, pkg in zip(records, summary.packages):
         cfg  = DEPT_CHANNELS.get(pkg.department.value, {})
-        sent = notify_department(pkg, cover_note, cfg)
-        if sent:
+        if outbound_dispatcher is None:
+            continue
+        result = await outbound_dispatcher.send(
+            business_id=business_id,
+            channel=cfg.get("channel", "email"),
+            recipient=cfg.get("recipient", ""),
+            subject=f"[{pkg.priority}] {pkg.subject}",
+            text=build_department_message(pkg, cover_note),
+        )
+        if result.confirmed:
             await mark_sent(session, record)
+            await log_action(
+                session,
+                "handoff_record",
+                record.id,
+                "provider_delivery_confirmed",
+                "handoff_agent",
+                {
+                    "provider_message_id": (
+                        result.provider_message_id
+                    ),
+                    "provider_status": result.status,
+                },
+            )
 
     await log_action(
         session, "handoff", summary.handoff_id,
