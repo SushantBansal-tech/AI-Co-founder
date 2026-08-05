@@ -688,3 +688,24 @@ Error               :
                    }
                ]
 }
+
+
+
+(.venv) PS C:\Users\susha\Downloads\AI> docker compose exec postgres `
+>>     psql -U sales_user -d sales_os `
+>>     -c "SELECT id, business_id, channel, status, attempt_count, last_error, created_at, completed_at FROM channel_jobs ORDER BY created_at DESC LIMIT 20;"
+ERROR:  relation "channel_jobs" does not exist
+LINE 1: ..._count, last_error, created_at, completed_at FROM channel_jo...
+                                                             ^
+
+                                                                               id                  |    business_id     | channel | provider |     provider_account_id     | active |                                                                                                                                                       configuration                                                                                                                                                        
+--------------------------------------+--------------------+---------+----------+-----------------------------+--------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 383e4886-6ef9-4662-9a82-21f55df23c44 | demo-steel-company | email   | imap     | sushantbansal2004@gmail.com | t      | {"host": "imap.gmail.com", "port": 993, "folder": "INBOX", "username_env": "SALES_EMAIL_USERNAME", "password_env": "SALES_EMAIL_PASSWORD", "smtp": {"host": "smtp.gmail.com", "port": 465, "username_env": "SALES_EMAIL_USERNAME", "password_env": "SALES_EMAIL_PASSWORD", "from_address": "sushantbansal2004@gmail.com"}}
+(1 row)
+
+(END)
+
+
+
+dotenv run -- uvicorn app.main:app --log-level debug
+dotenv run -- uvicorn app.main:app --reload --loop asyncio --log-level debug

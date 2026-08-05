@@ -1,6 +1,7 @@
 from app.database.models.activity import BusinessEvent, Interaction
 from app.database.models.channel import (
     ChannelAttachment,
+    ChannelConversation,
     ChannelCursor,
     ChannelInboundJob,
     ChannelIngestion,
@@ -72,6 +73,7 @@ __all__ = [
     "QuotationDeliveryAttempt",
     "InventoryReservation",
     "ChannelSource",
+    "ChannelConversation",
     "ChannelIngestion",
     "ChannelCursor",
     "ChannelInboundJob",

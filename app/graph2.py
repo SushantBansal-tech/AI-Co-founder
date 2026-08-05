@@ -351,6 +351,7 @@ def build_all_nodes(
         status: str = "sent",
         provider_message_id: str | None = None,
     ) -> None:
+        from app.database import ChannelConversation, ChannelSource
         from app.events.interactions import record_interaction
         from app.events.service import record_business_event
 
@@ -364,6 +365,7 @@ def build_all_nodes(
                 direction="outgoing",
                 channel=state.get("outbound_channel") or state.get("source") or "email",
                 message_type=message_type,
+                external_message_id=provider_message_id,
                 recipient=(
                     state.get("outbound_recipient")
                     or state.get("sender_identifier")
@@ -374,6 +376,55 @@ def build_all_nodes(
                     "provider_message_id": provider_message_id,
                 },
             )
+            channel = (
+                state.get("outbound_channel")
+                or state.get("source")
+                or "email"
+            )
+            participant = (
+                state.get("outbound_recipient")
+                or state.get("sender_identifier")
+                or ""
+            ).strip().lower()
+            channel_source_id = await session.scalar(
+                select(ChannelSource.id)
+                .where(
+                    ChannelSource.business_id == state["business_id"],
+                    ChannelSource.channel == channel,
+                    ChannelSource.active.is_(True),
+                )
+                .order_by(ChannelSource.created_at)
+                .limit(1)
+            )
+            if channel_source_id is None:
+                raise RuntimeError(
+                    f"No active {channel} source is available for conversation tracking."
+                )
+            conversation = await session.scalar(
+                select(ChannelConversation).where(
+                    ChannelConversation.business_id == state["business_id"],
+                    ChannelConversation.thread_id == state.get("thread_id"),
+                    ChannelConversation.channel == channel,
+                )
+            )
+            if conversation is None:
+                conversation = ChannelConversation(
+                    business_id=state["business_id"],
+                    customer_id=state.get("customer_id"),
+                    lead_id=state.get("lead_id"),
+                    thread_id=state.get("thread_id"),
+                    channel=channel,
+                    channel_source_id=channel_source_id,
+                    participant_identifier=participant,
+                    external_conversation_id=provider_message_id,
+                    root_message_id=provider_message_id,
+                )
+                session.add(conversation)
+            conversation.customer_id = state.get("customer_id")
+            conversation.lead_id = state.get("lead_id")
+            conversation.participant_identifier = participant
+            conversation.latest_message_id = provider_message_id
+            conversation.status = "active"
             await record_business_event(
                 session,
                 business_id=state["business_id"],
@@ -1442,6 +1493,10 @@ def build_all_nodes(
                     "pipeline_status": PipelineStatus.AWAITING_CUSTOMER_REPLY.value,
                     "business_milestone": BusinessMilestone.QUOTATION_SENT.value,
                     "waiting_for": WaitingFor.CUSTOMER.value,
+                    "status_reason": None,
+                    "failure": None,
+                    "needs_human_approval": False,
+                    "human_approval_stage": None,
                     "stages_completed": ["quotation_delivery_already_confirmed"],
                 }
             if attempt is None:
@@ -1501,6 +1556,10 @@ def build_all_nodes(
                 "pipeline_status": PipelineStatus.AWAITING_CUSTOMER_REPLY.value,
                 "business_milestone": BusinessMilestone.QUOTATION_SENT.value,
                 "waiting_for": WaitingFor.CUSTOMER.value,
+                "status_reason": None,
+                "failure": None,
+                "needs_human_approval": False,
+                "human_approval_stage": None,
                 "stages_completed": ["quotation_dispatched"],
             }
         except Exception as exc:

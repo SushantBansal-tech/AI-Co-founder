@@ -227,6 +227,168 @@ async def test_customer_reply_reuses_quotation_thread(
 
 
 @pytest.mark.asyncio
+async def test_email_reply_resumes_website_thread_cross_channel(
+    test_session_factory,
+):
+    source = await create_source(
+        test_session_factory,
+        channel="email",
+        provider="imap",
+    )
+    thread_id = str(uuid4())
+    async with test_session_factory() as session:
+        session.add(
+            Interaction(
+                business_id=source.business_id,
+                thread_id=thread_id,
+                direction="outgoing",
+                channel="email",
+                message_type="quotation",
+                external_message_id="<quote-cross-channel@example.com>",
+                recipient="buyer@example.com",
+                content="Quotation",
+                status="sent",
+            )
+        )
+        await session.commit()
+    graph = InspectingGraph(
+        snapshots={
+            thread_id: {
+                "pipeline_status": "awaiting_customer_reply",
+                "final_draft_json": "{}",
+            }
+        }
+    )
+    service = ChannelIngestionService(
+        session_factory=test_session_factory,
+        sales_graph=graph,
+        initial_state_factory=initial_state_factory,
+    )
+    reply = incoming(source, event_id="email-cross-channel")
+    reply.metadata = {
+        "message_id": "<reply-cross-channel@example.com>",
+        "in_reply_to": "<quote-cross-channel@example.com>",
+        "references": ["<quote-cross-channel@example.com>"],
+    }
+    response = await service.ingest(reply)
+    assert response["thread_id"] == thread_id
+    assert graph.invocations[0][0]["trigger"] == "customer_reply"
+
+
+@pytest.mark.asyncio
+async def test_reply_headers_disambiguate_multiple_open_threads(
+    test_session_factory,
+):
+    source = await create_source(
+        test_session_factory,
+        channel="email",
+        provider="imap",
+    )
+    selected_thread = str(uuid4())
+    other_thread = str(uuid4())
+    async with test_session_factory() as session:
+        session.add_all(
+            [
+                Interaction(
+                    business_id=source.business_id,
+                    thread_id=selected_thread,
+                    direction="outgoing",
+                    channel="email",
+                    message_type="quotation",
+                    external_message_id="<selected-quote@example.com>",
+                    recipient="buyer@example.com",
+                    content="Selected quotation",
+                    status="sent",
+                ),
+                Interaction(
+                    business_id=source.business_id,
+                    thread_id=other_thread,
+                    direction="outgoing",
+                    channel="email",
+                    message_type="quotation",
+                    external_message_id="<other-quote@example.com>",
+                    recipient="buyer@example.com",
+                    content="Other quotation",
+                    status="sent",
+                ),
+            ]
+        )
+        await session.commit()
+    graph = InspectingGraph(
+        snapshots={
+            selected_thread: {
+                "pipeline_status": "awaiting_customer_reply",
+                "final_draft_json": "{}",
+            },
+            other_thread: {
+                "pipeline_status": "awaiting_purchase_order",
+                "final_draft_json": "{}",
+            },
+        }
+    )
+    service = ChannelIngestionService(
+        session_factory=test_session_factory,
+        sales_graph=graph,
+        initial_state_factory=initial_state_factory,
+    )
+    reply = incoming(source, event_id="email-header-match")
+    reply.metadata = {
+        "message_id": "<reply-header-match@example.com>",
+        "in_reply_to": "<selected-quote@example.com>",
+        "references": ["<selected-quote@example.com>"],
+    }
+    response = await service.ingest(reply)
+    assert response["thread_id"] == selected_thread
+
+
+@pytest.mark.asyncio
+async def test_ambiguous_sender_is_not_attached_to_random_thread(
+    test_session_factory,
+):
+    source = await create_source(
+        test_session_factory,
+        channel="email",
+        provider="imap",
+    )
+    threads = [str(uuid4()), str(uuid4())]
+    async with test_session_factory() as session:
+        session.add_all(
+            [
+                Interaction(
+                    business_id=source.business_id,
+                    thread_id=thread_id,
+                    direction="outgoing",
+                    channel="email",
+                    message_type="quotation",
+                    recipient="buyer@example.com",
+                    content="Quotation",
+                    status="sent",
+                )
+                for thread_id in threads
+            ]
+        )
+        await session.commit()
+    graph = InspectingGraph(
+        snapshots={
+            thread_id: {
+                "pipeline_status": "awaiting_customer_reply",
+                "final_draft_json": "{}",
+            }
+            for thread_id in threads
+        }
+    )
+    service = ChannelIngestionService(
+        session_factory=test_session_factory,
+        sales_graph=graph,
+        initial_state_factory=initial_state_factory,
+    )
+    with pytest.raises(GraphExecutionError, match="Ambiguous customer reply"):
+        await service.ingest(
+            incoming(source, event_id="ambiguous-email-reply")
+        )
+
+
+@pytest.mark.asyncio
 async def test_initial_interaction_and_events_are_backfilled(
     test_session_factory,
 ):

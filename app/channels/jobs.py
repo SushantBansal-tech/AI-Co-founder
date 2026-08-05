@@ -140,8 +140,10 @@ class ChannelJobService:
             response = await self.ingestion_service.ingest(incoming)
             graph_state = response.get("state") or {}
             if graph_state.get("error"):
-                raise RuntimeError(
-                    f"Sales graph failed: {graph_state['error']}"
+                failure = graph_state.get("failure") or {}
+                raise GraphExecutionError(
+                    f"Sales graph failed: {graph_state['error']}",
+                    retryable=bool(failure.get("retryable")),
                 )
             async with self.session_factory() as session:
                 await session.execute(
@@ -162,7 +164,10 @@ class ChannelJobService:
         except Exception as exc:
             logger.exception("Channel job %s failed", job.id)
             terminal = (
-                isinstance(exc, GraphExecutionError)
+                (
+                    isinstance(exc, GraphExecutionError)
+                    and not exc.retryable
+                )
                 or job.attempt_count >= job.max_attempts
             )
             delay = self.retry_base_seconds * (2 ** max(job.attempt_count - 1, 0))

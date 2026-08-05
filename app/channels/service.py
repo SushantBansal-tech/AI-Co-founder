@@ -2,10 +2,15 @@ from datetime import datetime
 from uuid import uuid4
 
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy import select, update
+from sqlalchemy import or_, select, update
 
 from app.channels.schemas import IncomingInquiry
-from app.database import BusinessEvent, ChannelIngestion, Interaction
+from app.database import (
+    BusinessEvent,
+    ChannelConversation,
+    ChannelIngestion,
+    Interaction,
+)
 from app.events.interactions import record_interaction
 from app.events.service import record_business_event
 from app.idempotency.service import (
@@ -16,10 +21,26 @@ from app.idempotency.service import (
 
 
 class GraphExecutionError(RuntimeError):
-    pass
+    def __init__(self, message: str, *, retryable: bool = False) -> None:
+        super().__init__(message)
+        self.retryable = retryable
 
 
 class ChannelIngestionService:
+    RESUMABLE_STATUSES = {
+        "awaiting_customer_reply",
+        "awaiting_purchase_order",
+        "awaiting_corrected_po",
+        "awaiting_approval",
+        # Legacy statuses retained for checkpoints created before the
+        # explicit business-status migration.
+        "quotation_sent",
+        "followup_sent",
+        "negotiating",
+        "objection_addressed",
+        "rejection_sent",
+        "awaiting_revised_po",
+    }
     def __init__(
         self,
         *,
@@ -52,51 +73,180 @@ class ChannelIngestionService:
             else "whatsapp"
         )
 
+    @staticmethod
+    def _message_references(incoming: IncomingInquiry) -> list[str]:
+        values = [
+            incoming.metadata.get("in_reply_to"),
+            *(incoming.metadata.get("references") or []),
+        ]
+        return list(dict.fromkeys(str(value).strip() for value in values if value))
+
+    @classmethod
+    def _is_resumable(cls, state: dict) -> bool:
+        status = str(state.get("pipeline_status") or "")
+        return bool(
+            state.get("final_draft_json")
+            and (
+                status in cls.RESUMABLE_STATUSES
+                or status.startswith("awaiting_approval:")
+            )
+        )
+
+    async def _load_resumable_state(
+        self,
+        thread_id: str,
+    ) -> dict | None:
+        snapshot = await self.sales_graph.aget_state(
+            {"configurable": {"thread_id": thread_id}}
+        )
+        state = dict(snapshot.values or {})
+        return state if self._is_resumable(state) else None
+
+    async def _select_unique_resumable_thread(
+        self,
+        thread_ids: list[str],
+        *,
+        sender: str,
+    ) -> tuple[str | None, dict]:
+        matches: list[tuple[str, dict]] = []
+        for thread_id in dict.fromkeys(thread_ids):
+            state = await self._load_resumable_state(thread_id)
+            if state is not None:
+                matches.append((thread_id, state))
+        if len(matches) > 1:
+            raise GraphExecutionError(
+                "Ambiguous customer reply: multiple open sales conversations "
+                f"exist for {sender}. Match by In-Reply-To/References or route "
+                "to operator review."
+            )
+        return matches[0] if matches else (None, {})
+
     async def _continuation_state(
         self,
         incoming: IncomingInquiry,
     ) -> tuple[str | None, dict]:
+        references = self._message_references(incoming)
+        participant = incoming.sender_identifier.strip().lower()
         async with self.session_factory() as session:
-            candidates = (
-                await session.execute(
-                    select(Interaction)
+            # RFC message headers are authoritative. They disambiguate two
+            # simultaneous quotations sent to the same customer mailbox.
+            if references:
+                exact_thread = await session.scalar(
+                    select(Interaction.thread_id)
                     .where(
                         Interaction.business_id == incoming.business_id,
-                        Interaction.channel == incoming.channel,
-                        Interaction.sender == incoming.sender_identifier,
+                        Interaction.external_message_id.in_(references),
                         Interaction.thread_id.is_not(None),
                     )
                     .order_by(Interaction.occurred_at.desc())
-                    .limit(5)
+                    .limit(1)
                 )
-            ).scalars().all()
+                if exact_thread:
+                    state = await self._load_resumable_state(exact_thread)
+                    if state is not None:
+                        return exact_thread, state
 
-        resumable_statuses = {
-            "quotation_sent",
-            "followup_sent",
-            "negotiating",
-            "objection_addressed",
-            "rejection_sent",
-            "awaiting_revised_po",
-        }
-        for interaction in candidates:
-            config = {
-                "configurable": {
-                    "thread_id": interaction.thread_id,
-                }
-            }
-            snapshot = await self.sales_graph.aget_state(config)
-            state = dict(snapshot.values or {})
-            status = state.get("pipeline_status", "")
-            if (
-                state.get("final_draft_json")
-                and (
-                    status in resumable_statuses
-                    or status.startswith("awaiting_approval:")
+                exact_thread = await session.scalar(
+                    select(ChannelConversation.thread_id)
+                    .where(
+                        ChannelConversation.business_id == incoming.business_id,
+                        ChannelConversation.channel == incoming.channel,
+                        or_(
+                            ChannelConversation.external_conversation_id.in_(references),
+                            ChannelConversation.root_message_id.in_(references),
+                            ChannelConversation.latest_message_id.in_(references),
+                        ),
+                    )
+                    .limit(1)
                 )
-            ):
-                return interaction.thread_id, state
-        return None, {}
+                if exact_thread:
+                    state = await self._load_resumable_state(exact_thread)
+                    if state is not None:
+                        return exact_thread, state
+
+            conversation_threads = list(
+                (
+                    await session.scalars(
+                        select(ChannelConversation.thread_id)
+                        .where(
+                            ChannelConversation.business_id == incoming.business_id,
+                            ChannelConversation.participant_identifier == participant,
+                            ChannelConversation.status == "active",
+                        )
+                        .order_by(ChannelConversation.updated_at.desc())
+                    )
+                ).all()
+            )
+            if conversation_threads:
+                selected = await self._select_unique_resumable_thread(
+                    conversation_threads,
+                    sender=participant,
+                )
+                if selected[0]:
+                    return selected
+
+            # Compatibility fallback for records created before
+            # channel_conversations existed. Recipient matching is what
+            # connects a website inquiry to its later outbound email.
+            interaction_threads = list(
+                (
+                    await session.scalars(
+                        select(Interaction.thread_id)
+                        .where(
+                            Interaction.business_id == incoming.business_id,
+                            or_(
+                                Interaction.sender == participant,
+                                Interaction.recipient == participant,
+                            ),
+                            Interaction.thread_id.is_not(None),
+                        )
+                        .order_by(Interaction.occurred_at.desc())
+                        .limit(20)
+                    )
+                ).all()
+            )
+        return await self._select_unique_resumable_thread(
+            interaction_threads,
+            sender=participant,
+        )
+
+    async def _upsert_conversation(
+        self,
+        session,
+        *,
+        incoming: IncomingInquiry,
+        thread_id: str,
+        customer_id: str | None,
+        lead_id: str | None,
+    ) -> None:
+        conversation = await session.scalar(
+            select(ChannelConversation).where(
+                ChannelConversation.business_id == incoming.business_id,
+                ChannelConversation.thread_id == thread_id,
+                ChannelConversation.channel == incoming.channel,
+            )
+        )
+        message_id = (
+            incoming.metadata.get("message_id")
+            or incoming.external_event_id
+        )
+        if conversation is None:
+            conversation = ChannelConversation(
+                business_id=incoming.business_id,
+                customer_id=customer_id,
+                lead_id=lead_id,
+                thread_id=thread_id,
+                channel=incoming.channel,
+                channel_source_id=incoming.channel_source_id,
+                participant_identifier=incoming.sender_identifier.strip().lower(),
+                external_conversation_id=message_id,
+                root_message_id=message_id,
+            )
+            session.add(conversation)
+        conversation.customer_id = customer_id or conversation.customer_id
+        conversation.lead_id = lead_id or conversation.lead_id
+        conversation.latest_message_id = message_id
+        conversation.status = "active"
 
     async def ingest(self, incoming: IncomingInquiry) -> dict:
         idempotency_key = self.idempotency_key(incoming)
@@ -118,9 +268,17 @@ class ChannelIngestionService:
 
         ingestion_id = None
         interaction_id = None
-        continuation_thread_id, previous_state = (
-            await self._continuation_state(incoming)
-        )
+        try:
+            continuation_thread_id, previous_state = (
+                await self._continuation_state(incoming)
+            )
+        except Exception as exc:
+            await fail_request(
+                claim.event_id,
+                exc,
+                session_factory=self.session_factory,
+            )
+            raise
         thread_id = continuation_thread_id or str(uuid4())
         is_continuation = continuation_thread_id is not None
 
@@ -165,7 +323,10 @@ class ChannelIngestionService:
                     message_type=(
                         "customer_reply" if is_continuation else "inquiry"
                     ),
-                    external_message_id=idempotency_key,
+                    external_message_id=(
+                        incoming.metadata.get("message_id")
+                        or incoming.external_event_id
+                    ),
                     sender=incoming.sender_identifier,
                     subject=incoming.subject,
                     content=incoming.text,
@@ -174,6 +335,8 @@ class ChannelIngestionService:
                         "provider": incoming.provider,
                         "channel_source_id": incoming.channel_source_id,
                         "sender_name": incoming.sender_name,
+                        "in_reply_to": incoming.metadata.get("in_reply_to"),
+                        "references": incoming.metadata.get("references", []),
                         "attachments": [
                             attachment.model_dump(mode="json")
                             for attachment in incoming.attachments
@@ -182,6 +345,13 @@ class ChannelIngestionService:
                 )
                 ingestion.interaction_id = interaction.id
                 ingestion.thread_id = thread_id
+                await self._upsert_conversation(
+                    session,
+                    incoming=incoming,
+                    thread_id=thread_id,
+                    customer_id=previous_state.get("customer_id"),
+                    lead_id=previous_state.get("lead_id"),
+                )
                 await record_business_event(
                     session,
                     business_id=incoming.business_id,
@@ -257,6 +427,17 @@ class ChannelIngestionService:
                     .values(
                         status="completed",
                         processed_at=datetime.utcnow(),
+                    )
+                )
+                await session.execute(
+                    update(ChannelConversation)
+                    .where(
+                        ChannelConversation.business_id == incoming.business_id,
+                        ChannelConversation.thread_id == thread_id,
+                    )
+                    .values(
+                        customer_id=result.get("customer_id"),
+                        lead_id=result.get("lead_id"),
                     )
                 )
                 await session.execute(

@@ -36,12 +36,26 @@ class FakeMailbox:
         ]
 
 
-def email_bytes(message_id="<rfq-101@example.com>"):
+class FailingMailbox:
+    def fetch_after(self, source, last_uid, expected_uid_validity):
+        raise RuntimeError("IMAP authentication failed")
+
+
+def email_bytes(
+    message_id="<rfq-101@example.com>",
+    *,
+    in_reply_to=None,
+    references=None,
+):
     message = EmailMessage()
     message["From"] = "Buyer Name <buyer@example.com>"
     message["To"] = "sales@example.com"
     message["Subject"] = "RFQ for steel billets"
     message["Message-ID"] = message_id
+    if in_reply_to:
+        message["In-Reply-To"] = in_reply_to
+    if references:
+        message["References"] = " ".join(references)
     message.set_content("Please quote 100 MT MS billets.")
     message.add_attachment(
         b"purchase order",
@@ -78,7 +92,13 @@ def test_email_mime_normalization():
         name="Email",
     )
     incoming = parse_email_message(
-        email_bytes(),
+        email_bytes(
+            in_reply_to="<quotation-1@example.com>",
+            references=[
+                "<inquiry-1@example.com>",
+                "<quotation-1@example.com>",
+            ],
+        ),
         source=source,
         uid="41",
         uid_validity="999",
@@ -88,6 +108,11 @@ def test_email_mime_normalization():
     assert incoming.sender_identifier == "buyer@example.com"
     assert "100 MT" in incoming.text
     assert incoming.attachments[0].filename == "requirement.pdf"
+    assert incoming.metadata["in_reply_to"] == "<quotation-1@example.com>"
+    assert incoming.metadata["references"] == [
+        "<quotation-1@example.com>",
+        "<inquiry-1@example.com>",
+    ]
 
 
 @pytest.mark.asyncio
@@ -123,3 +148,25 @@ async def test_imap_cursor_survives_poller_restart(test_session_factory):
     async with test_session_factory() as session:
         cursor = await session.scalar(select(ChannelCursor))
         assert cursor.cursor_value == "42"
+        persisted_source = await session.get(ChannelSource, source.id)
+        assert persisted_source.last_successful_poll_at is not None
+        assert persisted_source.last_seen_uid == "42"
+        assert persisted_source.last_poll_messages_enqueued == 0
+
+
+@pytest.mark.asyncio
+async def test_imap_failure_is_persisted_for_health_status(
+    test_session_factory,
+):
+    source = await create_source(test_session_factory)
+    poller = EmailPollingService(
+        session_factory=test_session_factory,
+        job_service=RecordingJobService(),
+        mailbox=FailingMailbox(),
+    )
+    assert await poller.poll_once() == 0
+    async with test_session_factory() as session:
+        persisted_source = await session.get(ChannelSource, source.id)
+        assert persisted_source.last_poll_completed_at is not None
+        assert persisted_source.last_successful_poll_at is None
+        assert "IMAP authentication failed" in persisted_source.last_poll_error

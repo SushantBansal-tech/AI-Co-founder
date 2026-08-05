@@ -65,6 +65,83 @@ class ChannelSource(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime, default=datetime.utcnow, nullable=False
     )
+    last_poll_started_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime, nullable=True
+    )
+    last_poll_completed_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime, nullable=True
+    )
+    last_successful_poll_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime, nullable=True
+    )
+    last_seen_uid: Mapped[Optional[str]] = mapped_column(
+        String(255), nullable=True
+    )
+    last_poll_messages_found: Mapped[int] = mapped_column(
+        Integer, default=0, nullable=False
+    )
+    last_poll_messages_enqueued: Mapped[int] = mapped_column(
+        Integer, default=0, nullable=False
+    )
+    last_poll_error: Mapped[Optional[str]] = mapped_column(
+        Text, nullable=True
+    )
+
+
+class ChannelConversation(Base):
+    __tablename__ = "channel_conversations"
+    __table_args__ = (
+        UniqueConstraint(
+            "business_id", "thread_id", "channel",
+            name="uq_channel_conversation_thread_channel",
+        ),
+        UniqueConstraint(
+            "business_id", "channel", "external_conversation_id",
+            name="uq_channel_conversation_external",
+        ),
+        Index(
+            "ix_channel_conversations_participant_status",
+            "business_id", "participant_identifier", "status",
+        ),
+    )
+
+    id: Mapped[str] = mapped_column(
+        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
+    )
+    business_id: Mapped[str] = mapped_column(String(100), nullable=False)
+    customer_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("customers.id"), nullable=True
+    )
+    lead_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("leads.id"), nullable=True
+    )
+    thread_id: Mapped[str] = mapped_column(String(100), nullable=False)
+    channel: Mapped[str] = mapped_column(String(30), nullable=False)
+    channel_source_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("channel_sources.id"), nullable=False
+    )
+    participant_identifier: Mapped[str] = mapped_column(
+        String(255), nullable=False
+    )
+    external_conversation_id: Mapped[Optional[str]] = mapped_column(
+        String(255), nullable=True
+    )
+    root_message_id: Mapped[Optional[str]] = mapped_column(
+        String(255), nullable=True
+    )
+    latest_message_id: Mapped[Optional[str]] = mapped_column(
+        String(255), nullable=True
+    )
+    status: Mapped[str] = mapped_column(
+        String(30), default="active", nullable=False
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow,
+        nullable=False,
+    )
 
 
 class ChannelIngestion(Base):

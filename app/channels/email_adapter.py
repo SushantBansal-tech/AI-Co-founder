@@ -3,6 +3,7 @@ import imaplib
 import os
 import socket
 import logging
+import re
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from email import policy
@@ -10,12 +11,24 @@ from email.message import Message
 from email.parser import BytesParser
 from email.utils import parseaddr, parsedate_to_datetime
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 
 from app.channels.schemas import AttachmentReference, IncomingInquiry
 from app.database import ChannelCursor, ChannelSource
 
 logger = logging.getLogger(__name__)
+
+
+def _message_reference_ids(message: Message) -> list[str]:
+    raw_values = [
+        *(message.get_all("In-Reply-To", []) or []),
+        *(message.get_all("References", []) or []),
+    ]
+    references: list[str] = []
+    for raw_value in raw_values:
+        found = re.findall(r"<[^>]+>", str(raw_value))
+        references.extend(found or str(raw_value).split())
+    return list(dict.fromkeys(value.strip() for value in references if value.strip()))
 
 
 def _plain_text(message: Message) -> str:
@@ -68,6 +81,8 @@ def parse_email_message(
         )
 
     message_id = str(message.get("Message-ID", "")).strip()
+    in_reply_to = str(message.get("In-Reply-To", "")).strip() or None
+    references = _message_reference_ids(message)
     external_id = message_id or (
         f"imap:{source.id}:{uid_validity}:{uid}"
     )
@@ -91,6 +106,8 @@ def parse_email_message(
             "imap_uid": uid,
             "uid_validity": uid_validity,
             "message_id": message_id or None,
+            "in_reply_to": in_reply_to,
+            "references": references,
         },
     )
 
@@ -187,7 +204,60 @@ class EmailPollingService:
         self.job_service = job_service
         self.mailbox = mailbox or ImapMailbox()
 
+    async def _mark_poll_started(self, source_id: str) -> None:
+        async with self.session_factory() as session:
+            await session.execute(
+                update(ChannelSource)
+                .where(ChannelSource.id == source_id)
+                .values(
+                    last_poll_started_at=datetime.utcnow(),
+                    last_poll_error=None,
+                )
+            )
+            await session.commit()
+
+    async def _mark_poll_succeeded(
+        self,
+        source_id: str,
+        *,
+        messages_found: int,
+        messages_enqueued: int,
+        last_seen_uid: str | None,
+    ) -> None:
+        now = datetime.utcnow()
+        async with self.session_factory() as session:
+            await session.execute(
+                update(ChannelSource)
+                .where(ChannelSource.id == source_id)
+                .values(
+                    last_poll_completed_at=now,
+                    last_successful_poll_at=now,
+                    last_seen_uid=last_seen_uid,
+                    last_poll_messages_found=messages_found,
+                    last_poll_messages_enqueued=messages_enqueued,
+                    last_poll_error=None,
+                )
+            )
+            await session.commit()
+
+    async def _mark_poll_failed(
+        self,
+        source_id: str,
+        error: Exception,
+    ) -> None:
+        async with self.session_factory() as session:
+            await session.execute(
+                update(ChannelSource)
+                .where(ChannelSource.id == source_id)
+                .values(
+                    last_poll_completed_at=datetime.utcnow(),
+                    last_poll_error=str(error)[:4000],
+                )
+            )
+            await session.commit()
+
     async def poll_source(self, source: ChannelSource) -> int:
+        await self._mark_poll_started(source.id)
         async with self.session_factory() as session:
             cursor = await session.scalar(
                 select(ChannelCursor).where(
@@ -216,7 +286,7 @@ class EmailPollingService:
                 logger.warning("Transient network error polling source %s (attempt %d): %s", source.id, attempt + 1, err)
                 await asyncio.sleep(2 ** attempt)
 
-        processed = 0
+        enqueued = 0
         for fetched in messages:
             effective_last_uid = (
                 0
@@ -232,7 +302,7 @@ class EmailPollingService:
                 uid=fetched.uid,
                 uid_validity=fetched.uid_validity,
             )
-            await self.job_service.enqueue(
+            _, duplicate = await self.job_service.enqueue(
                 incoming,
                 raw_payload={
                     "imap_uid": fetched.uid,
@@ -262,9 +332,24 @@ class EmailPollingService:
 
             last_uid = int(fetched.uid)
             old_validity = fetched.uid_validity
-            processed += 1
+            if not duplicate:
+                enqueued += 1
 
-        return processed
+        await self._mark_poll_succeeded(
+            source.id,
+            messages_found=len(messages),
+            messages_enqueued=enqueued,
+            last_seen_uid=str(last_uid) if last_uid else None,
+        )
+        logger.info(
+            "Email poll succeeded source_id=%s mailbox=%s found=%d enqueued=%d last_uid=%s",
+            source.id,
+            source.provider_account_id,
+            len(messages),
+            enqueued,
+            last_uid or None,
+        )
+        return enqueued
 
     async def poll_once(self) -> int:
         async with self.session_factory() as session:
@@ -281,10 +366,12 @@ class EmailPollingService:
         for source in sources:
             try:
                 total += await self.poll_source(source)
-            except Exception:
+            except Exception as exc:
+                await self._mark_poll_failed(source.id, exc)
                 logger.exception(
-                    "Email polling failed for source %s",
+                    "Email polling failed source_id=%s mailbox=%s",
                     source.id,
+                    source.provider_account_id,
                 )
         return total
 

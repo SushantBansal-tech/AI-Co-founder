@@ -1,0 +1,101 @@
+﻿product_code,name,category,grade,specifications,unit
+MSB-001,Steel Billet Model 001,Steel Billet,IS2062 E250,Industrial grade product; size 15mm; standard commercial tolerance,MT
+MSP-002,Steel Plate Model 002,Steel Plate,IS2062 E350,3.5mm thickness; width up to 2500mm; cut length available,MT
+SHT-003,Steel Sheet Model 003,Steel Sheet,IS513 CR1,5.0mm thickness; width up to 3000mm; cut length available,MT
+COI-004,Steel Coil Model 004,Steel Coil,IS2062 E250,Industrial grade product; size 30mm; standard commercial tolerance,MT
+TMT-005,Reinforcement Bar Model 005,Reinforcement Bar,IS1786 Fe500D,25mm ribbed TMT bar; standard length 12m,MT
+IBE-006,I Beam Model 006,I Beam,IS808 / IS2062 E250,40mm nominal section; standard length 6m/12m; fabrication grade,MT
+CHN-007,Channel Section Model 007,Channel Section,IS808 / IS2062 E250,45mm nominal section; standard length 6m/12m; fabrication grade,MT
+ANG-008,Structural Angle Model 008,Structural Angle,IS808 / IS2062 E250,50mm nominal section; standard length 6m/12m; fabrication grade,MT
+FLT-009,Flat Bar Model 009,Flat Bar,IS2062 E250,Industrial grade product; size 55mm; standard commercial tolerance,MT
+RND-010,Round Bar Model 010,Round Bar,EN8,Industrial grade product; size 60mm; standard commercial tolerance,MT
+PIP-011,Steel Pipe Model 011,Steel Pipe,IS1239,65NB nominal bore; medium/heavy class; standard length 6m,MT
+HSS-012,Hollow Section Model 012,Hollow Section,IS4923,70mm nominal section; standard length 6m/12m; fabrication grade,MT
+SSP-013,Stainless Steel Model 013,Stainless Steel,AISI 304,Industrial grade product; size 75mm; standard commercial tolerance,MT
+FIT-014,Pipe Fitting Model 014,Pipe Fitting,ASTM A234 WPB,55NB fitting; pressure class 150; threaded or butt-weld,Nos
+GRT-015,Industrial Grating Model 015,Industrial Grating,IS2062 E250,Industrial grade product; size 85mm; standard commercial tolerance,SQM
+MSB-016,Steel Billet Model 016,Steel Billet,IS2062 E250,Industrial grade product; size 90mm; standard commercial tolerance,MT
+MSP-017,Steel Plate Model 017,Steel Plate,IS2062 E350,26.0mm thickness; width up to 2000mm; cut length available,MT
+SHT-018,Steel Sheet Model 018,Steel Sheet,IS513 CR1,27.5mm thickness; width up to 2500mm; cut length available,MT
+COI-019,Steel Coil Model 019,Steel Coil,IS2062 E250,Industrial grade product; size 105mm; standard commercial tolerance,MT
+TMT-020,Reinforcement Bar Model 020,Reinforcement Bar,IS1786 Fe500D,32mm ribbed TMT bar; standard length 12m,MT
+IBE-021,I Beam Model 021,I Beam,IS808 / IS2062 E250,115mm nominal section; standard length 6m/12m; fabrication grade,MT
+CHN-022,Channel Section Model 022,Channel Section,IS808 / IS2062 E250,120mm nominal section; standard length 6m/12m; fabrication grade,MT
+ANG-023,Structural Angle Model 023,Structural Angle,IS808 / IS2062 E250,125mm nominal section; standard length 6m/12m; fabrication grade,MT
+FLT-024,Flat Bar Model 024,Flat Bar,IS2062 E250,Industrial grade product; size 130mm; standard commercial tolerance,MT
+RND-025,Round Bar Model 025,Round Bar,EN8,Industrial grade product; size 135mm; standard commercial tolerance,MT
+PIP-026,Steel Pipe Model 026,Steel Pipe,IS1239,140NB nominal bore; medium/heavy class; standard length 6m,MT
+HSS-027,Hollow Section Model 027,Hollow Section,IS4923,145mm nominal section; standard length 6m/12m; fabrication grade,MT
+SSP-028,Stainless Steel Model 028,Stainless Steel,AISI 304,Industrial grade product; size 150mm; standard commercial tolerance,MT
+FIT-029,Pipe Fitting Model 029,Pipe Fitting,ASTM A234 WPB,105NB fitting; pressure class 150; threaded or butt-weld,Nos
+GRT-030,Industrial Grating Model 030,Industrial Grating,IS2062 E250,Industrial grade product; size 160mm; standard commercial tolerance,SQM
+MSB-031,Steel Billet Model 031,Steel Billet,IS2062 E250,Industrial grade product; size 165mm; standard commercial tolerance,MT
+MSP-032,Steel Plate Model 032,Steel Plate,IS2062 E350,18.5mm thickness; width up to 1500mm; cut length available,MT
+SHT-033,Steel Sheet Model 033,Steel Sheet,IS513 CR1,20.0mm thickness; width up to 2000mm; cut length available,MT
+COI-034,Steel Coil Model 034,Steel Coil,IS2062 E250,Industrial grade product; size 180mm; standard commercial tolerance,MT
+TMT-035,Reinforcement Bar Model 035,Reinforcement Bar,IS1786 Fe500D,8mm ribbed TMT bar; standard length 12m,MT
+IBE-036,I Beam Model 036,I Beam,IS808 / IS2062 E250,190mm nominal section; standard length 6m/12m; fabrication grade,MT
+CHN-037,Channel Section Model 037,Channel Section,IS808 / IS2062 E250,195mm nominal section; standard length 6m/12m; fabrication grade,MT
+ANG-038,Structural Angle Model 038,Structural Angle,IS808 / IS2062 E250,200mm nominal section; standard length 6m/12m; fabrication grade,MT
+FLT-039,Flat Bar Model 039,Flat Bar,IS2062 E250,Industrial grade product; size 205mm; standard commercial tolerance,MT
+RND-040,Round Bar Model 040,Round Bar,EN8,Industrial grade product; size 210mm; standard commercial tolerance,MT
+PIP-041,Steel Pipe Model 041,Steel Pipe,IS1239,215NB nominal bore; medium/heavy class; standard length 6m,MT
+HSS-042,Hollow Section Model 042,Hollow Section,IS4923,220mm nominal section; standard length 6m/12m; fabrication grade,MT
+SSP-043,Stainless Steel Model 043,Stainless Steel,AISI 304,Industrial grade product; size 225mm; standard commercial tolerance,MT
+FIT-044,Pipe Fitting Model 044,Pipe Fitting,ASTM A234 WPB,55NB fitting; pressure class 150; threaded or butt-weld,Nos
+GRT-045,Industrial Grating Model 045,Industrial Grating,IS2062 E250,Industrial grade product; size 235mm; standard commercial tolerance,SQM
+MSB-046,Steel Billet Model 046,Steel Billet,IS2062 E250,Industrial grade product; size 240mm; standard commercial tolerance,MT
+MSP-047,Steel Plate Model 047,Steel Plate,IS2062 E350,11.0mm thickness; width up to 3000mm; cut length available,MT
+SHT-048,Steel Sheet Model 048,Steel Sheet,IS513 CR1,12.5mm thickness; width up to 1500mm; cut length available,MT
+COI-049,Steel Coil Model 049,Steel Coil,IS2062 E250,Industrial grade product; size 255mm; standard commercial tolerance,MT
+TMT-050,Reinforcement Bar Model 050,Reinforcement Bar,IS1786 Fe500D,10mm ribbed TMT bar; standard length 12m,MT
+IBE-051,I Beam Model 051,I Beam,IS808 / IS2062 E250,265mm nominal section; standard length 6m/12m; fabrication grade,MT
+CHN-052,Channel Section Model 052,Channel Section,IS808 / IS2062 E250,270mm nominal section; standard length 6m/12m; fabrication grade,MT
+ANG-053,Structural Angle Model 053,Structural Angle,IS808 / IS2062 E250,275mm nominal section; standard length 6m/12m; fabrication grade,MT
+FLT-054,Flat Bar Model 054,Flat Bar,IS2062 E250,Industrial grade product; size 280mm; standard commercial tolerance,MT
+RND-055,Round Bar Model 055,Round Bar,EN8,Industrial grade product; size 285mm; standard commercial tolerance,MT
+PIP-056,Steel Pipe Model 056,Steel Pipe,IS1239,290NB nominal bore; medium/heavy class; standard length 6m,MT
+HSS-057,Hollow Section Model 057,Hollow Section,IS4923,295mm nominal section; standard length 6m/12m; fabrication grade,MT
+SSP-058,Stainless Steel Model 058,Stainless Steel,AISI 304,Industrial grade product; size 10mm; standard commercial tolerance,MT
+FIT-059,Pipe Fitting Model 059,Pipe Fitting,ASTM A234 WPB,105NB fitting; pressure class 150; threaded or butt-weld,Nos
+GRT-060,Industrial Grating Model 060,Industrial Grating,IS2062 E250,Industrial grade product; size 20mm; standard commercial tolerance,SQM
+MSB-061,Steel Billet Model 061,Steel Billet,IS2062 E250,Industrial grade product; size 25mm; standard commercial tolerance,MT
+MSP-062,Steel Plate Model 062,Steel Plate,IS2062 E350,3.5mm thickness; width up to 2500mm; cut length available,MT
+SHT-063,Steel Sheet Model 063,Steel Sheet,IS513 CR1,5.0mm thickness; width up to 3000mm; cut length available,MT
+COI-064,Steel Coil Model 064,Steel Coil,IS2062 E250,Industrial grade product; size 40mm; standard commercial tolerance,MT
+TMT-065,Reinforcement Bar Model 065,Reinforcement Bar,IS1786 Fe500D,12mm ribbed TMT bar; standard length 12m,MT
+IBE-066,I Beam Model 066,I Beam,IS808 / IS2062 E250,50mm nominal section; standard length 6m/12m; fabrication grade,MT
+CHN-067,Channel Section Model 067,Channel Section,IS808 / IS2062 E250,55mm nominal section; standard length 6m/12m; fabrication grade,MT
+ANG-068,Structural Angle Model 068,Structural Angle,IS808 / IS2062 E250,60mm nominal section; standard length 6m/12m; fabrication grade,MT
+FLT-069,Flat Bar Model 069,Flat Bar,IS2062 E250,Industrial grade product; size 65mm; standard commercial tolerance,MT
+RND-070,Round Bar Model 070,Round Bar,EN8,Industrial grade product; size 70mm; standard commercial tolerance,MT
+PIP-071,Steel Pipe Model 071,Steel Pipe,IS1239,75NB nominal bore; medium/heavy class; standard length 6m,MT
+HSS-072,Hollow Section Model 072,Hollow Section,IS4923,80mm nominal section; standard length 6m/12m; fabrication grade,MT
+SSP-073,Stainless Steel Model 073,Stainless Steel,AISI 304,Industrial grade product; size 85mm; standard commercial tolerance,MT
+FIT-074,Pipe Fitting Model 074,Pipe Fitting,ASTM A234 WPB,55NB fitting; pressure class 150; threaded or butt-weld,Nos
+GRT-075,Industrial Grating Model 075,Industrial Grating,IS2062 E250,Industrial grade product; size 95mm; standard commercial tolerance,SQM
+MSB-076,Steel Billet Model 076,Steel Billet,IS2062 E250,Industrial grade product; size 100mm; standard commercial tolerance,MT
+MSP-077,Steel Plate Model 077,Steel Plate,IS2062 E350,26.0mm thickness; width up to 2000mm; cut length available,MT
+SHT-078,Steel Sheet Model 078,Steel Sheet,IS513 CR1,27.5mm thickness; width up to 2500mm; cut length available,MT
+COI-079,Steel Coil Model 079,Steel Coil,IS2062 E250,Industrial grade product; size 115mm; standard commercial tolerance,MT
+TMT-080,Reinforcement Bar Model 080,Reinforcement Bar,IS1786 Fe500D,16mm ribbed TMT bar; standard length 12m,MT
+IBE-081,I Beam Model 081,I Beam,IS808 / IS2062 E250,125mm nominal section; standard length 6m/12m; fabrication grade,MT
+CHN-082,Channel Section Model 082,Channel Section,IS808 / IS2062 E250,130mm nominal section; standard length 6m/12m; fabrication grade,MT
+ANG-083,Structural Angle Model 083,Structural Angle,IS808 / IS2062 E250,135mm nominal section; standard length 6m/12m; fabrication grade,MT
+FLT-084,Flat Bar Model 084,Flat Bar,IS2062 E250,Industrial grade product; size 140mm; standard commercial tolerance,MT
+RND-085,Round Bar Model 085,Round Bar,EN8,Industrial grade product; size 145mm; standard commercial tolerance,MT
+PIP-086,Steel Pipe Model 086,Steel Pipe,IS1239,150NB nominal bore; medium/heavy class; standard length 6m,MT
+HSS-087,Hollow Section Model 087,Hollow Section,IS4923,155mm nominal section; standard length 6m/12m; fabrication grade,MT
+SSP-088,Stainless Steel Model 088,Stainless Steel,AISI 304,Industrial grade product; size 160mm; standard commercial tolerance,MT
+FIT-089,Pipe Fitting Model 089,Pipe Fitting,ASTM A234 WPB,105NB fitting; pressure class 150; threaded or butt-weld,Nos
+GRT-090,Industrial Grating Model 090,Industrial Grating,IS2062 E250,Industrial grade product; size 170mm; standard commercial tolerance,SQM
+MSB-091,Steel Billet Model 091,Steel Billet,IS2062 E250,Industrial grade product; size 175mm; standard commercial tolerance,MT
+MSP-092,Steel Plate Model 092,Steel Plate,IS2062 E350,18.5mm thickness; width up to 1500mm; cut length available,MT
+SHT-093,Steel Sheet Model 093,Steel Sheet,IS513 CR1,20.0mm thickness; width up to 2000mm; cut length available,MT
+COI-094,Steel Coil Model 094,Steel Coil,IS2062 E250,Industrial grade product; size 190mm; standard commercial tolerance,MT
+TMT-095,Reinforcement Bar Model 095,Reinforcement Bar,IS1786 Fe500D,20mm ribbed TMT bar; standard length 12m,MT
+IBE-096,I Beam Model 096,I Beam,IS808 / IS2062 E250,200mm nominal section; standard length 6m/12m; fabrication grade,MT
+CHN-097,Channel Section Model 097,Channel Section,IS808 / IS2062 E250,205mm nominal section; standard length 6m/12m; fabrication grade,MT
+ANG-098,Structural Angle Model 098,Structural Angle,IS808 / IS2062 E250,210mm nominal section; standard length 6m/12m; fabrication grade,MT
+FLT-099,Flat Bar Model 099,Flat Bar,IS2062 E250,Industrial grade product; size 215mm; standard commercial tolerance,MT
+RND-100,Round Bar Model 100,Round Bar,EN8,Industrial grade product; size 220mm; standard commercial tolerance,MT

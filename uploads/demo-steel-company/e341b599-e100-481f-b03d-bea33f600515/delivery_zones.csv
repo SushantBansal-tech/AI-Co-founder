@@ -1,0 +1,101 @@
+﻿zone_code,city,state,region,pincode_start,pincode_end,transit_days,preferred_mode,minimum_freight_inr,service_level,status
+ZONE-001,Bengaluru,Karnataka,South,101000,101999,12,Road,684,Priority,Active
+ZONE-002,Chennai,Tamil Nadu,South,102000,102999,6,Road/Rail,1350,Standard,Active
+ZONE-003,Hyderabad,Telangana,South,103000,103999,4,Road,2110,Remote,Active
+ZONE-004,Mumbai,Maharashtra,West,104000,104999,6,Road/Rail,1527,Priority,Active
+ZONE-005,Pune,Maharashtra,West,105000,105999,3,Rail,2371,Priority,Active
+ZONE-006,Ahmedabad,Gujarat,West,106000,106999,5,Road/Rail,2282,Priority,Active
+ZONE-007,Delhi,Delhi,North,107000,107999,2,Rail,2472,Standard,Active
+ZONE-008,Noida,Uttar Pradesh,North,108000,108999,3,Road,2261,Remote,Active
+ZONE-009,Gurugram,Haryana,North,109000,109999,12,Road/Rail,1313,Remote,Active
+ZONE-010,Jaipur,Rajasthan,North,110000,110999,6,Road,2119,Priority,Active
+ZONE-011,Kolkata,West Bengal,East,111000,111999,1,Rail,1598,Standard,Active
+ZONE-012,Bhubaneswar,Odisha,East,112000,112999,8,Rail,1877,Remote,Active
+ZONE-013,Raipur,Chhattisgarh,Central,113000,113999,11,Rail,1697,Priority,Active
+ZONE-014,Indore,Madhya Pradesh,Central,114000,114999,11,Rail,721,Remote,Active
+ZONE-015,Nagpur,Maharashtra,Central,115000,115999,4,Rail,551,Remote,Active
+ZONE-016,Bengaluru,Karnataka,South,116000,116999,9,Rail,2374,Remote,Active
+ZONE-017,Chennai,Tamil Nadu,South,117000,117999,4,Road/Rail,629,Remote,Active
+ZONE-018,Hyderabad,Telangana,South,118000,118999,8,Road/Rail,1118,Remote,Active
+ZONE-019,Mumbai,Maharashtra,West,119000,119999,7,Road,786,Standard,Active
+ZONE-020,Pune,Maharashtra,West,120000,120999,1,Rail,1508,Standard,Active
+ZONE-021,Ahmedabad,Gujarat,West,121000,121999,2,Road,2317,Remote,Active
+ZONE-022,Delhi,Delhi,North,122000,122999,3,Rail,1429,Priority,Active
+ZONE-023,Noida,Uttar Pradesh,North,123000,123999,11,Road/Rail,1926,Remote,Active
+ZONE-024,Gurugram,Haryana,North,124000,124999,7,Road/Rail,2020,Remote,Active
+ZONE-025,Jaipur,Rajasthan,North,125000,125999,3,Rail,1841,Standard,Active
+ZONE-026,Kolkata,West Bengal,East,126000,126999,8,Road/Rail,1335,Priority,Active
+ZONE-027,Bhubaneswar,Odisha,East,127000,127999,1,Road/Rail,1258,Standard,Active
+ZONE-028,Raipur,Chhattisgarh,Central,128000,128999,8,Rail,2446,Standard,Active
+ZONE-029,Indore,Madhya Pradesh,Central,129000,129999,6,Road,1904,Priority,Active
+ZONE-030,Nagpur,Maharashtra,Central,130000,130999,9,Road/Rail,1234,Standard,Active
+ZONE-031,Bengaluru,Karnataka,South,131000,131999,7,Rail,888,Standard,Active
+ZONE-032,Chennai,Tamil Nadu,South,132000,132999,8,Road,1857,Standard,Active
+ZONE-033,Hyderabad,Telangana,South,133000,133999,11,Road/Rail,1722,Standard,Active
+ZONE-034,Mumbai,Maharashtra,West,134000,134999,1,Rail,998,Standard,Active
+ZONE-035,Pune,Maharashtra,West,135000,135999,10,Road,640,Remote,Active
+ZONE-036,Ahmedabad,Gujarat,West,136000,136999,4,Road/Rail,942,Standard,Active
+ZONE-037,Delhi,Delhi,North,137000,137999,6,Road,2115,Remote,Active
+ZONE-038,Noida,Uttar Pradesh,North,138000,138999,1,Rail,2258,Standard,Active
+ZONE-039,Gurugram,Haryana,North,139000,139999,3,Road/Rail,1013,Standard,Active
+ZONE-040,Jaipur,Rajasthan,North,140000,140999,2,Road/Rail,2274,Standard,Active
+ZONE-041,Kolkata,West Bengal,East,141000,141999,3,Road,1233,Standard,Active
+ZONE-042,Bhubaneswar,Odisha,East,142000,142999,10,Rail,532,Standard,Active
+ZONE-043,Raipur,Chhattisgarh,Central,143000,143999,5,Road,759,Remote,Active
+ZONE-044,Indore,Madhya Pradesh,Central,144000,144999,7,Road/Rail,732,Remote,Active
+ZONE-045,Nagpur,Maharashtra,Central,145000,145999,2,Rail,1418,Priority,Active
+ZONE-046,Bengaluru,Karnataka,South,146000,146999,9,Road/Rail,723,Priority,Active
+ZONE-047,Chennai,Tamil Nadu,South,147000,147999,9,Road,2436,Remote,Active
+ZONE-048,Hyderabad,Telangana,South,148000,148999,1,Road/Rail,2104,Remote,Active
+ZONE-049,Mumbai,Maharashtra,West,149000,149999,9,Rail,1438,Remote,Active
+ZONE-050,Pune,Maharashtra,West,150000,150999,1,Road,1480,Priority,Active
+ZONE-051,Ahmedabad,Gujarat,West,151000,151999,7,Road/Rail,721,Priority,Active
+ZONE-052,Delhi,Delhi,North,152000,152999,12,Rail,650,Standard,Active
+ZONE-053,Noida,Uttar Pradesh,North,153000,153999,6,Road/Rail,803,Standard,Active
+ZONE-054,Gurugram,Haryana,North,154000,154999,3,Rail,1778,Remote,Active
+ZONE-055,Jaipur,Rajasthan,North,155000,155999,10,Road/Rail,1958,Priority,Active
+ZONE-056,Kolkata,West Bengal,East,156000,156999,7,Road/Rail,1586,Priority,Active
+ZONE-057,Bhubaneswar,Odisha,East,157000,157999,8,Road/Rail,1739,Priority,Active
+ZONE-058,Raipur,Chhattisgarh,Central,158000,158999,2,Road/Rail,734,Remote,Active
+ZONE-059,Indore,Madhya Pradesh,Central,159000,159999,11,Road/Rail,1976,Standard,Active
+ZONE-060,Nagpur,Maharashtra,Central,160000,160999,7,Rail,2318,Standard,Active
+ZONE-061,Bengaluru,Karnataka,South,161000,161999,7,Rail,2194,Priority,Active
+ZONE-062,Chennai,Tamil Nadu,South,162000,162999,7,Rail,1994,Standard,Active
+ZONE-063,Hyderabad,Telangana,South,163000,163999,6,Rail,1140,Remote,Active
+ZONE-064,Mumbai,Maharashtra,West,164000,164999,5,Rail,2452,Standard,Active
+ZONE-065,Pune,Maharashtra,West,165000,165999,11,Rail,637,Standard,Active
+ZONE-066,Ahmedabad,Gujarat,West,166000,166999,2,Road,1384,Standard,Active
+ZONE-067,Delhi,Delhi,North,167000,167999,12,Road/Rail,1263,Standard,Active
+ZONE-068,Noida,Uttar Pradesh,North,168000,168999,9,Road,1701,Remote,Active
+ZONE-069,Gurugram,Haryana,North,169000,169999,9,Rail,1872,Standard,Active
+ZONE-070,Jaipur,Rajasthan,North,170000,170999,7,Rail,2289,Remote,Active
+ZONE-071,Kolkata,West Bengal,East,171000,171999,7,Road/Rail,605,Priority,Active
+ZONE-072,Bhubaneswar,Odisha,East,172000,172999,10,Rail,1220,Standard,Active
+ZONE-073,Raipur,Chhattisgarh,Central,173000,173999,10,Road/Rail,935,Standard,Active
+ZONE-074,Indore,Madhya Pradesh,Central,174000,174999,11,Rail,959,Standard,Active
+ZONE-075,Nagpur,Maharashtra,Central,175000,175999,6,Road/Rail,1252,Standard,Active
+ZONE-076,Bengaluru,Karnataka,South,176000,176999,5,Road/Rail,963,Priority,Active
+ZONE-077,Chennai,Tamil Nadu,South,177000,177999,9,Road/Rail,1756,Remote,Active
+ZONE-078,Hyderabad,Telangana,South,178000,178999,11,Road/Rail,553,Remote,Active
+ZONE-079,Mumbai,Maharashtra,West,179000,179999,11,Road/Rail,1047,Standard,Active
+ZONE-080,Pune,Maharashtra,West,180000,180999,3,Rail,1939,Priority,Active
+ZONE-081,Ahmedabad,Gujarat,West,181000,181999,6,Rail,512,Standard,Active
+ZONE-082,Delhi,Delhi,North,182000,182999,3,Road/Rail,1846,Priority,Active
+ZONE-083,Noida,Uttar Pradesh,North,183000,183999,2,Road,2017,Remote,Active
+ZONE-084,Gurugram,Haryana,North,184000,184999,1,Road,2028,Remote,Active
+ZONE-085,Jaipur,Rajasthan,North,185000,185999,4,Rail,1359,Priority,Active
+ZONE-086,Kolkata,West Bengal,East,186000,186999,6,Road,1257,Priority,Active
+ZONE-087,Bhubaneswar,Odisha,East,187000,187999,12,Rail,2090,Remote,Active
+ZONE-088,Raipur,Chhattisgarh,Central,188000,188999,10,Road,2309,Standard,Active
+ZONE-089,Indore,Madhya Pradesh,Central,189000,189999,3,Road,2045,Remote,Active
+ZONE-090,Nagpur,Maharashtra,Central,190000,190999,1,Road/Rail,667,Priority,Active
+ZONE-091,Bengaluru,Karnataka,South,191000,191999,8,Road/Rail,1368,Priority,Active
+ZONE-092,Chennai,Tamil Nadu,South,192000,192999,10,Rail,1348,Priority,Active
+ZONE-093,Hyderabad,Telangana,South,193000,193999,4,Road/Rail,733,Priority,Active
+ZONE-094,Mumbai,Maharashtra,West,194000,194999,7,Road,1080,Remote,Active
+ZONE-095,Pune,Maharashtra,West,195000,195999,11,Road/Rail,1496,Remote,Active
+ZONE-096,Ahmedabad,Gujarat,West,196000,196999,11,Rail,593,Standard,Active
+ZONE-097,Delhi,Delhi,North,197000,197999,7,Road/Rail,612,Standard,Active
+ZONE-098,Noida,Uttar Pradesh,North,198000,198999,4,Rail,2436,Standard,Active
+ZONE-099,Gurugram,Haryana,North,199000,199999,3,Rail,1092,Priority,Active
+ZONE-100,Jaipur,Rajasthan,North,200000,200999,2,Road,1518,Remote,Active

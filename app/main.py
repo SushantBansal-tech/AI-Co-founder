@@ -1,5 +1,6 @@
 import asyncio
 import json
+import logging
 import os
 import sys
 from contextlib import asynccontextmanager
@@ -31,6 +32,7 @@ load_dotenv()
 from app.database import (
     Base,
     BusinessEvent,
+    ChannelSource,
     Customer,
     CustomerMatchReview,
     CustomerMatchReviewStatus,
@@ -87,6 +89,9 @@ from app.sales_context import (
 from langgraph.checkpoint.postgres.aio import (
     AsyncPostgresSaver,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 if sys.platform == "win32":
@@ -404,6 +409,25 @@ async def lifespan(app: FastAPI):
 
     channel_stop_event = asyncio.Event()
     channel_background_tasks = []
+    async with SessionFactory() as session:
+        active_email_sources = list(
+            (
+                await session.scalars(
+                    select(ChannelSource).where(
+                        ChannelSource.channel == "email",
+                        ChannelSource.provider == "imap",
+                        ChannelSource.active.is_(True),
+                    )
+                )
+            ).all()
+        )
+    logger.info(
+        "Channel startup email_poller_enabled=%s active_email_sources=%d mailboxes=%s interval_seconds=%s",
+        email_poller_enabled,
+        len(active_email_sources),
+        [source.provider_account_id for source in active_email_sources],
+        os.getenv("EMAIL_POLL_INTERVAL_SECONDS", "30"),
+    )
     if os.getenv("CHANNEL_WORKER_ENABLED", "true").lower() in {
         "1",
         "true",
@@ -539,9 +563,36 @@ app.include_router(whatsapp_channel_router)
 @app.get("/healthz")
 async def healthz():
     database_ready = False
+    email_source_health = []
     try:
         async with SessionFactory() as session:
             await session.execute(text("SELECT 1"))
+            email_sources = list(
+                (
+                    await session.scalars(
+                        select(ChannelSource).where(
+                            ChannelSource.channel == "email",
+                            ChannelSource.provider == "imap",
+                        )
+                    )
+                ).all()
+            )
+            email_source_health = [
+                {
+                    "source_id": source.id,
+                    "business_id": source.business_id,
+                    "mailbox": source.provider_account_id,
+                    "active": source.active,
+                    "last_poll_started_at": source.last_poll_started_at,
+                    "last_poll_completed_at": source.last_poll_completed_at,
+                    "last_successful_poll_at": source.last_successful_poll_at,
+                    "last_seen_uid": source.last_seen_uid,
+                    "last_poll_messages_found": source.last_poll_messages_found,
+                    "last_poll_messages_enqueued": source.last_poll_messages_enqueued,
+                    "last_poll_error": source.last_poll_error,
+                }
+                for source in email_sources
+            ]
         database_ready = True
     except Exception:
         database_ready = False
@@ -585,6 +636,7 @@ async def healthz():
             "worker_enabled": os.getenv(
                 "CHANNEL_WORKER_ENABLED", "true"
             ).lower() in {"1", "true", "yes"},
+            "email_sources": email_source_health,
         },
         "followups": {
             "worker_enabled": os.getenv(
