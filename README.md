@@ -1,7 +1,7 @@
 # AI Sales Operations Agent
 
-An agentic AI platform for automating the end-to-end B2B industrial sales workflow.
-
+I have designed and implemented a local prototype of an AI-native B2B Sales Operations OS. It captures inquiries from website, email and WhatsApp, identifies the customer, retrieves their CRM history, resolves the product, checks feasibility, calculates pricing, generates quotations, follows up, handles negotiations, validates purchase orders and creates a final sales-order handoff.
+The important architectural decision is that the LLM does not control money or authority. Gemini is used for language interpretation and communication, Qdrant stores narrative company knowledge, while PostgreSQL and deterministic services control pricing, inventory, credit, policies and approvals. Jarvis has a separate restricted identity and may only use registered business tools. Sensitive actions are stopped by a versioned authority engine and sent to the founder for approval.
 ## Overview
 
 The system helps industrial businesses automate:
@@ -20,15 +20,15 @@ Humans are involved only for high-risk approvals such as large discounts, low-ma
 
 ## High Level Architecture
 
-![High Level Architecture](B2B Customer Sales Workflow-2026-08-13-193019.png)
+![High Level Architecture](B2B%20Customer%20Sales%20Workflow-2026-08-13-193019.png)
 
 ## Core Sales Workflow
 
-![Core Sales Workflow](B2B Customer Sales Workflow-2026-08-13-193125.png)
+![Core Sales Workflow](B2B%20Customer%20Sales%20Workflow-2026-08-13-193125.png)
 
 ## How AI and Deterministic Logic Are Separated
 
-![AI vs Deterministic Logic](B2B Customer Sales Workflow-2026-08-13-193155.png)
+![AI vs Deterministic Logic](B2B%20Customer%20Sales%20Workflow-2026-08-13-193155.png)
 
 
 
