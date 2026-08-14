@@ -1,0 +1,2352 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/bhep73",
+    "id": "bhep73",
+    "slide": 9,
+    "layoutId": "15433292-82ca-42bf-8472-d238c6c4628c",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "54d0db12-953b-41c5-af3a-468b5133fa25",
+    "masterLayoutName": "Master",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "Helvetica Neue"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "15433292-82ca-42bf-8472-d238c6c4628c",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "54d0db12-953b-41c5-af3a-468b5133fa25",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "54d0db12-953b-41c5-af3a-468b5133fa25",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/l4b2t0ba",
+      "id": "1",
+      "name": "Slide-Number-Placeholder-3-2",
+      "bbox": [
+        1184.18,
+        659.24,
+        54.48,
+        25.33
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.0"
+      },
+      "geometry": "rect",
+      "text": "9",
+      "textPreview": "9",
+      "resolvedFontSize": 13.33,
+      "resolvedTextStyle": {
+        "anchor": 3,
+        "fontSize": 13.33,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "right",
+        "verticalAlignment": "bottom",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "9"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "9",
+          "resolvedTextStyle": {
+            "anchor": 3,
+            "fontSize": 13.33,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "right",
+            "verticalAlignment": "bottom",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "9",
+              "anchor": 3,
+              "fontSize": 13.33,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "right",
+              "verticalAlignment": "bottom",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/y10jy5cj",
+      "id": "2",
+      "name": "Title-7-3",
+      "bbox": [
+        41.33,
+        36.12,
+        1197.33,
+        109.97
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.1"
+      },
+      "geometry": "rect",
+      "text": "A focused pilot grows into a recurring platform",
+      "textPreview": "A focused pilot grows into a recurring platform",
+      "resolvedFontSize": 38.67,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 38.67,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "A focused pilot grows into a recurring platform"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "A focused pilot grows into a recurring platform",
+          "resolvedTextStyle": {
+            "anchor": 1,
+            "fontSize": 38.67,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "verticalAlignment": "top",
+            "autoFit": "shrinkText",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "A focused pilot grows into a recurring platform",
+              "anchor": 1,
+              "fontSize": 38.67,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "verticalAlignment": "top",
+              "autoFit": "shrinkText",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/z2t0rqt4",
+      "id": "3",
+      "name": "Rounded-Rectangle-4-4",
+      "bbox": [
+        41.33,
+        213.33,
+        374.67,
+        416
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.2"
+      },
+      "geometry": "roundRect",
+      "fillColor": "#F2F2F2"
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/czi1wvut",
+      "id": "4",
+      "name": "Content-Placeholder-8-5",
+      "bbox": [
+        67.58,
+        502.29,
+        322.17,
+        22.29
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.3"
+      },
+      "geometry": "rect",
+      "text": "ENTRY",
+      "textPreview": "ENTRY",
+      "resolvedFontSize": 32,
+      "resolvedTextStyle": {
+        "fontSize": 32,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "left",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "ENTRY"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "ENTRY",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "ENTRY",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/d0rip0be",
+      "id": "5",
+      "name": "Content-Placeholder-8-6",
+      "bbox": [
+        67.58,
+        554.56,
+        179.08,
+        50.59
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.4"
+      },
+      "geometry": "rect",
+      "text": "Pilot",
+      "textPreview": "Pilot",
+      "resolvedFontSize": 32,
+      "resolvedTextStyle": {
+        "fontSize": 32,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "left",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Pilot"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Pilot",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Pilot",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/qd0julcn",
+      "id": "6",
+      "name": "Content-Placeholder-8-7",
+      "bbox": [
+        246.67,
+        569.53,
+        143.08,
+        22.29
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.5"
+      },
+      "geometry": "rect",
+      "text": "Scoped",
+      "textPreview": "Scoped",
+      "resolvedFontSize": 32,
+      "resolvedTextStyle": {
+        "fontSize": 32,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "left",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Scoped"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Scoped",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Scoped",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/by90nqt8",
+      "id": "7",
+      "name": "Rounded-Rectangle-1-9",
+      "bbox": [
+        452,
+        213.33,
+        374.67,
+        416
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.6"
+      },
+      "geometry": "roundRect",
+      "fillColor": "#F2F2F2"
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/4bi1sbuh",
+      "id": "8",
+      "name": "Content-Placeholder-8-10",
+      "bbox": [
+        478.25,
+        243.15,
+        322.17,
+        214.18
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.7"
+      },
+      "geometry": "rect",
+      "text": "Platform subscription\nAI sales agent, CRM memory, channels, approvals and management visibility.",
+      "textPreview": "Platform subscription | AI sales agent, CRM memory, channels, approvals and management visibility.",
+      "resolvedFontSize": 32,
+      "resolvedTextStyle": {
+        "fontSize": 32,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "left",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 5,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Platform subscription"
+          },
+          {
+            "index": 2,
+            "text": "AI sales agent, CRM"
+          },
+          {
+            "index": 3,
+            "text": "memory, channels,"
+          },
+          {
+            "index": 4,
+            "text": "approvals and"
+          },
+          {
+            "index": 5,
+            "text": "management visibility."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Platform subscription",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Platform subscription",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 2,
+          "text": "AI sales agent, CRM memory, channels, approvals and management visibility.",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "AI sales agent, CRM memory, channels, approvals and management visibility.",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/pcrilgb2",
+      "id": "9",
+      "name": "Content-Placeholder-8-11",
+      "bbox": [
+        478.25,
+        502.29,
+        322.17,
+        22.29
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.8"
+      },
+      "geometry": "rect",
+      "text": "RECURRING",
+      "textPreview": "RECURRING",
+      "resolvedFontSize": 32,
+      "resolvedTextStyle": {
+        "fontSize": 32,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "left",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "RECURRING"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "RECURRING",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "RECURRING",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/pg7298fi",
+      "id": "10",
+      "name": "Content-Placeholder-8-12",
+      "bbox": [
+        478.25,
+        554.56,
+        179.08,
+        50.59
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.9"
+      },
+      "geometry": "rect",
+      "text": "SaaS",
+      "textPreview": "SaaS",
+      "resolvedFontSize": 32,
+      "resolvedTextStyle": {
+        "fontSize": 32,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "left",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "SaaS"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "SaaS",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "SaaS",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ofylg3yx",
+      "id": "11",
+      "name": "Content-Placeholder-8-13",
+      "bbox": [
+        657.33,
+        569.53,
+        143.08,
+        22.29
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.10"
+      },
+      "geometry": "rect",
+      "text": "Tenant",
+      "textPreview": "Tenant",
+      "resolvedFontSize": 32,
+      "resolvedTextStyle": {
+        "fontSize": 32,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "left",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Tenant"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Tenant",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Tenant",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 12,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/3epk7yxs",
+      "id": "12",
+      "name": "Rounded-Rectangle-12-15",
+      "bbox": [
+        862.67,
+        213.33,
+        374.67,
+        416
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.11"
+      },
+      "geometry": "roundRect",
+      "fillColor": "#F2F2F2"
+    },
+    {
+      "order": 13,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/2dg3etg7",
+      "id": "13",
+      "name": "Content-Placeholder-8-16",
+      "bbox": [
+        888.92,
+        243.15,
+        322.17,
+        214.18
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.12"
+      },
+      "geometry": "rect",
+      "text": "Integration & support\nERP connectors, custom policies, onboarding and operational support.",
+      "textPreview": "Integration & support | ERP connectors, custom policies, onboarding and operational support.",
+      "resolvedFontSize": 32,
+      "resolvedTextStyle": {
+        "fontSize": 32,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "left",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 4,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Integration & support"
+          },
+          {
+            "index": 2,
+            "text": "ERP connectors, custom"
+          },
+          {
+            "index": 3,
+            "text": "policies, onboarding and"
+          },
+          {
+            "index": 4,
+            "text": "operational support."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Integration & support",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Integration & support",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 2,
+          "text": "ERP connectors, custom policies, onboarding and operational support.",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "ERP connectors, custom policies, onboarding and operational support.",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 14,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/1c725ofm",
+      "id": "14",
+      "name": "Content-Placeholder-8-17",
+      "bbox": [
+        888.92,
+        502.29,
+        322.17,
+        22.29
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.13"
+      },
+      "geometry": "rect",
+      "text": "EXPANSION",
+      "textPreview": "EXPANSION",
+      "resolvedFontSize": 32,
+      "resolvedTextStyle": {
+        "fontSize": 32,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "left",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "EXPANSION"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "EXPANSION",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "EXPANSION",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 15,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/gbylcjy1",
+      "id": "15",
+      "name": "Content-Placeholder-8-18",
+      "bbox": [
+        888.92,
+        554.56,
+        179.08,
+        50.59
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.14"
+      },
+      "geometry": "rect",
+      "text": "Custom",
+      "textPreview": "Custom",
+      "resolvedFontSize": 32,
+      "resolvedTextStyle": {
+        "fontSize": 32,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "left",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Custom"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Custom",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Custom",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 16,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/fapk3yhg",
+      "id": "16",
+      "name": "Content-Placeholder-8-19",
+      "bbox": [
+        1068,
+        569.53,
+        143.08,
+        22.29
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.15"
+      },
+      "geometry": "rect",
+      "text": "Tailored",
+      "textPreview": "Tailored",
+      "resolvedFontSize": 32,
+      "resolvedTextStyle": {
+        "fontSize": 32,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "left",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Tailored"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Tailored",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Tailored",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 17,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/e9w3atgv",
+      "id": "17",
+      "name": "Content-Placeholder-8-21",
+      "bbox": [
+        67.42,
+        243.17,
+        322.33,
+        214.17
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.16"
+      },
+      "geometry": "rect",
+      "text": "Discovery pilot\nMap one workflow, onboard core data and agree success measures.",
+      "textPreview": "Discovery pilot | Map one workflow, onboard core data and agree success measures.",
+      "resolvedFontSize": 32,
+      "resolvedTextStyle": {
+        "fontSize": 32,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "left",
+        "autoFit": "none",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 5,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Discovery pilot"
+          },
+          {
+            "index": 2,
+            "text": "Map one workflow,"
+          },
+          {
+            "index": 3,
+            "text": "onboard core data and"
+          },
+          {
+            "index": 4,
+            "text": "agree success"
+          },
+          {
+            "index": 5,
+            "text": "measures."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Discovery pilot",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 4.8,
+              "right": 9.6,
+              "bottom": 4.8,
+              "left": 9.6
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Discovery pilot",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 4.8,
+                "right": 9.6,
+                "bottom": 4.8,
+                "left": 9.6
+              }
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 2,
+          "text": "Map one workflow, onboard core data and agree success measures.",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 4.8,
+              "right": 9.6,
+              "bottom": 4.8,
+              "left": 9.6
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Map one workflow, onboard core data and agree success measures.",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 4.8,
+                "right": 9.6,
+                "bottom": 4.8,
+                "left": 9.6
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    }
+  ],
+  "composeRuns": [
+    {
+      "index": 1,
+      "frame": {
+        "left": 0,
+        "top": 0,
+        "width": 1280,
+        "height": 720
+      },
+      "baseUnit": 1,
+      "root": {
+        "path": "0",
+        "kind": "layers",
+        "name": "codex-grid-layout-library#slide-23",
+        "requestedSize": {
+          "width": {
+            "mode": "fill",
+            "value": 1
+          },
+          "height": {
+            "mode": "fill",
+            "value": 1
+          }
+        },
+        "intrinsicSize": {
+          "width": 1238.66,
+          "height": 684.57
+        },
+        "frame": {
+          "left": 0,
+          "top": 0,
+          "width": 1280,
+          "height": 720
+        },
+        "children": [
+          {
+            "path": "0.0",
+            "kind": "text",
+            "name": "Slide-Number-Placeholder-3-2",
+            "position": {
+              "left": 1184.18,
+              "top": 659.24
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 54.48
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 25.33
+              }
+            },
+            "intrinsicSize": {
+              "width": 54.48,
+              "height": 25.33
+            },
+            "frame": {
+              "left": 1184.18,
+              "top": 659.24,
+              "width": 54.48,
+              "height": 25.33
+            },
+            "snappedFrame": {
+              "left": 1184.18,
+              "top": 659.24,
+              "width": 54.48,
+              "height": 25.33
+            },
+            "children": [],
+            "text": "9",
+            "transform": "none",
+            "element": {
+              "aid": "sh/l4b2t0ba",
+              "id": "1",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.1",
+            "kind": "text",
+            "name": "Title-7-3",
+            "position": {
+              "left": 41.33,
+              "top": 36.12
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 1197.33
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 109.97
+              }
+            },
+            "intrinsicSize": {
+              "width": 1197.33,
+              "height": 109.97
+            },
+            "frame": {
+              "left": 41.33,
+              "top": 36.12,
+              "width": 1197.33,
+              "height": 109.97
+            },
+            "snappedFrame": {
+              "left": 41.33,
+              "top": 36.12,
+              "width": 1197.33,
+              "height": 109.97
+            },
+            "children": [],
+            "text": "A focused pilot grows into a recurring platform",
+            "transform": "none",
+            "element": {
+              "aid": "sh/y10jy5cj",
+              "id": "2",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.2",
+            "kind": "shape",
+            "name": "Rounded-Rectangle-4-4",
+            "position": {
+              "left": 41.33,
+              "top": 213.33
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 374.67
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 416
+              }
+            },
+            "intrinsicSize": {
+              "width": 374.67,
+              "height": 416
+            },
+            "frame": {
+              "left": 41.33,
+              "top": 213.33,
+              "width": 374.67,
+              "height": 416
+            },
+            "snappedFrame": {
+              "left": 41.33,
+              "top": 213.33,
+              "width": 374.67,
+              "height": 416
+            },
+            "children": [],
+            "geometry": "roundRect",
+            "element": {
+              "aid": "sh/z2t0rqt4",
+              "id": "3",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.3",
+            "kind": "text",
+            "name": "Content-Placeholder-8-5",
+            "position": {
+              "left": 67.58,
+              "top": 502.29
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 322.17
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 22.29
+              }
+            },
+            "intrinsicSize": {
+              "width": 322.17,
+              "height": 22.29
+            },
+            "frame": {
+              "left": 67.58,
+              "top": 502.29,
+              "width": 322.17,
+              "height": 22.29
+            },
+            "snappedFrame": {
+              "left": 67.58,
+              "top": 502.29,
+              "width": 322.17,
+              "height": 22.29
+            },
+            "children": [],
+            "text": "ENTRY",
+            "transform": "none",
+            "element": {
+              "aid": "sh/czi1wvut",
+              "id": "4",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.4",
+            "kind": "text",
+            "name": "Content-Placeholder-8-6",
+            "position": {
+              "left": 67.58,
+              "top": 554.56
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 179.08
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 50.59
+              }
+            },
+            "intrinsicSize": {
+              "width": 179.08,
+              "height": 50.59
+            },
+            "frame": {
+              "left": 67.58,
+              "top": 554.56,
+              "width": 179.08,
+              "height": 50.59
+            },
+            "snappedFrame": {
+              "left": 67.58,
+              "top": 554.56,
+              "width": 179.08,
+              "height": 50.59
+            },
+            "children": [],
+            "text": "Pilot",
+            "transform": "none",
+            "element": {
+              "aid": "sh/d0rip0be",
+              "id": "5",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.5",
+            "kind": "text",
+            "name": "Content-Placeholder-8-7",
+            "position": {
+              "left": 246.67,
+              "top": 569.53
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 143.08
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 22.29
+              }
+            },
+            "intrinsicSize": {
+              "width": 143.08,
+              "height": 22.29
+            },
+            "frame": {
+              "left": 246.67,
+              "top": 569.53,
+              "width": 143.08,
+              "height": 22.29
+            },
+            "snappedFrame": {
+              "left": 246.67,
+              "top": 569.53,
+              "width": 143.08,
+              "height": 22.29
+            },
+            "children": [],
+            "text": "Scoped",
+            "transform": "none",
+            "element": {
+              "aid": "sh/qd0julcn",
+              "id": "6",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.6",
+            "kind": "shape",
+            "name": "Rounded-Rectangle-1-9",
+            "position": {
+              "left": 452,
+              "top": 213.33
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 374.67
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 416
+              }
+            },
+            "intrinsicSize": {
+              "width": 374.67,
+              "height": 416
+            },
+            "frame": {
+              "left": 452,
+              "top": 213.33,
+              "width": 374.67,
+              "height": 416
+            },
+            "snappedFrame": {
+              "left": 452,
+              "top": 213.33,
+              "width": 374.67,
+              "height": 416
+            },
+            "children": [],
+            "geometry": "roundRect",
+            "element": {
+              "aid": "sh/by90nqt8",
+              "id": "7",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.7",
+            "kind": "text",
+            "name": "Content-Placeholder-8-10",
+            "position": {
+              "left": 478.25,
+              "top": 243.15
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 322.17
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 214.18
+              }
+            },
+            "intrinsicSize": {
+              "width": 322.17,
+              "height": 214.18
+            },
+            "frame": {
+              "left": 478.25,
+              "top": 243.15,
+              "width": 322.17,
+              "height": 214.18
+            },
+            "snappedFrame": {
+              "left": 478.25,
+              "top": 243.15,
+              "width": 322.17,
+              "height": 214.18
+            },
+            "children": [],
+            "text": "Platform subscriptionAI sales agent, CRM memory, channels, approvals and management visibility.",
+            "transform": "none",
+            "element": {
+              "aid": "sh/4bi1sbuh",
+              "id": "8",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.8",
+            "kind": "text",
+            "name": "Content-Placeholder-8-11",
+            "position": {
+              "left": 478.25,
+              "top": 502.29
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 322.17
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 22.29
+              }
+            },
+            "intrinsicSize": {
+              "width": 322.17,
+              "height": 22.29
+            },
+            "frame": {
+              "left": 478.25,
+              "top": 502.29,
+              "width": 322.17,
+              "height": 22.29
+            },
+            "snappedFrame": {
+              "left": 478.25,
+              "top": 502.29,
+              "width": 322.17,
+              "height": 22.29
+            },
+            "children": [],
+            "text": "RECURRING",
+            "transform": "none",
+            "element": {
+              "aid": "sh/pcrilgb2",
+              "id": "9",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.9",
+            "kind": "text",
+            "name": "Content-Placeholder-8-12",
+            "position": {
+              "left": 478.25,
+              "top": 554.56
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 179.08
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 50.59
+              }
+            },
+            "intrinsicSize": {
+              "width": 179.08,
+              "height": 50.59
+            },
+            "frame": {
+              "left": 478.25,
+              "top": 554.56,
+              "width": 179.08,
+              "height": 50.59
+            },
+            "snappedFrame": {
+              "left": 478.25,
+              "top": 554.56,
+              "width": 179.08,
+              "height": 50.59
+            },
+            "children": [],
+            "text": "SaaS",
+            "transform": "none",
+            "element": {
+              "aid": "sh/pg7298fi",
+              "id": "10",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.10",
+            "kind": "text",
+            "name": "Content-Placeholder-8-13",
+            "position": {
+              "left": 657.33,
+              "top": 569.53
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 143.08
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 22.29
+              }
+            },
+            "intrinsicSize": {
+              "width": 143.08,
+              "height": 22.29
+            },
+            "frame": {
+              "left": 657.33,
+              "top": 569.53,
+              "width": 143.08,
+              "height": 22.29
+            },
+            "snappedFrame": {
+              "left": 657.33,
+              "top": 569.53,
+              "width": 143.08,
+              "height": 22.29
+            },
+            "children": [],
+            "text": "Tenant",
+            "transform": "none",
+            "element": {
+              "aid": "sh/ofylg3yx",
+              "id": "11",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.11",
+            "kind": "shape",
+            "name": "Rounded-Rectangle-12-15",
+            "position": {
+              "left": 862.67,
+              "top": 213.33
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 374.67
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 416
+              }
+            },
+            "intrinsicSize": {
+              "width": 374.67,
+              "height": 416
+            },
+            "frame": {
+              "left": 862.67,
+              "top": 213.33,
+              "width": 374.67,
+              "height": 416
+            },
+            "snappedFrame": {
+              "left": 862.67,
+              "top": 213.33,
+              "width": 374.67,
+              "height": 416
+            },
+            "children": [],
+            "geometry": "roundRect",
+            "element": {
+              "aid": "sh/3epk7yxs",
+              "id": "12",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.12",
+            "kind": "text",
+            "name": "Content-Placeholder-8-16",
+            "position": {
+              "left": 888.92,
+              "top": 243.15
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 322.17
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 214.18
+              }
+            },
+            "intrinsicSize": {
+              "width": 322.17,
+              "height": 214.18
+            },
+            "frame": {
+              "left": 888.92,
+              "top": 243.15,
+              "width": 322.17,
+              "height": 214.18
+            },
+            "snappedFrame": {
+              "left": 888.92,
+              "top": 243.15,
+              "width": 322.17,
+              "height": 214.18
+            },
+            "children": [],
+            "text": "Integration & supportERP connectors, custom policies, onboarding and operational support.",
+            "transform": "none",
+            "element": {
+              "aid": "sh/2dg3etg7",
+              "id": "13",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.13",
+            "kind": "text",
+            "name": "Content-Placeholder-8-17",
+            "position": {
+              "left": 888.92,
+              "top": 502.29
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 322.17
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 22.29
+              }
+            },
+            "intrinsicSize": {
+              "width": 322.17,
+              "height": 22.29
+            },
+            "frame": {
+              "left": 888.92,
+              "top": 502.29,
+              "width": 322.17,
+              "height": 22.29
+            },
+            "snappedFrame": {
+              "left": 888.92,
+              "top": 502.29,
+              "width": 322.17,
+              "height": 22.29
+            },
+            "children": [],
+            "text": "EXPANSION",
+            "transform": "none",
+            "element": {
+              "aid": "sh/1c725ofm",
+              "id": "14",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.14",
+            "kind": "text",
+            "name": "Content-Placeholder-8-18",
+            "position": {
+              "left": 888.92,
+              "top": 554.56
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 179.08
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 50.59
+              }
+            },
+            "intrinsicSize": {
+              "width": 179.08,
+              "height": 50.59
+            },
+            "frame": {
+              "left": 888.92,
+              "top": 554.56,
+              "width": 179.08,
+              "height": 50.59
+            },
+            "snappedFrame": {
+              "left": 888.92,
+              "top": 554.56,
+              "width": 179.08,
+              "height": 50.59
+            },
+            "children": [],
+            "text": "Custom",
+            "transform": "none",
+            "element": {
+              "aid": "sh/gbylcjy1",
+              "id": "15",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.15",
+            "kind": "text",
+            "name": "Content-Placeholder-8-19",
+            "position": {
+              "left": 1068,
+              "top": 569.53
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 143.08
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 22.29
+              }
+            },
+            "intrinsicSize": {
+              "width": 143.08,
+              "height": 22.29
+            },
+            "frame": {
+              "left": 1068,
+              "top": 569.53,
+              "width": 143.08,
+              "height": 22.29
+            },
+            "snappedFrame": {
+              "left": 1068,
+              "top": 569.53,
+              "width": 143.08,
+              "height": 22.29
+            },
+            "children": [],
+            "text": "Tailored",
+            "transform": "none",
+            "element": {
+              "aid": "sh/fapk3yhg",
+              "id": "16",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.16",
+            "kind": "text",
+            "name": "Content-Placeholder-8-21",
+            "position": {
+              "left": 67.42,
+              "top": 243.17
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 322.33
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 214.17
+              }
+            },
+            "intrinsicSize": {
+              "width": 322.33,
+              "height": 214.17
+            },
+            "frame": {
+              "left": 67.42,
+              "top": 243.17,
+              "width": 322.33,
+              "height": 214.17
+            },
+            "snappedFrame": {
+              "left": 67.42,
+              "top": 243.17,
+              "width": 322.33,
+              "height": 214.17
+            },
+            "children": [],
+            "text": "Discovery pilotMap one workflow, onboard core data and agree success measures.",
+            "transform": "none",
+            "element": {
+              "aid": "sh/e9w3atgv",
+              "id": "17",
+              "kind": "shape"
+            }
+          }
+        ],
+        "padding": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "alignItems": "stretch",
+        "justifyItems": "stretch",
+        "contentFrame": {
+          "left": 0,
+          "top": 0,
+          "width": 1280,
+          "height": 720
+        },
+        "items": [
+          {
+            "path": "0.0",
+            "frame": {
+              "left": 1184.18,
+              "top": 659.24,
+              "width": 54.48,
+              "height": 25.33
+            }
+          },
+          {
+            "path": "0.1",
+            "frame": {
+              "left": 41.33,
+              "top": 36.12,
+              "width": 1197.33,
+              "height": 109.97
+            }
+          },
+          {
+            "path": "0.2",
+            "frame": {
+              "left": 41.33,
+              "top": 213.33,
+              "width": 374.67,
+              "height": 416
+            }
+          },
+          {
+            "path": "0.3",
+            "frame": {
+              "left": 67.58,
+              "top": 502.29,
+              "width": 322.17,
+              "height": 22.29
+            }
+          },
+          {
+            "path": "0.4",
+            "frame": {
+              "left": 67.58,
+              "top": 554.56,
+              "width": 179.08,
+              "height": 50.59
+            }
+          },
+          {
+            "path": "0.5",
+            "frame": {
+              "left": 246.67,
+              "top": 569.53,
+              "width": 143.08,
+              "height": 22.29
+            }
+          },
+          {
+            "path": "0.6",
+            "frame": {
+              "left": 452,
+              "top": 213.33,
+              "width": 374.67,
+              "height": 416
+            }
+          },
+          {
+            "path": "0.7",
+            "frame": {
+              "left": 478.25,
+              "top": 243.15,
+              "width": 322.17,
+              "height": 214.18
+            }
+          },
+          {
+            "path": "0.8",
+            "frame": {
+              "left": 478.25,
+              "top": 502.29,
+              "width": 322.17,
+              "height": 22.29
+            }
+          },
+          {
+            "path": "0.9",
+            "frame": {
+              "left": 478.25,
+              "top": 554.56,
+              "width": 179.08,
+              "height": 50.59
+            }
+          },
+          {
+            "path": "0.10",
+            "frame": {
+              "left": 657.33,
+              "top": 569.53,
+              "width": 143.08,
+              "height": 22.29
+            }
+          },
+          {
+            "path": "0.11",
+            "frame": {
+              "left": 862.67,
+              "top": 213.33,
+              "width": 374.67,
+              "height": 416
+            }
+          },
+          {
+            "path": "0.12",
+            "frame": {
+              "left": 888.92,
+              "top": 243.15,
+              "width": 322.17,
+              "height": 214.18
+            }
+          },
+          {
+            "path": "0.13",
+            "frame": {
+              "left": 888.92,
+              "top": 502.29,
+              "width": 322.17,
+              "height": 22.29
+            }
+          },
+          {
+            "path": "0.14",
+            "frame": {
+              "left": 888.92,
+              "top": 554.56,
+              "width": 179.08,
+              "height": 50.59
+            }
+          },
+          {
+            "path": "0.15",
+            "frame": {
+              "left": 1068,
+              "top": 569.53,
+              "width": 143.08,
+              "height": 22.29
+            }
+          },
+          {
+            "path": "0.16",
+            "frame": {
+              "left": 67.42,
+              "top": 243.17,
+              "width": 322.33,
+              "height": 214.17
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

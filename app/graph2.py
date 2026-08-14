@@ -1060,6 +1060,12 @@ def build_all_nodes(
                     .where(ia.Lead.id == state.get("lead_id"))
                     .values(customer_id=resolution.customer.id)
                 )
+                from app.crm.assignment import auto_assign_lead
+                assigned_to_user_id = await auto_assign_lead(
+                    session,
+                    business_id=state["business_id"],
+                    lead_id=state.get("lead_id"),
+                )
                 from app.events.service import record_business_event
                 await record_business_event(
                     session,
@@ -1075,6 +1081,7 @@ def build_all_nodes(
                         "resolution": resolution.resolution,
                         "confidence": resolution.confidence,
                         "review_id": resolution.review_id,
+                        "assigned_to_user_id": assigned_to_user_id,
                     },
                 )
                 await session.commit()

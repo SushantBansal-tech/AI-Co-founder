@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from decimal import Decimal
 from enum import Enum
 from typing import Optional
 
@@ -7,7 +8,9 @@ from sqlalchemy import (
     DateTime,
     Enum as SAEnum,
     ForeignKey,
+    Index,
     JSON,
+    Numeric,
     String,
     Text,
 )
@@ -31,6 +34,9 @@ class LeadStatus(str, Enum):
 
 class Lead(Base):
     __tablename__ = "leads"
+    __table_args__ = (
+        Index("ix_leads_business_created", "business_id", "created_at"),
+    )
 
     id: Mapped[str] = mapped_column(
         String(36),
@@ -43,6 +49,13 @@ class Lead(Base):
     )
     customer_id: Mapped[Optional[str]] = mapped_column(
         String(36), ForeignKey("customers.id"), nullable=True, index=True
+    )
+    assigned_to_user_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("users.id"), nullable=True, index=True
+    )
+    assigned_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    assigned_by_user_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("users.id"), nullable=True
     )
     thread_id: Mapped[str] = mapped_column(
         String(100), nullable=False, unique=True, index=True
@@ -130,6 +143,17 @@ class Lead(Base):
         DateTime,
         default=datetime.utcnow,
         onupdate=datetime.utcnow,
+    )
+
+    lost_reason_code: Mapped[Optional[str]] = mapped_column(
+        String(50), nullable=True, index=True
+    )
+    lost_reason_notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    competitor_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    lost_value: Mapped[Optional[Decimal]] = mapped_column(Numeric(18, 2), nullable=True)
+    closed_lost_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    closed_lost_by_user_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("users.id"), nullable=True
     )
 
 

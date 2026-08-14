@@ -85,6 +85,10 @@ class Customer(Base):
         String(36), ForeignKey("customers.id"), nullable=True, index=True
     )
 
+    account_owner_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("users.id"), nullable=True, index=True
+    )
+
     company_name: Mapped[str] = mapped_column(
         String(255),
         index=True,

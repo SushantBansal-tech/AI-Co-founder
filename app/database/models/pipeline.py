@@ -28,6 +28,7 @@ class PipelineInstance(Base):
     pipeline_status: Mapped[str] = mapped_column(String(60), nullable=False, default="processing")
     business_milestone: Mapped[Optional[str]] = mapped_column(String(60), nullable=True)
     waiting_for: Mapped[str] = mapped_column(String(60), nullable=False, default="none")
+    approval_stage: Mapped[Optional[str]] = mapped_column(String(60), nullable=True)
     status_reason: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     current_node: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     failure_category: Mapped[Optional[str]] = mapped_column(String(60), nullable=True)

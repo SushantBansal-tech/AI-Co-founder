@@ -1,0 +1,82 @@
+flowchart TB
+  subgraph TOP["1. Customers and channels"]
+    CHANNELS["Website · Email · WhatsApp"]:::channel
+    INGEST["Channel ingestion<br/>normalization · correlation · durable jobs · idempotency"]:::channel
+    CRMINT["CRM interaction record<br/>customer · lead · thread · messages · events"]:::data
+    OWNER["Founder / business owner"]:::owner
+    CHANNELS --> INGEST --> CRMINT
+  end
+
+  subgraph CONTROL["2. AI-native CRM control plane — NEW"]
+    COMMAND["Founder command centre<br/>Ask Jarvis · approvals · pipeline · risks · AI actions"]:::crm
+    JARVIS["Jarvis orchestrator<br/>intent · context · plan · tool proposal"]:::crm
+    CONTEXT["Sales context builder<br/>Customer 360 · pipeline · memory"]:::crm
+    TOOLS["Controlled business tools<br/>typed operations · no raw SQL"]:::crm
+    PERMISSION["Permission check<br/>AI service identity · tenant · scope"]:::policy
+    AUTHORITY["Authority engine<br/>ALLOW · DENY · REQUIRE APPROVAL"]:::policy
+    ACTIONS["AI action ledger<br/>idempotent execution · result · failure"]:::crm
+    APPROVAL["Approval decision<br/>approve · reject · expire"]:::policy
+
+    COMMAND --> JARVIS --> CONTEXT --> TOOLS --> PERMISSION --> AUTHORITY --> ACTIONS
+    AUTHORITY -->|"high risk"| APPROVAL
+    APPROVAL --> ACTIONS
+  end
+
+  OWNER <--> COMMAND
+  APPROVAL --> OWNER
+  CRMINT --> JARVIS
+
+  subgraph GRAPH["3. Existing persistent sales workflow — preserved"]
+    INQUIRY["Inquiry extraction"]:::workflow
+    IDENTITY["Identity + Customer 360"]:::workflow
+    QUALIFY["Qualification"]:::workflow
+    FEAS["Feasibility"]:::workflow
+    PRICE["Pricing"]:::workflow
+    QUOTE["Quotation persist · render · dispatch"]:::workflow
+    REPLY["Customer reply"]:::workflow
+    NEGOTIATE["Negotiation"]:::workflow
+    PO["PO validation"]:::workflow
+    REVALIDATE["Price · stock · capacity · credit revalidation"]:::workflow
+    ORDER["Sales order"]:::workflow
+    HANDOFF["Department handoff"]:::workflow
+    FINAL["Explicit state<br/>handed off · blocked · failed"]:::audit
+
+    INQUIRY --> IDENTITY --> QUALIFY --> FEAS --> PRICE --> QUOTE --> REPLY --> NEGOTIATE --> PO --> REVALIDATE --> ORDER --> HANDOFF --> FINAL
+  end
+
+  INGEST --> INQUIRY
+  ACTIONS -->|"CRM operation"| IDENTITY
+  ACTIONS -->|"pipeline trigger"| INQUIRY
+
+  subgraph SERVICES["4. Services, memory and durable execution"]
+    STRUCTURED["Structured PostgreSQL repositories<br/>catalog · stock · capacity · delivery · price · cost · transport · margin · GST · terms"]:::data
+    QDRANT["Qdrant semantic memory<br/>documents · notes · narrative context"]:::data
+    WORKERS["Durable workers<br/>follow-up · inbound email · memory outbox · retries"]:::data
+    CHECKPOINTS["PostgreSQL LangGraph checkpoints<br/>same thread resumes after restart"]:::data
+  end
+
+  FEAS -. exact data .-> STRUCTURED
+  PRICE -. exact data .-> STRUCTURED
+  CONTEXT -. semantic context .-> QDRANT
+  QUOTE --> WORKERS
+  GRAPH -. workflow state .-> CHECKPOINTS
+
+  subgraph RECORD["5. System of record and audit"]
+    POSTGRES["PostgreSQL — single source of truth<br/>customers · leads · interactions · tasks · quotations · POs · orders · payments · pipelines · jobs · policies · AI actions"]:::data
+    EVENTS["Append-only business events<br/>proposed · evaluated · approved/rejected · succeeded/failed"]:::audit
+  end
+
+  STRUCTURED --> POSTGRES
+  QDRANT -. references CRM identities .-> POSTGRES
+  WORKERS --> POSTGRES
+  CHECKPOINTS --> POSTGRES
+  ACTIONS --> POSTGRES
+  POSTGRES --> EVENTS
+
+  classDef channel fill:#eaf4ff,stroke:#72a7d8,color:#17212b
+  classDef crm fill:#f0edff,stroke:#8b78e6,color:#17212b
+  classDef policy fill:#fff5df,stroke:#d7a54b,color:#17212b
+  classDef workflow fill:#eaf8f1,stroke:#5ea782,color:#17212b
+  classDef data fill:#eef2f6,stroke:#93a1b1,color:#17212b
+  classDef audit fill:#fff0ef,stroke:#d17870,color:#17212b
+  classDef owner fill:#ffffff,stroke:#8b78e6,color:#17212b,stroke-width:2px

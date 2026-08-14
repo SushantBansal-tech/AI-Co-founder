@@ -44,6 +44,17 @@ from app.database import (
 )
 from app.customers.merge_service import resolve_customer_match_review
 from app.customers.customer_360 import get_customer_360
+from app.dashboard import DashboardRepository, DashboardService
+from app.dashboard.router import router as dashboard_router
+from app.crm.router import router as crm_router
+from app.crm.service import CRMService
+from app.authority.router import (
+    execution_router as authority_execution_router,
+    router as authority_router,
+)
+from app.authority.service import AuthorityService
+from app.business_tools.executor import BusinessToolExecutor
+from app.business_tools.router import router as business_tools_router
 from app.channels.service import ChannelIngestionService
 from app.channels.configuration import channel_configuration_errors
 from app.channels.email_adapter import EmailPollingService
@@ -289,12 +300,22 @@ async def lifespan(app: FastAPI):
         embedding_service=embedding_service,
         vector_store=vector_store,
     )
+    app.state.sales_context_service = sales_context_service
     customer_memory_service = CustomerMemoryService(SessionFactory)
+    app.state.customer_memory_service = customer_memory_service
     memory_outbox_worker = MemoryOutboxWorker(
         session_factory=SessionFactory,
         embedding_service=embedding_service,
         vector_store=vector_store,
         max_attempts=int(os.getenv("MEMORY_OUTBOX_MAX_ATTEMPTS", "5")),
+    )
+    app.state.dashboard_service = DashboardService(
+        DashboardRepository(SessionFactory)
+    )
+    app.state.crm_service = CRMService(SessionFactory)
+    app.state.authority_service = AuthorityService(SessionFactory)
+    app.state.business_tool_executor = BusinessToolExecutor(
+        SessionFactory, app.state.authority_service
     )
 
     # ------------------------------------------------------------------
@@ -368,6 +389,7 @@ async def lifespan(app: FastAPI):
         structured_data=structured_data,
         sales_context_service=sales_context_service,
     )
+    app.state.sales_graph = sales_graph
     app.state.channel_ingestion_service = ChannelIngestionService(
         session_factory=SessionFactory,
         sales_graph=sales_graph,
@@ -554,6 +576,11 @@ app = FastAPI(
 )
 app.include_router(website_channel_router)
 app.include_router(whatsapp_channel_router)
+app.include_router(dashboard_router)
+app.include_router(crm_router)
+app.include_router(authority_router)
+app.include_router(authority_execution_router)
+app.include_router(business_tools_router)
 
 
 # ---------------------------------------------------------------------------
@@ -1200,6 +1227,14 @@ async def process_pipeline_event(
     )
 
     current_status = current_state.get("pipeline_status", "")
+    if current_status == "closed_lost":
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                "Pipeline is closed lost. Reopen the lead in CRM before "
+                "sending another event."
+            ),
+        )
     if current_status == "awaiting_approval" or current_status.startswith("awaiting_approval:"):
         raise HTTPException(
             status_code=409,

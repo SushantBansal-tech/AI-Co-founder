@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Sales CRM</title>
+  <style>
+    :root { --nav:#152238; --accent:#1677ff; --bg:#f4f7fb; --line:#dfe6ef; --danger:#b42318; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,Segoe UI,Arial,sans-serif; background:var(--bg); color:#182230; }
+    button,input,select,textarea { font:inherit; }
+    button { cursor:pointer; }
+    .hidden { display:none!important; }
+    #login { min-height:100vh; display:grid; place-items:center; padding:24px; }
+    .login-card { width:min(420px,100%); background:white; padding:32px; border-radius:16px; box-shadow:0 16px 50px #172b4d22; }
+    .login-card input { width:100%; margin:7px 0 15px; padding:11px; border:1px solid var(--line); border-radius:8px; }
+    .primary { background:var(--accent); color:white; border:0; padding:10px 16px; border-radius:8px; }
+    .secondary { background:white; color:#344054; border:1px solid var(--line); padding:8px 12px; border-radius:8px; }
+    #shell { min-height:100vh; display:grid; grid-template-columns:230px 1fr; }
+    aside { background:var(--nav); color:white; padding:22px 14px; }
+    aside h2 { margin:0 10px 26px; }
+    nav button { width:100%; text-align:left; background:transparent; color:#dce5f2; border:0; border-radius:8px; padding:11px 12px; margin:2px 0; }
+    nav button.active,nav button:hover { background:#ffffff18; color:white; }
+    main { padding:24px; overflow:auto; }
+    header { display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; }
+    .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:14px; margin:18px 0; }
+    .card,.panel { background:white; border:1px solid var(--line); border-radius:12px; padding:17px; }
+    .metric { font-size:25px; font-weight:700; margin-top:8px; }
+    .toolbar { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+    .toolbar input,.toolbar select { padding:9px 11px; border:1px solid var(--line); border-radius:8px; background:white; }
+    table { width:100%; border-collapse:collapse; background:white; border-radius:10px; overflow:hidden; }
+    th,td { padding:11px 12px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top; }
+    th { background:#f8fafc; font-size:13px; color:#475467; }
+    tr:hover td { background:#fafcff; }
+    .link { color:var(--accent); border:0; background:transparent; padding:0; }
+    .badge { display:inline-block; padding:4px 8px; border-radius:999px; background:#eef4ff; color:#3538cd; font-size:12px; }
+    .danger { color:var(--danger); }
+    #drawer { position:fixed; inset:0 0 0 auto; width:min(620px,95vw); background:white; box-shadow:-15px 0 40px #10182826; padding:24px; overflow:auto; z-index:4; }
+    #drawer pre { white-space:pre-wrap; background:#f8fafc; padding:12px; border-radius:8px; }
+    .kanban { display:flex; gap:14px; overflow:auto; align-items:flex-start; }
+    .column { min-width:270px; background:#eef2f7; padding:12px; border-radius:12px; }
+    .deal { background:white; border:1px solid var(--line); border-radius:9px; padding:12px; margin-top:9px; }
+    .error { color:var(--danger); margin-top:10px; white-space:pre-wrap; }
+    @media(max-width:800px){ #shell{grid-template-columns:1fr} aside{position:static} nav{display:flex;overflow:auto} nav button{min-width:max-content} }
+  </style>
+</head>
+<body>
+  <section id="login">
+    <form class="login-card" id="login-form">
+      <h1>AI Sales CRM</h1><p>Sign in to your business workspace.</p>
+      <label>Business ID</label><input id="business" required value="demo-steel-company">
+      <label>Email</label><input id="email" type="email" required>
+      <label>Password</label><input id="password" type="password" minlength="12" required>
+      <button class="primary" type="submit">Sign in</button>
+      <div class="error" id="login-error"></div>
+    </form>
+  </section>
+  <section id="shell" class="hidden">
+    <aside><h2>Sales CRM</h2><nav id="nav"></nav></aside>
+    <main>
+      <header><div><h1 id="title">Dashboard</h1><div id="identity"></div></div><button class="secondary" id="logout">Logout</button></header>
+      <div id="content"></div>
+    </main>
+  </section>
+  <aside id="drawer" class="hidden"><button class="secondary" onclick="closeDrawer()">Close</button><div id="drawer-content"></div></aside>
+  <script>
+    const state={token:localStorage.getItem('crm_token'),user:null};
+    const pages=[['dashboard','Dashboard'],['leads','Leads'],['pipeline','Pipeline'],['customers','Customers'],['tasks','Tasks'],['approvals','Approvals'],['matches','Duplicate reviews'],['users','Team'],['authority','Jarvis authority']];
+    const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+    async function api(path,options={}){
+      const headers={'Content-Type':'application/json',...(options.headers||{})};
+      if(state.token)headers.Authorization=`Bearer ${state.token}`;
+      const response=await fetch(path,{...options,headers});
+      const data=await response.json().catch(()=>({detail:response.statusText}));
+      if(response.status===401){localStorage.removeItem('crm_token');location.reload();}
+      if(!response.ok)throw new Error(typeof data.detail==='string'?data.detail:JSON.stringify(data.detail));
+      return data;
+    }
+    document.querySelector('#login-form').onsubmit=async e=>{
+      e.preventDefault();document.querySelector('#login-error').textContent='';
+      try{const r=await api('/crm/auth/login',{method:'POST',body:JSON.stringify({business_id:business.value,email:email.value,password:password.value})});state.token=r.access_token;localStorage.setItem('crm_token',state.token);await boot();}
+      catch(err){document.querySelector('#login-error').textContent=err.message;}
+    };
+    async function boot(){
+      if(!state.token)return;
+      try{state.user=await api('/crm/me');login.classList.add('hidden');shell.classList.remove('hidden');identity.textContent=`${state.user.display_name} · ${state.user.role}`;const visiblePages=state.user.role==='admin'?pages:pages.filter(([id])=>id!=='authority');nav.innerHTML=visiblePages.map(([id,label])=>`<button data-page="${id}">${label}</button>`).join('');nav.onclick=e=>e.target.dataset.page&&openPage(e.target.dataset.page);logout.onclick=doLogout;await openPage('dashboard');}
+      catch(e){localStorage.removeItem('crm_token');state.token=null;}
+    }
+    async function doLogout(){try{await api('/crm/auth/logout',{method:'POST'});}finally{localStorage.removeItem('crm_token');location.reload();}}
+    async function openPage(page){document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));title.textContent=pages.find(x=>x[0]===page)?.[1]||page;content.innerHTML='<div class="panel">Loading…</div>';try{await window[`page_${page}`]();}catch(e){content.innerHTML=`<div class="panel error">${esc(e.message)}</div>`;}}
+    async function page_dashboard(){const d=await api('/crm/dashboard/overview');content.innerHTML=`<div class="cards">${[['RFQs',d.rfqs_received],['Quotations',d.quotations_sent],['Orders won',d.orders_won],['Quoted revenue',money(d.quoted_revenue)],['Won revenue',money(d.won_revenue)],['Revenue at risk',money(d.revenue_at_risk)],['Open approvals',d.open_approvals],['Blocked',d.blocked_pipelines]].map(x=>`<div class="card"><small>${x[0]}</small><div class="metric">${x[1]}</div></div>`).join('')}</div>`;}
+    async function page_customers(){content.innerHTML=`<div class="toolbar"><input id="q" placeholder="Company, email, phone, GSTIN"><button class="primary" onclick="loadCustomers()">Search</button></div><div id="grid"></div>`;await loadCustomers();}
+    async function loadCustomers(){const r=await api(`/crm/customers?search=${encodeURIComponent(document.querySelector('#q')?.value||'')}`);grid.innerHTML=table(['Company','Contact','City','Owner','Payment'],r.items.map(x=>[`<button class="link" onclick="showCustomer('${x.id}')">${esc(x.company_name)}</button>`,esc(x.contact_person||x.email),esc(x.city),esc(x.account_owner_name||'Unassigned'),esc(x.payment_behavior)]));}
+    async function showCustomer(id){const [d,ctx]=await Promise.all([api(`/crm/customers/${id}/360`),api(`/crm/customers/${id}/sales-context`).catch(()=>({semantic_memories:[],warnings:['Semantic memory unavailable']}))]);drawer.classList.remove('hidden');document.querySelector('#drawer-content').innerHTML=`<h2>${esc(d.customer.company_name)}</h2><p>${esc(d.customer.contact_person)} · ${esc(d.customer.email)} · ${esc(d.customer.phone)}</p><div class="cards"><div class="card">Orders<div class="metric">${d.summary.total_orders}</div></div><div class="card">Order value<div class="metric">${money(d.summary.total_order_value)}</div></div><div class="card">Quotes<div class="metric">${d.summary.total_quotations}</div></div></div><h3>AI relationship memory</h3>${(ctx.semantic_memories||[]).map(m=>`<div class="panel"><span class="badge">${esc(m.content_type)}</span><p>${esc(m.content)}</p></div>`).join('')||'<p>No relevant semantic memories.</p>'}<h3>Open tasks</h3>${d.open_tasks.map(t=>`<p><span class="badge">${esc(t.priority)}</span> ${esc(t.title)} · ${esc(t.due_at)}</p>`).join('')||'<p>None</p>'}<h3>Recent interactions</h3>${d.recent_interactions.map(i=>`<div class="panel"><b>${esc(i.channel)} · ${esc(i.direction)}</b><p>${esc(i.content)}</p></div>`).join('')||'<p>None</p>'}`;}
+    async function page_leads(){content.innerHTML=`<div class="toolbar"><input id="leadq" placeholder="Company, product or inquiry"><select id="leadstatus"><option value="">All statuses</option><option>new</option><option>awaiting_info</option><option>won</option></select><button class="primary" onclick="loadLeads()">Filter</button></div><div id="grid"></div>`;await loadLeads();}
+    async function loadLeads(){const r=await api(`/crm/leads?search=${encodeURIComponent(leadq.value)}&status=${encodeURIComponent(leadstatus.value)}`);grid.innerHTML=table(['Customer','Product','Status','Pipeline','Owner','Waiting'],r.items.map(x=>[`<button class="link" onclick="showLead('${x.id}')">${esc(x.customer_company)}</button>`,esc(x.product_requested),badge(x.status),badge(x.pipeline_status),esc(x.assigned_to_name||'Unassigned'),esc(x.waiting_for)]));}
+    async function showLead(id){const d=await api(`/crm/leads/${id}`);const timeline=await api(`/crm/leads/${id}/timeline`);drawer.classList.remove('hidden');document.querySelector('#drawer-content').innerHTML=`<h2>${esc(d.customer_company)}</h2><p>${esc(d.product_requested)} · ${esc(d.quantity)}</p><p>${badge(d.pipeline_status)} Waiting: ${esc(d.waiting_for)}</p><h3>Timeline</h3>${timeline.items.map(i=>`<div class="panel"><b>${esc(i.type)}</b><small> ${esc(i.occurred_at)}</small><p>${esc(i.summary)}</p></div>`).join('')}`;}
+    async function page_pipeline(){const r=await api('/crm/pipeline');const groups={};r.items.forEach(x=>(groups[x.pipeline_status]??=[]).push(x));content.innerHTML=`<div class="kanban">${Object.entries(groups).map(([name,items])=>`<div class="column"><b>${esc(name)} (${items.length})</b>${items.map(x=>`<div class="deal"><button class="link" onclick="showLead('${x.lead_id}')"><b>${esc(x.customer_name)}</b></button><p>${esc(x.product)} · ${esc(x.quantity)}</p><small>${esc(x.owner_name||'Unassigned')} · waiting: ${esc(x.waiting_for)}</small></div>`).join('')}</div>`).join('')||'<div class="panel">No active pipelines.</div>'}</div>`;}
+    async function page_tasks(){const r=await api('/crm/tasks');content.innerHTML=`<div class="toolbar"><button class="primary" onclick="newTask()">New task</button><button class="secondary" onclick="openPage('tasks')">Refresh</button></div>${table(['Task','Type','Priority','Due','Status','Action'],r.items.map(x=>[esc(x.title),esc(x.task_type),badge(x.priority),esc(x.due_at),badge(x.status),x.status==='open'||x.status==='in_progress'?`<button class="link" onclick="finishTask('${x.id}',${x.version})">Complete</button>`:'']))}`;}
+    async function newTask(){const users=await api('/crm/users');const title=prompt('Task title');if(!title)return;const assigned=prompt('Assignee user ID',users.items[0]?.id||'');const due=prompt('Due date/time (ISO)',new Date(Date.now()+86400000).toISOString());await api('/crm/tasks',{method:'POST',headers:{'Idempotency-Key':crypto.randomUUID()},body:JSON.stringify({assigned_to_user_id:assigned,task_type:'follow_up',title,priority:'normal',due_at:due})});await openPage('tasks');}
+    async function finishTask(id,version){await api(`/crm/tasks/${id}/complete`,{method:'POST',headers:{'Idempotency-Key':crypto.randomUUID()},body:JSON.stringify({version,completion_notes:'Completed from CRM'})});await openPage('tasks');}
+    async function page_approvals(){const r=await api('/crm/approvals');content.innerHTML=table(['Customer','Stage','Waiting for','Reason','Action'],r.items.map(x=>[esc(x.customer_name),esc(x.approval_stage),esc(x.waiting_for),esc(x.reason),`<button class="primary" onclick="approve('${x.thread_id}','${x.approval_stage}')">Approve</button>`]));}
+    async function approve(thread,stage){if(!stage)return alert('Approval stage is unavailable; run the latest migration and refresh the pipeline snapshot.');if(!confirm(`Approve ${stage}?`))return;await api(`/crm/approvals/${thread}/approve`,{method:'POST',headers:{'Idempotency-Key':crypto.randomUUID()},body:JSON.stringify({approved_stage:stage})});await openPage('approvals');}
+    async function page_matches(){const r=await api('/crm/customer-match-reviews');content.innerHTML=table(['Provisional','Candidate','Confidence','Signals','Actions'],r.items.map(x=>[esc(x.provisional_customer?.company_name),esc(x.candidate_customer?.company_name),esc(x.confidence),esc((x.matched_signals||[]).join(', ')),`<button class="link" onclick="resolveMatch('${x.id}','merge')">Merge</button> · <button class="link" onclick="resolveMatch('${x.id}','keep_separate')">Keep separate</button>`]));}
+    async function resolveMatch(id,action){if(!confirm(`${action} these customer records?`))return;await api(`/crm/customer-match-reviews/${id}/resolve`,{method:'POST',headers:{'Idempotency-Key':crypto.randomUUID()},body:JSON.stringify({action})});await openPage('matches');}
+    async function page_users(){const r=await api('/crm/users');content.innerHTML=table(['Name','Email','Role'],r.items.map(x=>[esc(x.display_name),esc(x.email),badge(x.role)]));}
+    async function page_authority(){
+      const [s,p,pol]=await Promise.all([api('/crm/ai/settings'),api('/crm/ai/principals'),api('/crm/ai/policies')]);
+      window.authoritySettings=s;window.authorityPolicies=pol.items;
+      content.innerHTML=`<div class="toolbar"><button class="primary" onclick="editAuthoritySettings()">Edit business limits</button><button class="secondary" onclick="createJarvisPrincipal()">Create Jarvis identity</button></div>
+      <div class="cards"><div class="card"><small>Operating mode</small><div class="metric">${esc(s.ai_operating_mode)}</div></div><div class="card"><small>Automatic discount</small><div class="metric">${esc(s.maximum_automatic_discount_pct)}%</div></div><div class="card"><small>Automatic quotation</small><div class="metric">${money(s.maximum_automatic_quotation_value)}</div></div><div class="card"><small>Minimum margin</small><div class="metric">${esc(s.minimum_margin_pct)}%</div></div></div>
+      <h2>Jarvis identities</h2>${table(['Name','Status','Credential prefix','Scopes'],p.items.map(x=>[esc(x.name),badge(x.status),esc(x.credential_prefix),esc(x.scopes.join(', '))]))}
+      <h2>Authority policies</h2>${table(['Action','Mode','Risk','Required scope','Approval','Version','Action'],pol.items.map(x=>[esc(x.action_type),badge(x.decision_mode),badge(x.risk_level),esc(x.required_scope),esc(x.approval_role||'None'),esc(x.active_version),`<button class="link" onclick="editPolicy('${x.id}')">Edit</button>`]))}`;
+    }
+    async function editAuthoritySettings(){
+      const s=window.authoritySettings;
+      const mode=prompt('Operating mode: recommend_only, prepare_only, or execute_low_risk',s.ai_operating_mode);if(!mode)return;
+      const discount=prompt('Maximum automatic discount %',s.maximum_automatic_discount_pct);if(discount===null)return;
+      const quote=prompt('Maximum automatic quotation value',s.maximum_automatic_quotation_value);if(quote===null)return;
+      const margin=prompt('Minimum margin %',s.minimum_margin_pct);if(margin===null)return;
+      const reason=prompt('Reason for this configuration change');if(!reason)return;
+      await api('/crm/ai/settings',{method:'PUT',headers:{'Idempotency-Key':crypto.randomUUID()},body:JSON.stringify({ai_operating_mode:mode,currency:s.currency,timezone:s.timezone,maximum_automatic_discount_pct:Number(discount),maximum_automatic_quotation_value:Number(quote),minimum_margin_pct:Number(margin),daily_outbound_message_limit:s.daily_outbound_message_limit,default_approval_role:s.default_approval_role,expected_version:s.version,change_reason:reason})});await openPage('authority');
+    }
+    async function createJarvisPrincipal(){
+      const name=prompt('AI identity name','Jarvis Sales Agent');if(!name)return;
+      const scopes=prompt('Comma-separated scopes','crm:read,customer:read,lead:read,quotation:prepare,reminder:send,negotiation:prepare');if(scopes===null)return;
+      const result=await api('/crm/ai/principals',{method:'POST',headers:{'Idempotency-Key':crypto.randomUUID()},body:JSON.stringify({name,scopes:scopes.split(',').map(x=>x.trim()).filter(Boolean)})});
+      drawer.classList.remove('hidden');document.querySelector('#drawer-content').innerHTML=`<h2>Save Jarvis credential now</h2><p>This secret is shown only once.</p><pre>${esc(result.credential)}</pre><p>${esc(result.credential_warning)}</p>`;await openPage('authority');
+    }
+    async function editPolicy(id){
+      const p=window.authorityPolicies.find(x=>x.id===id);if(!p)return;
+      const mode=prompt('Policy mode: deny, recommend_only, prepare_only, approval_required, auto_execute, threshold_auto',p.decision_mode);if(!mode)return;
+      const reason=prompt('Reason for publishing a new policy version');if(!reason)return;
+      await api(`/crm/ai/policies/${id}`,{method:'PUT',headers:{'Idempotency-Key':crypto.randomUUID()},body:JSON.stringify({decision_mode:mode,risk_level:p.risk_level,required_scope:p.required_scope,approval_role:p.approval_role,conditions:p.conditions,expected_version:p.active_version,change_reason:reason})});await openPage('authority');
+    }
+    function table(headers,rows){return `<table><thead><tr>${headers.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(x=>`<td>${x??''}</td>`).join('')}</tr>`).join('')}</tbody></table>`;}
+    function badge(v){return `<span class="badge">${esc(v||'—')}</span>`;}
+    function money(v){return new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(v||0);}
+    function closeDrawer(){drawer.classList.add('hidden');}
+    boot();
+  </script>
+</body>
+</html>

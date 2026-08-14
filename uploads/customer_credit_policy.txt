@@ -1,0 +1,41 @@
+1. CUSTOMER CLASSIFICATION
+
+New customer:
+- Advance payment is preferred.
+- Any credit terms require founder approval.
+
+Existing good-standing customer:
+- Standard credit may be considered using payment history and exposure.
+
+Overdue customer:
+- New credit is blocked until finance review.
+
+2. REQUIRED CREDIT INPUTS
+
+Credit decisions require:
+- Customer identity
+- Current credit limit
+- Outstanding invoice amount
+- Overdue amount
+- Previous payment behaviour
+- Proposed order value
+- Requested payment terms
+
+3. AUTOMATIC RESTRICTIONS
+
+Jarvis cannot:
+- Increase customer credit limits
+- Extend payment days
+- Ignore overdue invoices
+- Override a finance block
+- Approve incomplete credit data
+
+4. APPROVAL
+
+All changes to customer credit require founder or finance-manager approval.
+Approval must record the approver, reason, expiry and policy version.
+
+5. MISSING DATA
+
+Missing exposure, payment history or credit-limit information results in
+REQUIRE_MORE_INFORMATION or BLOCKED_MASTER_DATA.

@@ -1,0 +1,1587 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/9n55lc",
+    "id": "9n55lc",
+    "slide": 5,
+    "layoutId": "15433292-82ca-42bf-8472-d238c6c4628c",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "54d0db12-953b-41c5-af3a-468b5133fa25",
+    "masterLayoutName": "Master",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "Helvetica Neue"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "15433292-82ca-42bf-8472-d238c6c4628c",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "54d0db12-953b-41c5-af3a-468b5133fa25",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "54d0db12-953b-41c5-af3a-468b5133fa25",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/2hc3ad8r",
+      "id": "1",
+      "name": "Google-Shape-532-p58-2",
+      "bbox": [
+        1184.18,
+        659.24,
+        54.48,
+        25.33
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.0"
+      },
+      "geometry": "rect",
+      "text": "5",
+      "textPreview": "5",
+      "resolvedFontSize": 13.33,
+      "resolvedTextStyle": {
+        "anchor": 3,
+        "fontSize": 13.33,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "right",
+        "verticalAlignment": "bottom",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "5"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "5",
+          "resolvedTextStyle": {
+            "anchor": 3,
+            "fontSize": 13.33,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "right",
+            "verticalAlignment": "bottom",
+            "wrap": "square",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "5",
+              "anchor": 3,
+              "fontSize": 13.33,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "right",
+              "verticalAlignment": "bottom",
+              "wrap": "square",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/pk3258r2",
+      "id": "2",
+      "name": "Google-Shape-533-p58-3",
+      "bbox": [
+        41.33,
+        36.17,
+        1197.33,
+        134.7
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.1"
+      },
+      "geometry": "rect",
+      "text": "AI autonomy remains inside company-defined commercial boundaries",
+      "textPreview": "AI autonomy remains inside company-defined commercial boundaries",
+      "resolvedFontSize": 38.67,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 38.67,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "AI autonomy remains inside company-defined commercial boundaries"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "AI autonomy remains inside company-defined commercial boundaries",
+          "resolvedTextStyle": {
+            "anchor": 1,
+            "fontSize": 38.67,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "verticalAlignment": "top",
+            "wrap": "square",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "AI autonomy remains inside company-defined commercial boundaries",
+              "anchor": 1,
+              "fontSize": 38.67,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "verticalAlignment": "top",
+              "wrap": "square",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ojulc3qx",
+      "id": "3",
+      "name": "Rounded-Rectangle-9-4",
+      "bbox": [
+        452.38,
+        353.33,
+        374.67,
+        276
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.2"
+      },
+      "geometry": "roundRect",
+      "fillColor": "#F2F2F2"
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/fe1kzy90",
+      "id": "4",
+      "name": "Rounded-Rectangle-10-5",
+      "bbox": [
+        864,
+        353.33,
+        374.67,
+        276
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.3"
+      },
+      "geometry": "roundRect",
+      "fillColor": "#F2F2F2"
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/edsj6tsf",
+      "id": "5",
+      "name": "Content-Placeholder-9-6",
+      "bbox": [
+        485.23,
+        435.29,
+        309.64,
+        150.43
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.4"
+      },
+      "geometry": "rect",
+      "text": "Policy engine decides\nChecks exact data, authority limits, risk and required evidence.",
+      "textPreview": "Policy engine decides | Checks exact data, authority limits, risk and required evidence.",
+      "resolvedFontSize": 32,
+      "resolvedTextStyle": {
+        "fontSize": 32,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "left",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 4,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Policy engine decides"
+          },
+          {
+            "index": 2,
+            "text": "Checks exact data,"
+          },
+          {
+            "index": 3,
+            "text": "authority limits, risk"
+          },
+          {
+            "index": 4,
+            "text": "and required evidence."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Policy engine decides",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Policy engine decides",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 2,
+          "text": "Checks exact data, authority limits, risk and required evidence.",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Checks exact data, authority limits, risk and required evidence.",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/1g3218r6",
+      "id": "6",
+      "name": "Content-Placeholder-10-7",
+      "bbox": [
+        896.18,
+        435.29,
+        309.64,
+        150.43
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.5"
+      },
+      "geometry": "rect",
+      "text": "Owner controls exceptions\nApproves discounts, credit changes and PO exceptions.",
+      "textPreview": "Owner controls exceptions | Approves discounts, credit changes and PO exceptions.",
+      "resolvedFontSize": 32,
+      "resolvedTextStyle": {
+        "fontSize": 32,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "left",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 5,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Owner controls"
+          },
+          {
+            "index": 2,
+            "text": "exceptions"
+          },
+          {
+            "index": 3,
+            "text": "Approves discounts,"
+          },
+          {
+            "index": 4,
+            "text": "credit changes and PO"
+          },
+          {
+            "index": 5,
+            "text": "exceptions."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Owner controls exceptions",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Owner controls exceptions",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 2,
+          "text": "Approves discounts, credit changes and PO exceptions.",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Approves discounts, credit changes and PO exceptions.",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/gfu183ql",
+      "id": "7",
+      "name": "Google-Shape-340-p61-8",
+      "bbox": [
+        485.84,
+        387.83,
+        24.55,
+        24.54
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.6"
+      },
+      "geometry": "custom",
+      "fillColor": "#000000"
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ra1kve94",
+      "id": "8",
+      "name": "Google-Shape-340-p61-9",
+      "bbox": [
+        895.88,
+        387.83,
+        24.55,
+        24.54
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.7"
+      },
+      "geometry": "custom",
+      "fillColor": "#000000"
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/6psj2tsj",
+      "id": "9",
+      "name": "Rounded-Rectangle-5-10",
+      "bbox": [
+        40.77,
+        353.33,
+        374.67,
+        276
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.8"
+      },
+      "geometry": "roundRect",
+      "fillColor": "#F2F2F2"
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/0re9gv6h",
+      "id": "10",
+      "name": "Content-Placeholder-9-11",
+      "bbox": [
+        73.61,
+        435.29,
+        309.64,
+        150.43
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.9"
+      },
+      "geometry": "rect",
+      "text": "AI interprets\nUnderstands intent, summarizes context and drafts communication.",
+      "textPreview": "AI interprets | Understands intent, summarizes context and drafts communication.",
+      "resolvedFontSize": 32,
+      "resolvedTextStyle": {
+        "fontSize": 32,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "left",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 5,
+        "lines": [
+          {
+            "index": 1,
+            "text": "AI interprets"
+          },
+          {
+            "index": 2,
+            "text": "Understands intent,"
+          },
+          {
+            "index": 3,
+            "text": "summarizes context"
+          },
+          {
+            "index": 4,
+            "text": "and drafts"
+          },
+          {
+            "index": 5,
+            "text": "communication."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "AI interprets",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "AI interprets",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 2,
+          "text": "Understands intent, summarizes context and drafts communication.",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Understands intent, summarizes context and drafts communication.",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/1snq9072",
+      "id": "11",
+      "name": "Google-Shape-340-p61-12",
+      "bbox": [
+        74.23,
+        387.83,
+        24.55,
+        24.54
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.10"
+      },
+      "geometry": "custom",
+      "fillColor": "#000000"
+    },
+    {
+      "order": 12,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/epwrelob",
+      "id": "12",
+      "name": "Content-Placeholder-15-13",
+      "bbox": [
+        41.33,
+        152.29,
+        1197.33,
+        171.05
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.11"
+      },
+      "geometry": "rect",
+      "text": "The safety principle\nGemini can understand messages and draft communication.\nDeterministic rules decide money, authority, inventory, credit and order commitments.",
+      "textPreview": "The safety principle | Gemini can understand messages and draft communication. | Deterministic rules decide money, authority, inventory, ...",
+      "resolvedFontSize": 21.33,
+      "resolvedTextStyle": {
+        "fontSize": 21.33,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "left",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 3,
+        "lines": [
+          {
+            "index": 1,
+            "text": "The safety principle"
+          },
+          {
+            "index": 2,
+            "text": "Gemini can understand messages and draft communication."
+          },
+          {
+            "index": 3,
+            "text": "Deterministic rules decide money, authority, inventory, credit and order commitments."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "The safety principle",
+          "resolvedTextStyle": {
+            "fontSize": 21.33,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "The safety principle",
+              "fontSize": 21.33,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 2,
+          "text": "Gemini can understand messages and draft communication.",
+          "resolvedTextStyle": {
+            "fontSize": 21.33,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Gemini can understand messages and draft communication.",
+              "fontSize": 21.33,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 3,
+          "text": "Deterministic rules decide money, authority, inventory, credit and order commitments.",
+          "resolvedTextStyle": {
+            "fontSize": 21.33,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Deterministic rules decide money, authority, inventory, credit and order commitments.",
+              "fontSize": 21.33,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    }
+  ],
+  "composeRuns": [
+    {
+      "index": 1,
+      "frame": {
+        "left": 0,
+        "top": 0,
+        "width": 1280,
+        "height": 720
+      },
+      "baseUnit": 1,
+      "root": {
+        "path": "0",
+        "kind": "layers",
+        "name": "codex-grid-layout-library#slide-09",
+        "requestedSize": {
+          "width": {
+            "mode": "fill",
+            "value": 1
+          },
+          "height": {
+            "mode": "fill",
+            "value": 1
+          }
+        },
+        "intrinsicSize": {
+          "width": 1238.67,
+          "height": 684.57
+        },
+        "frame": {
+          "left": 0,
+          "top": 0,
+          "width": 1280,
+          "height": 720
+        },
+        "children": [
+          {
+            "path": "0.0",
+            "kind": "text",
+            "name": "Google-Shape-532-p58-2",
+            "position": {
+              "left": 1184.18,
+              "top": 659.24
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 54.48
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 25.33
+              }
+            },
+            "intrinsicSize": {
+              "width": 54.48,
+              "height": 25.33
+            },
+            "frame": {
+              "left": 1184.18,
+              "top": 659.24,
+              "width": 54.48,
+              "height": 25.33
+            },
+            "snappedFrame": {
+              "left": 1184.18,
+              "top": 659.24,
+              "width": 54.48,
+              "height": 25.33
+            },
+            "children": [],
+            "text": "5",
+            "transform": "none",
+            "element": {
+              "aid": "sh/2hc3ad8r",
+              "id": "1",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.1",
+            "kind": "text",
+            "name": "Google-Shape-533-p58-3",
+            "position": {
+              "left": 41.33,
+              "top": 36.17
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 1197.33
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 134.7
+              }
+            },
+            "intrinsicSize": {
+              "width": 1197.33,
+              "height": 134.7
+            },
+            "frame": {
+              "left": 41.33,
+              "top": 36.17,
+              "width": 1197.33,
+              "height": 134.7
+            },
+            "snappedFrame": {
+              "left": 41.33,
+              "top": 36.17,
+              "width": 1197.33,
+              "height": 134.7
+            },
+            "children": [],
+            "text": "AI autonomy remains inside company-defined commercial boundaries",
+            "transform": "none",
+            "element": {
+              "aid": "sh/pk3258r2",
+              "id": "2",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.2",
+            "kind": "shape",
+            "name": "Rounded-Rectangle-9-4",
+            "position": {
+              "left": 452.38,
+              "top": 353.33
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 374.67
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 276
+              }
+            },
+            "intrinsicSize": {
+              "width": 374.67,
+              "height": 276
+            },
+            "frame": {
+              "left": 452.38,
+              "top": 353.33,
+              "width": 374.67,
+              "height": 276
+            },
+            "snappedFrame": {
+              "left": 452.38,
+              "top": 353.33,
+              "width": 374.67,
+              "height": 276
+            },
+            "children": [],
+            "geometry": "roundRect",
+            "element": {
+              "aid": "sh/ojulc3qx",
+              "id": "3",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.3",
+            "kind": "shape",
+            "name": "Rounded-Rectangle-10-5",
+            "position": {
+              "left": 864,
+              "top": 353.33
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 374.67
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 276
+              }
+            },
+            "intrinsicSize": {
+              "width": 374.67,
+              "height": 276
+            },
+            "frame": {
+              "left": 864,
+              "top": 353.33,
+              "width": 374.67,
+              "height": 276
+            },
+            "snappedFrame": {
+              "left": 864,
+              "top": 353.33,
+              "width": 374.67,
+              "height": 276
+            },
+            "children": [],
+            "geometry": "roundRect",
+            "element": {
+              "aid": "sh/fe1kzy90",
+              "id": "4",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.4",
+            "kind": "text",
+            "name": "Content-Placeholder-9-6",
+            "position": {
+              "left": 485.23,
+              "top": 435.29
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 309.64
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 150.43
+              }
+            },
+            "intrinsicSize": {
+              "width": 309.64,
+              "height": 150.43
+            },
+            "frame": {
+              "left": 485.23,
+              "top": 435.29,
+              "width": 309.64,
+              "height": 150.43
+            },
+            "snappedFrame": {
+              "left": 485.23,
+              "top": 435.29,
+              "width": 309.64,
+              "height": 150.43
+            },
+            "children": [],
+            "text": "Policy engine decidesChecks exact data, authority limits, risk and required evidence.",
+            "transform": "none",
+            "element": {
+              "aid": "sh/edsj6tsf",
+              "id": "5",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.5",
+            "kind": "text",
+            "name": "Content-Placeholder-10-7",
+            "position": {
+              "left": 896.18,
+              "top": 435.29
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 309.64
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 150.43
+              }
+            },
+            "intrinsicSize": {
+              "width": 309.64,
+              "height": 150.43
+            },
+            "frame": {
+              "left": 896.18,
+              "top": 435.29,
+              "width": 309.64,
+              "height": 150.43
+            },
+            "snappedFrame": {
+              "left": 896.18,
+              "top": 435.29,
+              "width": 309.64,
+              "height": 150.43
+            },
+            "children": [],
+            "text": "Owner controls exceptionsApproves discounts, credit changes and PO exceptions.",
+            "transform": "none",
+            "element": {
+              "aid": "sh/1g3218r6",
+              "id": "6",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.6",
+            "kind": "shape",
+            "name": "Google-Shape-340-p61-8",
+            "position": {
+              "left": 485.84,
+              "top": 387.83
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 24.55
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 24.54
+              }
+            },
+            "intrinsicSize": {
+              "width": 24.55,
+              "height": 24.54
+            },
+            "frame": {
+              "left": 485.84,
+              "top": 387.83,
+              "width": 24.55,
+              "height": 24.54
+            },
+            "snappedFrame": {
+              "left": 485.84,
+              "top": 387.83,
+              "width": 24.55,
+              "height": 24.54
+            },
+            "children": [],
+            "geometry": "custom",
+            "element": {
+              "aid": "sh/gfu183ql",
+              "id": "7",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.7",
+            "kind": "shape",
+            "name": "Google-Shape-340-p61-9",
+            "position": {
+              "left": 895.88,
+              "top": 387.83
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 24.55
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 24.54
+              }
+            },
+            "intrinsicSize": {
+              "width": 24.55,
+              "height": 24.54
+            },
+            "frame": {
+              "left": 895.88,
+              "top": 387.83,
+              "width": 24.55,
+              "height": 24.54
+            },
+            "snappedFrame": {
+              "left": 895.88,
+              "top": 387.83,
+              "width": 24.55,
+              "height": 24.54
+            },
+            "children": [],
+            "geometry": "custom",
+            "element": {
+              "aid": "sh/ra1kve94",
+              "id": "8",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.8",
+            "kind": "shape",
+            "name": "Rounded-Rectangle-5-10",
+            "position": {
+              "left": 40.77,
+              "top": 353.33
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 374.67
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 276
+              }
+            },
+            "intrinsicSize": {
+              "width": 374.67,
+              "height": 276
+            },
+            "frame": {
+              "left": 40.77,
+              "top": 353.33,
+              "width": 374.67,
+              "height": 276
+            },
+            "snappedFrame": {
+              "left": 40.77,
+              "top": 353.33,
+              "width": 374.67,
+              "height": 276
+            },
+            "children": [],
+            "geometry": "roundRect",
+            "element": {
+              "aid": "sh/6psj2tsj",
+              "id": "9",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.9",
+            "kind": "text",
+            "name": "Content-Placeholder-9-11",
+            "position": {
+              "left": 73.61,
+              "top": 435.29
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 309.64
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 150.43
+              }
+            },
+            "intrinsicSize": {
+              "width": 309.64,
+              "height": 150.43
+            },
+            "frame": {
+              "left": 73.61,
+              "top": 435.29,
+              "width": 309.64,
+              "height": 150.43
+            },
+            "snappedFrame": {
+              "left": 73.61,
+              "top": 435.29,
+              "width": 309.64,
+              "height": 150.43
+            },
+            "children": [],
+            "text": "AI interpretsUnderstands intent, summarizes context and drafts communication.",
+            "transform": "none",
+            "element": {
+              "aid": "sh/0re9gv6h",
+              "id": "10",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.10",
+            "kind": "shape",
+            "name": "Google-Shape-340-p61-12",
+            "position": {
+              "left": 74.23,
+              "top": 387.83
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 24.55
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 24.54
+              }
+            },
+            "intrinsicSize": {
+              "width": 24.55,
+              "height": 24.54
+            },
+            "frame": {
+              "left": 74.23,
+              "top": 387.83,
+              "width": 24.55,
+              "height": 24.54
+            },
+            "snappedFrame": {
+              "left": 74.23,
+              "top": 387.83,
+              "width": 24.55,
+              "height": 24.54
+            },
+            "children": [],
+            "geometry": "custom",
+            "element": {
+              "aid": "sh/1snq9072",
+              "id": "11",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.11",
+            "kind": "text",
+            "name": "Content-Placeholder-15-13",
+            "position": {
+              "left": 41.33,
+              "top": 152.29
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 1197.33
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 171.05
+              }
+            },
+            "intrinsicSize": {
+              "width": 1197.33,
+              "height": 171.05
+            },
+            "frame": {
+              "left": 41.33,
+              "top": 152.29,
+              "width": 1197.33,
+              "height": 171.05
+            },
+            "snappedFrame": {
+              "left": 41.33,
+              "top": 152.29,
+              "width": 1197.33,
+              "height": 171.05
+            },
+            "children": [],
+            "text": "The safety principleGemini can understand messages and draft communication.Deterministic rules decide money, authority, inventory, credit and order commitments.",
+            "transform": "none",
+            "element": {
+              "aid": "sh/epwrelob",
+              "id": "12",
+              "kind": "shape"
+            }
+          }
+        ],
+        "padding": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "alignItems": "stretch",
+        "justifyItems": "stretch",
+        "contentFrame": {
+          "left": 0,
+          "top": 0,
+          "width": 1280,
+          "height": 720
+        },
+        "items": [
+          {
+            "path": "0.0",
+            "frame": {
+              "left": 1184.18,
+              "top": 659.24,
+              "width": 54.48,
+              "height": 25.33
+            }
+          },
+          {
+            "path": "0.1",
+            "frame": {
+              "left": 41.33,
+              "top": 36.17,
+              "width": 1197.33,
+              "height": 134.7
+            }
+          },
+          {
+            "path": "0.2",
+            "frame": {
+              "left": 452.38,
+              "top": 353.33,
+              "width": 374.67,
+              "height": 276
+            }
+          },
+          {
+            "path": "0.3",
+            "frame": {
+              "left": 864,
+              "top": 353.33,
+              "width": 374.67,
+              "height": 276
+            }
+          },
+          {
+            "path": "0.4",
+            "frame": {
+              "left": 485.23,
+              "top": 435.29,
+              "width": 309.64,
+              "height": 150.43
+            }
+          },
+          {
+            "path": "0.5",
+            "frame": {
+              "left": 896.18,
+              "top": 435.29,
+              "width": 309.64,
+              "height": 150.43
+            }
+          },
+          {
+            "path": "0.6",
+            "frame": {
+              "left": 485.84,
+              "top": 387.83,
+              "width": 24.55,
+              "height": 24.54
+            }
+          },
+          {
+            "path": "0.7",
+            "frame": {
+              "left": 895.88,
+              "top": 387.83,
+              "width": 24.55,
+              "height": 24.54
+            }
+          },
+          {
+            "path": "0.8",
+            "frame": {
+              "left": 40.77,
+              "top": 353.33,
+              "width": 374.67,
+              "height": 276
+            }
+          },
+          {
+            "path": "0.9",
+            "frame": {
+              "left": 73.61,
+              "top": 435.29,
+              "width": 309.64,
+              "height": 150.43
+            }
+          },
+          {
+            "path": "0.10",
+            "frame": {
+              "left": 74.23,
+              "top": 387.83,
+              "width": 24.55,
+              "height": 24.54
+            }
+          },
+          {
+            "path": "0.11",
+            "frame": {
+              "left": 41.33,
+              "top": 152.29,
+              "width": 1197.33,
+              "height": 171.05
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -145,6 +145,9 @@ class FollowUpJob(Base):
     cancellation_reason: Mapped[Optional[str]] = mapped_column(
         Text, nullable=True
     )
+    created_by_principal_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("ai_service_principals.id"), nullable=True
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=_utc_now,

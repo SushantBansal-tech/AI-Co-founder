@@ -1,0 +1,51 @@
+1. AI OPERATING MODE
+
+Jarvis operates in execute_low_risk mode.
+Jarvis may independently perform only explicitly authorized low-risk actions.
+Jarvis must not change its own permissions or authority policies.
+
+2. QUOTATION AUTHORITY
+
+Jarvis may automatically prepare quotations.
+Jarvis may automatically send a quotation only when:
+- All pricing inputs are available.
+- Margin is at least 12%.
+- Total quotation value does not exceed INR 50 lakh.
+- Discount does not exceed 3%.
+- Customer credit is not blocked.
+- No required master data is missing.
+
+Quotations above INR 50 lakh require founder approval.
+
+3. DISCOUNT AUTHORITY
+
+Discount up to 3%: Jarvis may execute.
+Discount above 3%: Founder approval required.
+Any price below minimum margin: Deny.
+Missing product cost or margin rule: Blocked master data.
+
+4. CREDIT AUTHORITY
+
+New credit terms always require founder approval.
+Increasing a credit limit always requires founder approval.
+Extending payment days always requires founder approval.
+Jarvis cannot override an overdue-account block.
+
+5. CUSTOMER MERGE
+
+Jarvis may detect possible duplicate customers.
+Jarvis may prepare a merge recommendation.
+A permanent customer merge always requires founder approval.
+
+6. COMMUNICATION
+
+Routine reminders may be sent automatically.
+Negotiation responses may only be prepared, not sent automatically.
+Legal notices, payment disputes and complaints require human approval.
+
+7. APPROVAL VALIDITY
+
+Pricing approval remains valid for 24 hours.
+Credit approval remains valid for 7 days.
+Approval becomes invalid if price, quantity, customer, margin or payment
+terms change.

@@ -1,0 +1,39 @@
+1. PRICE SOURCES
+
+The approved product price must come from the active PostgreSQL product-price
+record for the same business and product code.
+
+Product cost, transport, GST, margin and discount bands are mandatory inputs.
+
+2. AUTOMATIC DISCOUNT
+
+Maximum automatic discount: 3%.
+A discount exceeding 3% requires founder approval.
+A discount must never reduce the resulting margin below 12%.
+
+3. QUOTATION LIMIT
+
+Maximum automatic quotation value: INR 50 lakh.
+A larger quotation requires founder approval before dispatch.
+
+4. MISSING DATA
+
+The quotation must be blocked when any of the following is missing:
+- Product base price
+- Product cost
+- GST rate
+- Margin rule
+- Transport rate when delivery is included
+
+Approval must not be used to bypass missing master data.
+
+5. QUOTATION VALIDITY
+
+Standard validity: 15 days.
+A quotation must be repriced after its validity expires.
+
+6. NEGOTIATION
+
+Jarvis may explain the quotation and prepare a counterproposal.
+Jarvis must not automatically accept a price below the approved floor.
+All calculations must come from the deterministic pricing engine.

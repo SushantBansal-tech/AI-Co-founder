@@ -1,0 +1,287 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 2400 1800" role="img" aria-labelledby="title desc">
+  <title id="title">AI-Native Sales OS, CRM and Jarvis architecture</title>
+  <desc id="desc">Updated architecture showing customer channels, channel ingestion, permanent customer identity, persistent LangGraph sales workflow, structured PostgreSQL repositories, Qdrant memory, Jarvis orchestration, controlled business tools, authority policies, approval gates, founder command centre, idempotent action execution and complete auditing.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#52606d"/>
+    </marker>
+    <marker id="arrow-purple" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#6d4aff"/>
+    </marker>
+    <marker id="arrow-amber" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#b7791f"/>
+    </marker>
+    <style>
+      .canvas { fill:#f7f8fb; }
+      .title { font:700 42px "Segoe UI",Arial,sans-serif; fill:#17212b; }
+      .subtitle { font:400 21px "Segoe UI",Arial,sans-serif; fill:#52606d; }
+      .section { font:700 20px "Segoe UI",Arial,sans-serif; letter-spacing:1px; fill:#334e68; }
+      .h2 { font:700 23px "Segoe UI",Arial,sans-serif; fill:#17212b; }
+      .h3 { font:650 18px "Segoe UI",Arial,sans-serif; fill:#17212b; }
+      .body { font:400 16px "Segoe UI",Arial,sans-serif; fill:#334e68; }
+      .small { font:400 14px "Segoe UI",Arial,sans-serif; fill:#52606d; }
+      .label { font:650 14px "Segoe UI",Arial,sans-serif; fill:#334e68; }
+      .new-label { font:700 12px "Segoe UI",Arial,sans-serif; letter-spacing:.8px; fill:#ffffff; }
+      .boundary { fill:#ffffff; stroke:#d8dee8; stroke-width:2; rx:22; }
+      .channel { fill:#eaf4ff; stroke:#72a7d8; stroke-width:2; rx:16; }
+      .crm { fill:#f0edff; stroke:#8b78e6; stroke-width:2; rx:16; }
+      .policy { fill:#fff5df; stroke:#d7a54b; stroke-width:2; rx:16; }
+      .workflow { fill:#eaf8f1; stroke:#5ea782; stroke-width:2; rx:16; }
+      .data { fill:#eef2f6; stroke:#93a1b1; stroke-width:2; rx:16; }
+      .audit { fill:#fff0ef; stroke:#d17870; stroke-width:2; rx:16; }
+      .provider { fill:#f4f6f8; stroke:#aab4c0; stroke-width:2; rx:16; }
+      .connector { fill:none; stroke:#52606d; stroke-width:3; marker-end:url(#arrow); }
+      .connector-purple { fill:none; stroke:#6d4aff; stroke-width:3.5; marker-end:url(#arrow-purple); }
+      .connector-amber { fill:none; stroke:#b7791f; stroke-width:3.5; marker-end:url(#arrow-amber); }
+      .connector-dashed { fill:none; stroke:#73808c; stroke-width:2.5; stroke-dasharray:10 8; marker-end:url(#arrow); }
+      .bus { fill:none; stroke:#93a1b1; stroke-width:3; }
+    </style>
+  </defs>
+
+  <rect class="canvas" width="2400" height="1800"/>
+  <text class="title" x="70" y="66">AI-Native Sales OS + CRM + Jarvis</text>
+  <text class="subtitle" x="70" y="102">Existing inquiry-to-handoff workflow preserved · Jarvis acts only through governed business tools</text>
+
+  <!-- Connectors are intentionally rendered before nodes. -->
+  <path class="connector" d="M520 222 H615"/>
+  <path class="connector" d="M925 222 H1015"/>
+  <path class="connector-purple" d="M2110 222 H2180 V415 H2065"/>
+  <path class="connector-purple" d="M1880 440 H1695"/>
+  <path class="connector-purple" d="M1460 440 H1285"/>
+  <path class="connector-purple" d="M1050 440 H865"/>
+  <path class="connector-amber" d="M865 485 H965"/>
+  <path class="connector-amber" d="M1200 485 H1300"/>
+  <path class="connector-amber" d="M1535 485 H1635"/>
+  <path class="connector-purple" d="M1760 535 V625 H1515"/>
+  <path class="connector-amber" d="M1760 535 H2130 V330 H2065"/>
+  <path class="connector-purple" d="M1390 675 V790 H1200"/>
+  <path class="connector-purple" d="M1390 675 V775 H715 V820"/>
+  <path class="connector-purple" d="M620 485 H560 V790 H705"/>
+
+  <path class="connector" d="M350 870 H610"/>
+  <path class="connector" d="M960 870 H1035"/>
+  <path class="connector" d="M1275 870 H1330"/>
+  <path class="connector" d="M1570 870 H1625"/>
+  <path class="connector" d="M1865 870 H1920"/>
+  <path class="connector" d="M2160 870 H2220 V1035 H2040"/>
+  <path class="connector" d="M1920 1035 H1850"/>
+  <path class="connector" d="M1610 1035 H1555"/>
+  <path class="connector" d="M1315 1035 H1260"/>
+  <path class="connector" d="M1020 1035 H965"/>
+  <path class="connector" d="M725 1035 H670"/>
+  <path class="connector" d="M430 1035 H375"/>
+
+  <path class="connector-dashed" d="M1170 1090 V1210 H475"/>
+  <path class="connector-dashed" d="M1460 1090 V1210 H1135"/>
+  <path class="connector-dashed" d="M2050 1090 V1210 H2050"/>
+  <path class="connector" d="M475 1355 V1460"/>
+  <path class="connector" d="M1135 1355 V1460"/>
+  <path class="connector" d="M1595 1355 V1460"/>
+  <path class="connector" d="M2050 1355 V1460"/>
+  <path class="connector" d="M1595 1250 H1450 V1115"/>
+  <path class="connector" d="M740 1250 H815 V1115"/>
+  <path class="connector" d="M1380 1570 H1750"/>
+
+  <!-- Top: people and channels -->
+  <text class="section" x="70" y="145">1 · CUSTOMERS AND CHANNELS</text>
+  <rect class="boundary" x="70" y="165" width="450" height="190"/>
+  <text class="h2" x="100" y="205">Customer touchpoints</text>
+  <rect class="channel" x="100" y="230" width="120" height="72"/>
+  <rect class="channel" x="235" y="230" width="120" height="72"/>
+  <rect class="channel" x="370" y="230" width="120" height="72"/>
+  <text class="h3" x="160" y="273" text-anchor="middle">Website</text>
+  <text class="h3" x="295" y="273" text-anchor="middle">Email</text>
+  <text class="h3" x="430" y="273" text-anchor="middle">WhatsApp</text>
+  <text class="small" x="100" y="329">New inquiries · replies · POs · delivery confirmations</text>
+
+  <rect class="boundary" x="615" y="165" width="310" height="190"/>
+  <text class="h2" x="645" y="205">Channel ingestion</text>
+  <text class="body" x="645" y="239">Normalize incoming event</text>
+  <text class="body" x="645" y="267">Conversation correlation</text>
+  <text class="body" x="645" y="295">Durable inbound jobs</text>
+  <text class="body" x="645" y="323">Idempotency claim</text>
+
+  <rect class="boundary" x="1015" y="165" width="435" height="190"/>
+  <text class="h2" x="1045" y="205">CRM interaction record</text>
+  <text class="body" x="1045" y="239">Permanent customer and lead linkage</text>
+  <text class="body" x="1045" y="267">Incoming/outgoing messages</text>
+  <text class="body" x="1045" y="295">Thread and pipeline correlation</text>
+  <text class="body" x="1045" y="323">Business event audit</text>
+
+  <rect class="boundary" x="1880" y="165" width="450" height="190"/>
+  <text class="h2" x="1910" y="205">Founder / business owner</text>
+  <text class="body" x="1910" y="239">Configures Jarvis authority</text>
+  <text class="body" x="1910" y="267">Reviews risks and pipeline</text>
+  <text class="body" x="1910" y="295">Approves, rejects or modifies exceptions</text>
+  <text class="body" x="1910" y="323">Can switch AI to observe-only mode</text>
+
+  <!-- New AI-native CRM control plane -->
+  <text class="section" x="70" y="400">2 · AI-NATIVE CRM CONTROL PLANE</text>
+  <rect class="boundary" x="70" y="415" width="2260" height="330" style="stroke:#8b78e6;stroke-width:3"/>
+  <rect x="92" y="435" width="66" height="25" rx="12" fill="#6d4aff"/>
+  <text class="new-label" x="125" y="453" text-anchor="middle">NEW</text>
+
+  <rect class="crm" x="185" y="470" width="435" height="195"/>
+  <text class="h2" x="215" y="510">Founder command centre</text>
+  <text class="body" x="215" y="544">Ask Jarvis</text>
+  <text class="body" x="215" y="572">Pending approvals</text>
+  <text class="body" x="215" y="600">Revenue pipeline and risks</text>
+  <text class="body" x="215" y="628">Completed AI actions</text>
+
+  <rect class="crm" x="650" y="470" width="215" height="130"/>
+  <text class="h2" x="757" y="510" text-anchor="middle">Jarvis</text>
+  <text class="body" x="757" y="541" text-anchor="middle">Intent + planning</text>
+  <text class="body" x="757" y="569" text-anchor="middle">Tool proposal</text>
+
+  <rect class="crm" x="1050" y="405" width="235" height="130"/>
+  <text class="h3" x="1168" y="444" text-anchor="middle">Sales context builder</text>
+  <text class="body" x="1168" y="474" text-anchor="middle">Customer 360</text>
+  <text class="body" x="1168" y="501" text-anchor="middle">Pipeline + memory</text>
+
+  <rect class="crm" x="1300" y="405" width="235" height="130"/>
+  <text class="h3" x="1418" y="444" text-anchor="middle">Controlled tools</text>
+  <text class="body" x="1418" y="474" text-anchor="middle">Typed operations</text>
+  <text class="body" x="1418" y="501" text-anchor="middle">No raw SQL access</text>
+
+  <rect class="policy" x="965" y="555" width="235" height="130"/>
+  <text class="h3" x="1083" y="594" text-anchor="middle">Permission check</text>
+  <text class="body" x="1083" y="624" text-anchor="middle">AI service identity</text>
+  <text class="body" x="1083" y="651" text-anchor="middle">Tenant + scope</text>
+
+  <rect class="policy" x="1300" y="555" width="235" height="130"/>
+  <text class="h3" x="1418" y="594" text-anchor="middle">Authority engine</text>
+  <text class="body" x="1418" y="624" text-anchor="middle">ALLOW · DENY</text>
+  <text class="body" x="1418" y="651" text-anchor="middle">REQUIRE APPROVAL</text>
+
+  <rect class="crm" x="1635" y="470" width="250" height="130"/>
+  <text class="h3" x="1760" y="509" text-anchor="middle">AI action ledger</text>
+  <text class="body" x="1760" y="539" text-anchor="middle">Idempotent execution</text>
+  <text class="body" x="1760" y="566" text-anchor="middle">Result + failure state</text>
+
+  <rect class="policy" x="1635" y="625" width="250" height="80"/>
+  <text class="h3" x="1760" y="658" text-anchor="middle">Approval decision</text>
+  <text class="body" x="1760" y="684" text-anchor="middle">Approve · reject · expire</text>
+
+  <rect class="policy" x="1950" y="405" width="115" height="130"/>
+  <text class="h3" x="2008" y="447" text-anchor="middle">Owner</text>
+  <text class="body" x="2008" y="478" text-anchor="middle">approval</text>
+  <text class="body" x="2008" y="505" text-anchor="middle">gate</text>
+
+  <text class="small" x="1950" y="580">Sensitive examples:</text>
+  <text class="small" x="1950" y="606">discount · credit · PO mismatch</text>
+  <text class="small" x="1950" y="632">customer merge · cancellation</text>
+
+  <!-- Existing operating flow -->
+  <text class="section" x="70" y="790">3 · EXISTING SALES WORKFLOW — PRESERVED</text>
+  <rect class="boundary" x="70" y="810" width="2260" height="330"/>
+
+  <rect class="workflow" x="110" y="825" width="240" height="90"/>
+  <text class="h3" x="230" y="860" text-anchor="middle">Inquiry extraction</text>
+  <text class="small" x="230" y="888" text-anchor="middle">requirements + contacts</text>
+
+  <rect class="workflow" x="610" y="825" width="350" height="90"/>
+  <text class="h3" x="785" y="860" text-anchor="middle">Identity + Customer 360</text>
+  <text class="small" x="785" y="888" text-anchor="middle">deduplication · history · CRM memory</text>
+
+  <rect class="workflow" x="1035" y="825" width="240" height="90"/>
+  <text class="h3" x="1155" y="860" text-anchor="middle">Qualification</text>
+  <text class="small" x="1155" y="888" text-anchor="middle">customer + credit risk</text>
+
+  <rect class="workflow" x="1330" y="825" width="240" height="90"/>
+  <text class="h3" x="1450" y="860" text-anchor="middle">Feasibility</text>
+  <text class="small" x="1450" y="888" text-anchor="middle">stock · capacity · delivery</text>
+
+  <rect class="workflow" x="1625" y="825" width="240" height="90"/>
+  <text class="h3" x="1745" y="860" text-anchor="middle">Pricing</text>
+  <text class="small" x="1745" y="888" text-anchor="middle">cost · margin · GST · freight</text>
+
+  <rect class="workflow" x="1920" y="825" width="240" height="90"/>
+  <text class="h3" x="2040" y="860" text-anchor="middle">Quotation</text>
+  <text class="small" x="2040" y="888" text-anchor="middle">persist · render · dispatch</text>
+
+  <rect class="workflow" x="1920" y="990" width="240" height="90"/>
+  <text class="h3" x="2040" y="1025" text-anchor="middle">Customer reply</text>
+  <text class="small" x="2040" y="1053" text-anchor="middle">accept · objection · counteroffer</text>
+
+  <rect class="workflow" x="1610" y="990" width="240" height="90"/>
+  <text class="h3" x="1730" y="1025" text-anchor="middle">Negotiation</text>
+  <text class="small" x="1730" y="1053" text-anchor="middle">deterministic authority</text>
+
+  <rect class="workflow" x="1315" y="990" width="240" height="90"/>
+  <text class="h3" x="1435" y="1025" text-anchor="middle">PO validation</text>
+  <text class="small" x="1435" y="1053" text-anchor="middle">exact commercial comparison</text>
+
+  <rect class="workflow" x="1020" y="990" width="240" height="90"/>
+  <text class="h3" x="1140" y="1025" text-anchor="middle">Revalidation</text>
+  <text class="small" x="1140" y="1053" text-anchor="middle">price · stock · capacity · credit</text>
+
+  <rect class="workflow" x="725" y="990" width="240" height="90"/>
+  <text class="h3" x="845" y="1025" text-anchor="middle">Sales order</text>
+  <text class="small" x="845" y="1053" text-anchor="middle">validated order creation</text>
+
+  <rect class="workflow" x="430" y="990" width="240" height="90"/>
+  <text class="h3" x="550" y="1025" text-anchor="middle">Department handoff</text>
+  <text class="small" x="550" y="1053" text-anchor="middle">production · finance · logistics</text>
+
+  <rect class="audit" x="135" y="990" width="240" height="90"/>
+  <text class="h3" x="255" y="1025" text-anchor="middle">Explicit final state</text>
+  <text class="small" x="255" y="1053" text-anchor="middle">handed off · blocked · failed</text>
+
+  <!-- Services and data -->
+  <text class="section" x="70" y="1190">4 · SERVICES, MEMORY AND DURABLE EXECUTION</text>
+  <rect class="boundary" x="70" y="1210" width="2260" height="190"/>
+
+  <rect class="data" x="110" y="1230" width="730" height="125"/>
+  <text class="h2" x="140" y="1268">Structured PostgreSQL repositories</text>
+  <text class="body" x="140" y="1300">catalog · inventory · capacity · delivery · prices · costs</text>
+  <text class="body" x="140" y="1328">transport · discount bands · margin rules · GST · payment terms</text>
+
+  <rect class="data" x="930" y="1230" width="410" height="125"/>
+  <text class="h2" x="960" y="1268">Qdrant semantic memory</text>
+  <text class="body" x="960" y="1300">documents · notes · narrative policy</text>
+  <text class="body" x="960" y="1328">technical search · customer context</text>
+
+  <rect class="provider" x="1435" y="1230" width="320" height="125"/>
+  <text class="h2" x="1465" y="1268">Durable workers</text>
+  <text class="body" x="1465" y="1300">follow-up · inbound email</text>
+  <text class="body" x="1465" y="1328">memory outbox · retries</text>
+
+  <rect class="data" x="1850" y="1230" width="400" height="125"/>
+  <text class="h2" x="1880" y="1268">LangGraph checkpoints</text>
+  <text class="body" x="1880" y="1300">PostgreSQL-backed workflow state</text>
+  <text class="body" x="1880" y="1328">same thread resumes after restart</text>
+
+  <!-- Source of truth -->
+  <text class="section" x="70" y="1440">5 · SYSTEM OF RECORD AND AUDIT</text>
+  <rect class="data" x="70" y="1460" width="1310" height="240"/>
+  <text class="h2" x="105" y="1505">PostgreSQL · single source of truth</text>
+  <text class="body" x="105" y="1542">customers · customer identities · leads · assignments · interactions · tasks</text>
+  <text class="body" x="105" y="1573">quotations and versions · negotiations · purchase orders · sales orders · payments</text>
+  <text class="body" x="105" y="1604">pipeline instances · follow-up jobs · channel jobs · processed events</text>
+  <text class="body" x="105" y="1635">AI service principals · authority policies · AI action requests · approval decisions</text>
+  <text class="small" x="105" y="1672">Exact business facts live here. Qdrant and checkpoints support the system but do not replace the CRM record.</text>
+
+  <rect class="audit" x="1750" y="1460" width="580" height="240"/>
+  <text class="h2" x="1785" y="1505">Append-only business events</text>
+  <text class="body" x="1785" y="1542">AI action proposed</text>
+  <text class="body" x="1785" y="1573">Policy evaluated</text>
+  <text class="body" x="1785" y="1604">Owner approved / rejected</text>
+  <text class="body" x="1785" y="1635">Execution succeeded / failed</text>
+  <text class="small" x="1785" y="1672">Actor · reason · inputs · policy version · before/after · provider result</text>
+
+  <!-- Footer legend -->
+  <rect class="channel" x="70" y="1730" width="28" height="18"/>
+  <text class="small" x="110" y="1745">Channels</text>
+  <rect class="crm" x="225" y="1730" width="28" height="18"/>
+  <text class="small" x="265" y="1745">AI-native CRM / Jarvis</text>
+  <rect class="policy" x="500" y="1730" width="28" height="18"/>
+  <text class="small" x="540" y="1745">Authority and approvals</text>
+  <rect class="workflow" x="815" y="1730" width="28" height="18"/>
+  <text class="small" x="855" y="1745">Existing workflow</text>
+  <rect class="data" x="1065" y="1730" width="28" height="18"/>
+  <text class="small" x="1105" y="1745">Data and persistence</text>
+  <rect class="audit" x="1370" y="1730" width="28" height="18"/>
+  <text class="small" x="1410" y="1745">Audit</text>
+
+  <text class="small" x="70" y="1780">Core rule: Gemini interprets and communicates · deterministic policies authorize · controlled tools execute · PostgreSQL records · the founder controls exceptions</text>
+</svg>

@@ -1,0 +1,60 @@
+1. REQUIRED PO FIELDS
+
+A PO must contain:
+- PO number
+- PO date
+- Buyer company
+- Buyer GSTIN where applicable
+- Product code or unambiguous product specification
+- Quantity and unit
+- Unit rate
+- GST rate
+- Total amount
+- Delivery destination
+- Delivery date or schedule
+- Payment terms
+- Reference quotation number
+
+2. VALIDATION
+
+The PO must be compared with the latest approved quotation version.
+
+3. CRITICAL MISMATCHES
+
+The following require correction or approval:
+- Different product grade
+- Different product code
+- Price below approved quotation
+- Incompatible payment terms
+- Incorrect GST
+- Unsupported delivery commitment
+- Quantity outside the approved tolerance
+
+4. REVALIDATION
+
+Before order acceptance, recheck:
+- Quotation validity
+- Current product price
+- Inventory availability
+- Production capacity
+- Delivery commitment
+- Customer credit exposure
+- Approval expiry
+- Active policy version
+
+5. OUTCOMES
+
+Exact match: continue to order revalidation.
+Minor mismatch: request approval.
+Material mismatch: request a corrected PO or revised quotation.
+Missing mandatory information: request more information.
+
+6. ORDER STATUS
+
+Receiving a positive email is not automatically ORDER_WON.
+The normal sequence is:
+CUSTOMER_ACCEPTED_COMMERCIALS
+AWAITING_PO
+PO_RECEIVED
+PO_VALIDATED
+ORDER_WON

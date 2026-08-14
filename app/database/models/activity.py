@@ -23,6 +23,10 @@ class Interaction(Base):
             "ix_interactions_thread_occurred",
             "business_id", "thread_id", "occurred_at",
         ),
+        Index(
+            "ix_interactions_business_direction_time",
+            "business_id", "direction", "occurred_at",
+        ),
     )
 
     id: Mapped[str] = mapped_column(

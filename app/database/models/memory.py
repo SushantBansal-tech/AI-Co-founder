@@ -31,6 +31,9 @@ class CustomerNote(Base):
     content_type: Mapped[str] = mapped_column(String(50), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
     created_by: Mapped[str] = mapped_column(String(100), nullable=False, default="api")
+    created_by_principal_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("ai_service_principals.id"), nullable=True
+    )
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="active")
     occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=utc_now)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=utc_now)

@@ -10,6 +10,7 @@ from sqlalchemy import (
     Float,
     ForeignKey,
     Integer,
+    Index,
     String,
     Text,
 )
@@ -44,6 +45,9 @@ class QuotationStatus(str, Enum):
 
 class QuotationRecord(Base):
     __tablename__ = "quotations"
+    __table_args__ = (
+        Index("ix_quotations_business_sent", "business_id", "sent_at"),
+    )
 
     id: Mapped[str] = mapped_column(
         String(36),
@@ -118,6 +122,9 @@ class QuotationRecord(Base):
         DateTime(timezone=True),
         nullable=True,
     )
+    prepared_by_principal_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("ai_service_principals.id"), nullable=True
+    )
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
@@ -190,6 +197,9 @@ class QuotationVersion(Base):
 
     changed_by: Mapped[str] = mapped_column(
         String(100),
+    )
+    changed_by_principal_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("ai_service_principals.id"), nullable=True
     )
 
     negotiation_decision: Mapped[Optional[str]] = mapped_column(

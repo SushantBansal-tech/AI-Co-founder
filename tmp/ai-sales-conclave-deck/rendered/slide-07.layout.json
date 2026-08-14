@@ -1,0 +1,1566 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/i869kf",
+    "id": "i869kf",
+    "slide": 7,
+    "layoutId": "15433292-82ca-42bf-8472-d238c6c4628c",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "54d0db12-953b-41c5-af3a-468b5133fa25",
+    "masterLayoutName": "Master",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "Helvetica Neue"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "15433292-82ca-42bf-8472-d238c6c4628c",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "54d0db12-953b-41c5-af3a-468b5133fa25",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "54d0db12-953b-41c5-af3a-468b5133fa25",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/xw7qdcju",
+      "id": "1",
+      "name": "Google-Shape-532-p58-2",
+      "bbox": [
+        1184.18,
+        659.24,
+        54.48,
+        25.33
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.0"
+      },
+      "geometry": "rect",
+      "text": "7",
+      "textPreview": "7",
+      "resolvedFontSize": 13.33,
+      "resolvedTextStyle": {
+        "anchor": 3,
+        "fontSize": 13.33,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "right",
+        "verticalAlignment": "bottom",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "7"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "7",
+          "resolvedTextStyle": {
+            "anchor": 3,
+            "fontSize": 13.33,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "right",
+            "verticalAlignment": "bottom",
+            "wrap": "square",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "7",
+              "anchor": 3,
+              "fontSize": 13.33,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "right",
+              "verticalAlignment": "bottom",
+              "wrap": "square",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/a9wrixkj",
+      "id": "2",
+      "name": "Google-Shape-533-p58-3",
+      "bbox": [
+        41.33,
+        36.12,
+        1197.33,
+        109.97
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.1"
+      },
+      "geometry": "rect",
+      "text": "Owner command centre: decisions, risks and outcomes",
+      "textPreview": "Owner command centre: decisions, risks and outcomes",
+      "resolvedFontSize": 38.67,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 38.67,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "wrap": "square",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Owner command centre: decisions, risks and outcomes"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Owner command centre: decisions, risks and outcomes",
+          "resolvedTextStyle": {
+            "anchor": 1,
+            "fontSize": 38.67,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "verticalAlignment": "top",
+            "wrap": "square",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Owner command centre: decisions, risks and outcomes",
+              "anchor": 1,
+              "fontSize": 38.67,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "verticalAlignment": "top",
+              "wrap": "square",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/bup8b214",
+      "id": "3",
+      "name": "Rounded-Rectangle-6-4",
+      "bbox": [
+        657.68,
+        248.8,
+        580.99,
+        172
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.2"
+      },
+      "geometry": "roundRect",
+      "fillColor": "#F2F2F2"
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/o7epgn2d",
+      "id": "4",
+      "name": "Content-Placeholder-10-5",
+      "bbox": [
+        688.89,
+        279.77,
+        523.56,
+        110.07
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.3"
+      },
+      "geometry": "rect",
+      "text": "Revenue pipeline\nRFQs, quotations, accepted terms, POs and orders.",
+      "textPreview": "Revenue pipeline | RFQs, quotations, accepted terms, POs and orders.",
+      "resolvedFontSize": 30.58,
+      "resolvedTextStyle": {
+        "fontSize": 32,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "left",
+        "autoFit": "shrinkText",
+        "autoFitScale": 0.96,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 3,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Revenue pipeline"
+          },
+          {
+            "index": 2,
+            "text": "RFQs, quotations, accepted terms, POs"
+          },
+          {
+            "index": 3,
+            "text": "and orders."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Revenue pipeline",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "shrinkText",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Revenue pipeline",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "shrinkText",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 2,
+          "text": "RFQs, quotations, accepted terms, POs and orders.",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "shrinkText",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "RFQs, quotations, accepted terms, POs and orders.",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "shrinkText",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/p8nq9sjy",
+      "id": "5",
+      "name": "Rounded-Rectangle-8-6",
+      "bbox": [
+        42.94,
+        248.8,
+        580.99,
+        172
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.4"
+      },
+      "geometry": "roundRect",
+      "fillColor": "#F2F2F2"
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/25w7edk7",
+      "id": "6",
+      "name": "Content-Placeholder-10-7",
+      "bbox": [
+        74.15,
+        279.77,
+        523.56,
+        110.07
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.5"
+      },
+      "geometry": "rect",
+      "text": "Pending approvals\nCommercial impact, policy reason, evidence and expiry.",
+      "textPreview": "Pending approvals | Commercial impact, policy reason, evidence and expiry.",
+      "resolvedFontSize": 30.58,
+      "resolvedTextStyle": {
+        "fontSize": 32,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "left",
+        "autoFit": "shrinkText",
+        "autoFitScale": 0.96,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 3,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Pending approvals"
+          },
+          {
+            "index": 2,
+            "text": "Commercial impact, policy reason,"
+          },
+          {
+            "index": 3,
+            "text": "evidence and expiry."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Pending approvals",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "shrinkText",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Pending approvals",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "shrinkText",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 2,
+          "text": "Commercial impact, policy reason, evidence and expiry.",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "shrinkText",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Commercial impact, policy reason, evidence and expiry.",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "shrinkText",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/n6587i1s",
+      "id": "7",
+      "name": "Rounded-Rectangle-1-8",
+      "bbox": [
+        657.68,
+        458.8,
+        580.99,
+        172
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.6"
+      },
+      "geometry": "roundRect",
+      "fillColor": "#F2F2F2"
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/03epcn2h",
+      "id": "8",
+      "name": "Content-Placeholder-10-9",
+      "bbox": [
+        688.89,
+        489.77,
+        523.56,
+        110.07
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.7"
+      },
+      "geometry": "rect",
+      "text": "Completed AI actions\nWhat happened, why it happened and the audit reference.",
+      "textPreview": "Completed AI actions | What happened, why it happened and the audit reference.",
+      "resolvedFontSize": 30.58,
+      "resolvedTextStyle": {
+        "fontSize": 32,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "left",
+        "autoFit": "shrinkText",
+        "autoFitScale": 0.96,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 3,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Completed AI actions"
+          },
+          {
+            "index": 2,
+            "text": "What happened, why it happened and the"
+          },
+          {
+            "index": 3,
+            "text": "audit reference."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Completed AI actions",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "shrinkText",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Completed AI actions",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "shrinkText",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 2,
+          "text": "What happened, why it happened and the audit reference.",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "shrinkText",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "What happened, why it happened and the audit reference.",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "shrinkText",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/14nq58jm",
+      "id": "9",
+      "name": "Rounded-Rectangle-3-10",
+      "bbox": [
+        42.94,
+        458.8,
+        580.99,
+        172
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.8"
+      },
+      "geometry": "roundRect",
+      "fillColor": "#F2F2F2"
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/lkrip0rm",
+      "id": "10",
+      "name": "Content-Placeholder-10-11",
+      "bbox": [
+        74.15,
+        489.77,
+        523.56,
+        110.07
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.9"
+      },
+      "geometry": "rect",
+      "text": "Risks and attention\nStalled deals, expiring quotes, payment and delivery risks.",
+      "textPreview": "Risks and attention | Stalled deals, expiring quotes, payment and delivery risks.",
+      "resolvedFontSize": 30.58,
+      "resolvedTextStyle": {
+        "fontSize": 32,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "left",
+        "autoFit": "shrinkText",
+        "autoFitScale": 0.96,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 3,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Risks and attention"
+          },
+          {
+            "index": 2,
+            "text": "Stalled deals, expiring quotes, payment"
+          },
+          {
+            "index": 3,
+            "text": "and delivery risks."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Risks and attention",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "shrinkText",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Risks and attention",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "shrinkText",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 2,
+          "text": "Stalled deals, expiring quotes, payment and delivery risks.",
+          "resolvedTextStyle": {
+            "fontSize": 32,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "shrinkText",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Stalled deals, expiring quotes, payment and delivery risks.",
+              "fontSize": 32,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "shrinkText",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/0jihgfq1",
+      "id": "11",
+      "name": "Content-Placeholder-15-12",
+      "bbox": [
+        42.09,
+        111.02,
+        1197.33,
+        106.27
+      ],
+      "composeSource": {
+        "run": 1,
+        "path": "0.10"
+      },
+      "geometry": "rect",
+      "text": "Founder command centre\nA single interface focuses attention on what requires a human decision and what Jarvis completed independently.",
+      "textPreview": "Founder command centre | A single interface focuses attention on what requires a human decision and what Jarvis completed independently.",
+      "resolvedFontSize": 21.33,
+      "resolvedTextStyle": {
+        "fontSize": 21.33,
+        "typeface": "Helvetica Neue",
+        "color": "#000000",
+        "alignment": "left",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Founder command centre"
+          },
+          {
+            "index": 2,
+            "text": "A single interface focuses attention on what requires a human decision and what Jarvis completed independently."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Founder command centre",
+          "resolvedTextStyle": {
+            "fontSize": 21.33,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Founder command centre",
+              "fontSize": 21.33,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 2,
+          "text": "A single interface focuses attention on what requires a human decision and what Jarvis completed independently.",
+          "resolvedTextStyle": {
+            "fontSize": 21.33,
+            "typeface": "Helvetica Neue",
+            "color": "#000000",
+            "alignment": "left",
+            "autoFit": "none",
+            "insets": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "A single interface focuses attention on what requires a human decision and what Jarvis completed independently.",
+              "fontSize": 21.33,
+              "typeface": "Helvetica Neue",
+              "color": "#000000",
+              "alignment": "left",
+              "autoFit": "none",
+              "insets": {
+                "top": 0,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
+            }
+          ],
+          "marginLeft": 0
+        }
+      ]
+    }
+  ],
+  "composeRuns": [
+    {
+      "index": 1,
+      "frame": {
+        "left": 0,
+        "top": 0,
+        "width": 1280,
+        "height": 720
+      },
+      "baseUnit": 1,
+      "root": {
+        "path": "0",
+        "kind": "layers",
+        "name": "codex-grid-layout-library#slide-12",
+        "requestedSize": {
+          "width": {
+            "mode": "fill",
+            "value": 1
+          },
+          "height": {
+            "mode": "fill",
+            "value": 1
+          }
+        },
+        "intrinsicSize": {
+          "width": 1239.42,
+          "height": 684.57
+        },
+        "frame": {
+          "left": 0,
+          "top": 0,
+          "width": 1280,
+          "height": 720
+        },
+        "children": [
+          {
+            "path": "0.0",
+            "kind": "text",
+            "name": "Google-Shape-532-p58-2",
+            "position": {
+              "left": 1184.18,
+              "top": 659.24
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 54.48
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 25.33
+              }
+            },
+            "intrinsicSize": {
+              "width": 54.48,
+              "height": 25.33
+            },
+            "frame": {
+              "left": 1184.18,
+              "top": 659.24,
+              "width": 54.48,
+              "height": 25.33
+            },
+            "snappedFrame": {
+              "left": 1184.18,
+              "top": 659.24,
+              "width": 54.48,
+              "height": 25.33
+            },
+            "children": [],
+            "text": "7",
+            "transform": "none",
+            "element": {
+              "aid": "sh/xw7qdcju",
+              "id": "1",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.1",
+            "kind": "text",
+            "name": "Google-Shape-533-p58-3",
+            "position": {
+              "left": 41.33,
+              "top": 36.12
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 1197.33
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 109.97
+              }
+            },
+            "intrinsicSize": {
+              "width": 1197.33,
+              "height": 109.97
+            },
+            "frame": {
+              "left": 41.33,
+              "top": 36.12,
+              "width": 1197.33,
+              "height": 109.97
+            },
+            "snappedFrame": {
+              "left": 41.33,
+              "top": 36.12,
+              "width": 1197.33,
+              "height": 109.97
+            },
+            "children": [],
+            "text": "Owner command centre: decisions, risks and outcomes",
+            "transform": "none",
+            "element": {
+              "aid": "sh/a9wrixkj",
+              "id": "2",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.2",
+            "kind": "shape",
+            "name": "Rounded-Rectangle-6-4",
+            "position": {
+              "left": 657.68,
+              "top": 248.8
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 580.99
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 172
+              }
+            },
+            "intrinsicSize": {
+              "width": 580.99,
+              "height": 172
+            },
+            "frame": {
+              "left": 657.68,
+              "top": 248.8,
+              "width": 580.99,
+              "height": 172
+            },
+            "snappedFrame": {
+              "left": 657.68,
+              "top": 248.8,
+              "width": 580.99,
+              "height": 172
+            },
+            "children": [],
+            "geometry": "roundRect",
+            "element": {
+              "aid": "sh/bup8b214",
+              "id": "3",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.3",
+            "kind": "text",
+            "name": "Content-Placeholder-10-5",
+            "position": {
+              "left": 688.89,
+              "top": 279.77
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 523.56
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 110.07
+              }
+            },
+            "intrinsicSize": {
+              "width": 523.56,
+              "height": 110.07
+            },
+            "frame": {
+              "left": 688.89,
+              "top": 279.77,
+              "width": 523.56,
+              "height": 110.07
+            },
+            "snappedFrame": {
+              "left": 688.89,
+              "top": 279.77,
+              "width": 523.56,
+              "height": 110.07
+            },
+            "children": [],
+            "text": "Revenue pipelineRFQs, quotations, accepted terms, POs and orders.",
+            "transform": "none",
+            "element": {
+              "aid": "sh/o7epgn2d",
+              "id": "4",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.4",
+            "kind": "shape",
+            "name": "Rounded-Rectangle-8-6",
+            "position": {
+              "left": 42.94,
+              "top": 248.8
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 580.99
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 172
+              }
+            },
+            "intrinsicSize": {
+              "width": 580.99,
+              "height": 172
+            },
+            "frame": {
+              "left": 42.94,
+              "top": 248.8,
+              "width": 580.99,
+              "height": 172
+            },
+            "snappedFrame": {
+              "left": 42.94,
+              "top": 248.8,
+              "width": 580.99,
+              "height": 172
+            },
+            "children": [],
+            "geometry": "roundRect",
+            "element": {
+              "aid": "sh/p8nq9sjy",
+              "id": "5",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.5",
+            "kind": "text",
+            "name": "Content-Placeholder-10-7",
+            "position": {
+              "left": 74.15,
+              "top": 279.77
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 523.56
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 110.07
+              }
+            },
+            "intrinsicSize": {
+              "width": 523.56,
+              "height": 110.07
+            },
+            "frame": {
+              "left": 74.15,
+              "top": 279.77,
+              "width": 523.56,
+              "height": 110.07
+            },
+            "snappedFrame": {
+              "left": 74.15,
+              "top": 279.77,
+              "width": 523.56,
+              "height": 110.07
+            },
+            "children": [],
+            "text": "Pending approvalsCommercial impact, policy reason, evidence and expiry.",
+            "transform": "none",
+            "element": {
+              "aid": "sh/25w7edk7",
+              "id": "6",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.6",
+            "kind": "shape",
+            "name": "Rounded-Rectangle-1-8",
+            "position": {
+              "left": 657.68,
+              "top": 458.8
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 580.99
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 172
+              }
+            },
+            "intrinsicSize": {
+              "width": 580.99,
+              "height": 172
+            },
+            "frame": {
+              "left": 657.68,
+              "top": 458.8,
+              "width": 580.99,
+              "height": 172
+            },
+            "snappedFrame": {
+              "left": 657.68,
+              "top": 458.8,
+              "width": 580.99,
+              "height": 172
+            },
+            "children": [],
+            "geometry": "roundRect",
+            "element": {
+              "aid": "sh/n6587i1s",
+              "id": "7",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.7",
+            "kind": "text",
+            "name": "Content-Placeholder-10-9",
+            "position": {
+              "left": 688.89,
+              "top": 489.77
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 523.56
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 110.07
+              }
+            },
+            "intrinsicSize": {
+              "width": 523.56,
+              "height": 110.07
+            },
+            "frame": {
+              "left": 688.89,
+              "top": 489.77,
+              "width": 523.56,
+              "height": 110.07
+            },
+            "snappedFrame": {
+              "left": 688.89,
+              "top": 489.77,
+              "width": 523.56,
+              "height": 110.07
+            },
+            "children": [],
+            "text": "Completed AI actionsWhat happened, why it happened and the audit reference.",
+            "transform": "none",
+            "element": {
+              "aid": "sh/03epcn2h",
+              "id": "8",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.8",
+            "kind": "shape",
+            "name": "Rounded-Rectangle-3-10",
+            "position": {
+              "left": 42.94,
+              "top": 458.8
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 580.99
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 172
+              }
+            },
+            "intrinsicSize": {
+              "width": 580.99,
+              "height": 172
+            },
+            "frame": {
+              "left": 42.94,
+              "top": 458.8,
+              "width": 580.99,
+              "height": 172
+            },
+            "snappedFrame": {
+              "left": 42.94,
+              "top": 458.8,
+              "width": 580.99,
+              "height": 172
+            },
+            "children": [],
+            "geometry": "roundRect",
+            "element": {
+              "aid": "sh/14nq58jm",
+              "id": "9",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.9",
+            "kind": "text",
+            "name": "Content-Placeholder-10-11",
+            "position": {
+              "left": 74.15,
+              "top": 489.77
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 523.56
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 110.07
+              }
+            },
+            "intrinsicSize": {
+              "width": 523.56,
+              "height": 110.07
+            },
+            "frame": {
+              "left": 74.15,
+              "top": 489.77,
+              "width": 523.56,
+              "height": 110.07
+            },
+            "snappedFrame": {
+              "left": 74.15,
+              "top": 489.77,
+              "width": 523.56,
+              "height": 110.07
+            },
+            "children": [],
+            "text": "Risks and attentionStalled deals, expiring quotes, payment and delivery risks.",
+            "transform": "none",
+            "element": {
+              "aid": "sh/lkrip0rm",
+              "id": "10",
+              "kind": "shape"
+            }
+          },
+          {
+            "path": "0.10",
+            "kind": "text",
+            "name": "Content-Placeholder-15-12",
+            "position": {
+              "left": 42.09,
+              "top": 111.02
+            },
+            "requestedSize": {
+              "width": {
+                "mode": "fixed",
+                "value": 1197.33
+              },
+              "height": {
+                "mode": "fixed",
+                "value": 106.27
+              }
+            },
+            "intrinsicSize": {
+              "width": 1197.33,
+              "height": 106.27
+            },
+            "frame": {
+              "left": 42.09,
+              "top": 111.02,
+              "width": 1197.33,
+              "height": 106.27
+            },
+            "snappedFrame": {
+              "left": 42.09,
+              "top": 111.02,
+              "width": 1197.33,
+              "height": 106.27
+            },
+            "children": [],
+            "text": "Founder command centreA single interface focuses attention on what requires a human decision and what Jarvis completed independently.",
+            "transform": "none",
+            "element": {
+              "aid": "sh/0jihgfq1",
+              "id": "11",
+              "kind": "shape"
+            }
+          }
+        ],
+        "padding": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "alignItems": "stretch",
+        "justifyItems": "stretch",
+        "contentFrame": {
+          "left": 0,
+          "top": 0,
+          "width": 1280,
+          "height": 720
+        },
+        "items": [
+          {
+            "path": "0.0",
+            "frame": {
+              "left": 1184.18,
+              "top": 659.24,
+              "width": 54.48,
+              "height": 25.33
+            }
+          },
+          {
+            "path": "0.1",
+            "frame": {
+              "left": 41.33,
+              "top": 36.12,
+              "width": 1197.33,
+              "height": 109.97
+            }
+          },
+          {
+            "path": "0.2",
+            "frame": {
+              "left": 657.68,
+              "top": 248.8,
+              "width": 580.99,
+              "height": 172
+            }
+          },
+          {
+            "path": "0.3",
+            "frame": {
+              "left": 688.89,
+              "top": 279.77,
+              "width": 523.56,
+              "height": 110.07
+            }
+          },
+          {
+            "path": "0.4",
+            "frame": {
+              "left": 42.94,
+              "top": 248.8,
+              "width": 580.99,
+              "height": 172
+            }
+          },
+          {
+            "path": "0.5",
+            "frame": {
+              "left": 74.15,
+              "top": 279.77,
+              "width": 523.56,
+              "height": 110.07
+            }
+          },
+          {
+            "path": "0.6",
+            "frame": {
+              "left": 657.68,
+              "top": 458.8,
+              "width": 580.99,
+              "height": 172
+            }
+          },
+          {
+            "path": "0.7",
+            "frame": {
+              "left": 688.89,
+              "top": 489.77,
+              "width": 523.56,
+              "height": 110.07
+            }
+          },
+          {
+            "path": "0.8",
+            "frame": {
+              "left": 42.94,
+              "top": 458.8,
+              "width": 580.99,
+              "height": 172
+            }
+          },
+          {
+            "path": "0.9",
+            "frame": {
+              "left": 74.15,
+              "top": 489.77,
+              "width": 523.56,
+              "height": 110.07
+            }
+          },
+          {
+            "path": "0.10",
+            "frame": {
+              "left": 42.09,
+              "top": 111.02,
+              "width": 1197.33,
+              "height": 106.27
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -7,6 +7,7 @@ from sqlalchemy import (
     Float,
     ForeignKey,
     JSON,
+    Index,
     String,
     Text,
 )
@@ -200,6 +201,9 @@ class PurchaseOrder(Base):
 
 class SalesOrder(Base):
     __tablename__ = "sales_orders"
+    __table_args__ = (
+        Index("ix_sales_orders_business_created", "business_id", "created_at"),
+    )
 
     id: Mapped[str] = mapped_column(
         String(36),

@@ -1,0 +1,13 @@
+- Approved grades and standards
+- Grade equivalence rules
+- Size and dimensional tolerances
+- Prohibited substitutions
+- Surface-finish requirements
+- Testing and certification requirements
+- Cases requiring engineering approval
+
+Examples:
+IS2062 E250 must not automatically match E350.
+Fe500 must not automatically match Fe500D.
+SS304 must not be substituted for SS316 without technical approval.
+50NB medium-class pipe must not be treated as heavy class.

@@ -8,6 +8,25 @@ from app.database.models.channel import (
     ChannelSource,
 )
 from app.database.models.idempotency import ProcessedEvent
+from app.database.models.crm import (
+    AuthSession,
+    BusinessMembership,
+    CRMActivity,
+    CRMTask,
+    LeadAssignment,
+    User,
+)
+from app.database.models.authority import (
+    AIPrincipalScope,
+    AIServicePrincipal,
+    AuthorityApprovalRequest,
+    AuthorityDecision,
+    AuthorityPolicy,
+    AuthorityPolicyVersion,
+    BusinessSettings,
+    BusinessSettingVersion,
+)
+from app.database.models.business_tool import AIToolExecution
 from app.database.models.memory import CustomerNote, MemoryOutbox
 from app.database.models.pipeline import (
     InventoryReservation,
@@ -67,6 +86,21 @@ __all__ = [
     "Interaction",
     "BusinessEvent",
     "ProcessedEvent",
+    "User",
+    "BusinessMembership",
+    "AuthSession",
+    "LeadAssignment",
+    "CRMTask",
+    "CRMActivity",
+    "BusinessSettings",
+    "BusinessSettingVersion",
+    "AIServicePrincipal",
+    "AIPrincipalScope",
+    "AuthorityDecision",
+    "AuthorityApprovalRequest",
+    "AuthorityPolicy",
+    "AuthorityPolicyVersion",
+    "AIToolExecution",
     "CustomerNote",
     "MemoryOutbox",
     "PipelineInstance",

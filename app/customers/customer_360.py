@@ -17,6 +17,10 @@ from app.database import (
     QuotationHistory,
     QuotationRecord,
     SalesOrder,
+    CRMActivity,
+    CRMTask,
+    PipelineInstance,
+    User,
 )
 
 
@@ -122,6 +126,44 @@ async def get_customer_360(
             .limit(20)
         )
     ).scalars().all()
+    tasks = (
+        await session.execute(
+            select(CRMTask)
+            .where(
+                CRMTask.business_id == business_id,
+                CRMTask.customer_id == customer_id,
+                CRMTask.status.in_(("open", "in_progress")),
+            )
+            .order_by(CRMTask.due_at)
+            .limit(50)
+        )
+    ).scalars().all()
+    crm_activities = (
+        await session.execute(
+            select(CRMActivity)
+            .where(
+                CRMActivity.business_id == business_id,
+                CRMActivity.customer_id == customer_id,
+            )
+            .order_by(CRMActivity.occurred_at.desc())
+            .limit(30)
+        )
+    ).scalars().all()
+    pipelines = (
+        await session.execute(
+            select(PipelineInstance)
+            .where(
+                PipelineInstance.business_id == business_id,
+                PipelineInstance.customer_id == customer_id,
+            )
+            .order_by(PipelineInstance.updated_at.desc())
+            .limit(20)
+        )
+    ).scalars().all()
+    account_owner = (
+        await session.get(User, customer.account_owner_id)
+        if customer.account_owner_id else None
+    )
 
     total_order_value = (
         sum(float(order.total_value or 0) for order in orders)
@@ -170,6 +212,8 @@ async def get_customer_360(
             "credit_limit": float(customer.credit_limit or 0),
             "outstanding_amount": float(customer.outstanding_amount or 0),
             "payment_behavior": _value(customer.payment_behavior),
+            "account_owner_id": customer.account_owner_id,
+            "account_owner_name": account_owner.display_name if account_owner else None,
         },
         "identities": [
             {
@@ -272,5 +316,41 @@ async def get_customer_360(
                 "occurred_at": item.occurred_at.isoformat(),
             }
             for item in notes
+        ],
+        "open_tasks": [
+            {
+                "id": item.id,
+                "task_type": item.task_type,
+                "title": item.title,
+                "priority": item.priority,
+                "status": item.status,
+                "assigned_to_user_id": item.assigned_to_user_id,
+                "due_at": item.due_at.isoformat(),
+            }
+            for item in tasks
+        ],
+        "recent_crm_activities": [
+            {
+                "id": item.id,
+                "activity_type": item.activity_type,
+                "subject": item.subject,
+                "notes": item.notes,
+                "outcome": item.outcome,
+                "actor_user_id": item.actor_user_id,
+                "occurred_at": item.occurred_at.isoformat(),
+            }
+            for item in crm_activities
+        ],
+        "active_pipelines": [
+            {
+                "thread_id": item.thread_id,
+                "pipeline_status": item.pipeline_status,
+                "business_milestone": item.business_milestone,
+                "waiting_for": item.waiting_for,
+                "status_reason": item.status_reason,
+                "updated_at": item.updated_at.isoformat(),
+            }
+            for item in pipelines
+            if item.pipeline_status not in {"handed_off", "closed_lost"}
         ],
     }

@@ -53,6 +53,7 @@ async def schedule_quotation_followups(
     channel: str,
     recipient: str,
     max_attempts: int = 5,
+    created_by_principal_id: str | None = None,
 ) -> int:
     if not thread_id:
         raise ValueError("thread_id is required to schedule follow-ups.")
@@ -91,6 +92,7 @@ async def schedule_quotation_followups(
                 "status": FollowUpJobStatus.SCHEDULED.value,
                 "attempt_count": 0,
                 "max_attempts": max_attempts,
+                "created_by_principal_id": created_by_principal_id,
                 "created_at": now,
                 "updated_at": now,
             }

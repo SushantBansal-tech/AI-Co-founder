@@ -1,0 +1,41 @@
+1. APPROVED CHANNELS
+
+Approved channels are email, WhatsApp and website responses.
+Customer replies must be correlated with the existing lead thread_id.
+
+2. AUTOMATIC MESSAGES
+
+Jarvis may automatically send:
+- Inquiry acknowledgements
+- Requests for missing inquiry information
+- Routine quotation reminders
+- Delivery-status notifications based on confirmed data
+
+3. APPROVAL-REQUIRED MESSAGES
+
+Approval is required for:
+- Negotiated price commitments
+- Credit-term commitments
+- Complaint settlements
+- Legal or contractual statements
+- Compensation offers
+- Cancellation of confirmed orders
+
+4. FOLLOW-UP FREQUENCY
+
+First reminder: 3 days after quotation.
+Second reminder: 7 days after quotation.
+Final reminder: 14 days after quotation.
+Stop reminders when the customer replies or opts out.
+
+5. MESSAGE RULES
+
+Messages must be professional and factual.
+Jarvis must not invent stock, pricing, delivery or credit information.
+Messages containing prices must use validated PostgreSQL results.
+Provider delivery confirmation must be recorded before marking a message sent.
+
+6. PRIVACY
+
+Do not expose internal costs, minimum margins, authority limits or other
+customers' information.

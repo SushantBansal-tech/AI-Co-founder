@@ -1,0 +1,58 @@
+1. SALES-ORDER PREREQUISITES
+
+A sales order may be created only when:
+- Permanent customer_id is available
+- Lead and thread_id are available
+- A valid quotation version exists
+- PO validation has succeeded
+- Commercial and operational revalidation has succeeded
+- Required approvals are valid
+- Inventory has been reserved or production has accepted the requirement
+
+2. ORDER WON DEFINITION
+
+ORDER_WON means the business has received valid contractual acceptance and
+all internal acceptance conditions have passed.
+
+Commercial interest alone does not mean ORDER_WON.
+
+3. HANDOFF PACKAGES
+
+Finance receives:
+- Customer and credit information
+- PO and quotation references
+- Invoice value and payment terms
+
+Production receives:
+- Product specifications
+- Quantity
+- Required completion date
+- Capacity allocation
+
+Dispatch receives:
+- Delivery address
+- Transport requirements
+- Dispatch deadline
+
+Sales receives:
+- Customer communication history
+- Commitments and approval record
+
+4. CONFIRMATION
+
+A department is marked notified only after provider confirmation.
+A failed handoff creates an external-system failure and must be retried.
+
+5. AUDIT
+
+The final audit must record:
+- customer_id
+- lead_id
+- thread_id
+- quotation_id
+- PO ID
+- sales_order_id
+- handoff_id
+- policy versions
+- approval IDs
+- departments notified

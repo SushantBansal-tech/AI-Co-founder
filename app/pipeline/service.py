@@ -25,6 +25,7 @@ async def persist_pipeline_snapshot(session_factory, state: dict, result: dict, 
         instance.pipeline_status = merged.get("pipeline_status") or "processing"
         instance.business_milestone = merged.get("business_milestone")
         instance.waiting_for = merged.get("waiting_for") or "none"
+        instance.approval_stage = merged.get("human_approval_stage")
         instance.status_reason = merged.get("status_reason")
         instance.current_node = node
         instance.failure_category = failure.get("category")

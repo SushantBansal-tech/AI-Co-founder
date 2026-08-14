@@ -17,6 +17,7 @@ from sqlalchemy.ext.asyncio import (
 from app.channels.outbound import MessageSendResult
 from app.database import (
     BusinessDocument,
+    ChannelSource,
     FollowUpJob,
     FollowUpJobStatus,
     FollowUpRecord,
@@ -331,6 +332,16 @@ async def test_postgres_inquiry_to_handoff(monkeypatch):
             row_count=1,
         )
         session.add(source_document)
+        session.add(ChannelSource(
+            business_id=business_id,
+            channel="email",
+            provider="integration-test",
+            provider_account_id=sender,
+            public_key=f"integration-email-{uuid4()}",
+            name="Integration email source",
+            active=True,
+            configuration={},
+        ))
         await session.flush()
         session.add(InventoryRecord(
             business_id=business_id,
