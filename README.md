@@ -18,14 +18,20 @@ The system helps industrial businesses automate:
 
 Humans are involved only for high-risk approvals such as large discounts, low-margin quotations, credit exceptions, unusual payment terms, custom requirements, and purchase-order mismatches.
 
-## Architecture
+## High Level Architecture
 
-![AI Sales Operations Agent Architecture](Firebase%20Cloud%20Data-2026-07-15-180227.png)
-(![Firebase%20Cloud%20Data-2026-07-15-180227.png](mermaid-ai-diagram-2026-07-16-080241.png))
-![(Firebase%20Cloud%20Data-2026-07-15-180227.png)](mermaid-ai-diagram-2026-07-16-080420.png)
-![(Firebase%20Cloud%20Data-2026-07-15-180227.png)](mermaid-ai-diagram-2026-07-16-080500.png)
-![(Firebase%20Cloud%20Data-2026-07-15-180227.png)](mermaid-ai-diagram-2026-07-16-080647.png)
-The workflow is coordinated using LangGraph, with separate agents for each stage of the sales process.
+![High Level Architecture](B2B Customer Sales Workflow-2026-08-13-193019.png)
+
+## Core Sales Workflow
+
+![Core Sales Workflow](B2B Customer Sales Workflow-2026-08-13-193125.png)
+
+## How AI and Deterministic Logic Are Separated
+
+![AI vs Deterministic Logic](B2B Customer Sales Workflow-2026-08-13-193155.png)
+
+
+
 
 ## Document Intelligence
 
