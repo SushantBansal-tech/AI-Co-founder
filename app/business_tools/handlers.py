@@ -46,8 +46,9 @@ def _decimal(value) -> Decimal:
 
 
 class BusinessToolHandlers:
-    def __init__(self, session_factory):
+    def __init__(self, session_factory, sales_context_service=None):
         self.session_factory = session_factory
+        self.sales_context_service = sales_context_service
 
     async def search_customers(self, context: ToolContext, args) -> dict:
         conditions = [
@@ -90,6 +91,24 @@ class BusinessToolHandlers:
                 )
             except ValueError as exc:
                 raise HTTPException(status_code=404, detail="Customer was not found.") from exc
+
+    async def get_customer_sales_context(self, context: ToolContext, args) -> dict:
+        if self.sales_context_service is None:
+            raise HTTPException(
+                status_code=503,
+                detail="PostgreSQL and Qdrant sales context is unavailable.",
+            )
+        try:
+            result = await self.sales_context_service.get_context(
+                business_id=context.business_id,
+                customer_id=args.customer_id,
+                agent_name="jarvis_crm",
+                query=args.query,
+                top_k=args.top_k,
+            )
+            return result.model_dump(mode="json")
+        except ValueError as exc:
+            raise HTTPException(status_code=404, detail="Customer was not found.") from exc
 
     async def get_lead(self, context: ToolContext, args) -> dict:
         async with self.session_factory() as session:

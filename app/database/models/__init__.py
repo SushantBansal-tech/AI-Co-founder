@@ -27,6 +27,8 @@ from app.database.models.authority import (
     BusinessSettingVersion,
 )
 from app.database.models.business_tool import AIToolExecution
+from app.database.models.ai_action import AIActionRequest, ApprovalDecision
+from app.database.models.jarvis import JarvisConversation, JarvisMessage, JarvisRun
 from app.database.models.memory import CustomerNote, MemoryOutbox
 from app.database.models.pipeline import (
     InventoryReservation,
@@ -101,6 +103,11 @@ __all__ = [
     "AuthorityPolicy",
     "AuthorityPolicyVersion",
     "AIToolExecution",
+    "AIActionRequest",
+    "ApprovalDecision",
+    "JarvisConversation",
+    "JarvisMessage",
+    "JarvisRun",
     "CustomerNote",
     "MemoryOutbox",
     "PipelineInstance",

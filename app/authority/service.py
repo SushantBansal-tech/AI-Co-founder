@@ -23,6 +23,8 @@ from app.database.models.authority import (
     BusinessSettings,
     BusinessSettingVersion,
 )
+from app.database.models.ai_action import AIActionRequest, ApprovalDecision
+from app.ai_actions.state_machine import AIActionStatus, assert_transition
 from app.events.service import record_business_event
 from app.idempotency.service import hash_request
 
@@ -586,6 +588,7 @@ class AuthorityService:
         action_type: str,
         facts: dict,
         tool_execution_id: str | None = None,
+        action_request_id: str | None = None,
         create_approval: bool = True,
     ) -> AuthorityDecisionResult:
         """Evaluate and persist a standardized deterministic Batch 3 decision."""
@@ -642,7 +645,9 @@ class AuthorityService:
                 return await self._persist_decision(
                     session, business_id=business_id, principal_id=principal_id,
                     result=result, facts_hash=facts_hash,
-                    tool_execution_id=tool_execution_id, create_approval=False,
+                    tool_execution_id=tool_execution_id,
+                    action_request_id=action_request_id,
+                    create_approval=False,
                 )
 
             policy, version = policy_row
@@ -667,8 +672,7 @@ class AuthorityService:
                     evidence_chunk_ids=validated.evidence_chunk_ids,
                 )
             else:
-                approved = await session.scalar(
-                    select(AuthorityApprovalRequest).where(
+                approval_query = select(AuthorityApprovalRequest).where(
                         AuthorityApprovalRequest.business_id == business_id,
                         AuthorityApprovalRequest.action_type == action_type,
                         AuthorityApprovalRequest.requested_by_principal_id == principal_id,
@@ -677,7 +681,15 @@ class AuthorityService:
                         AuthorityApprovalRequest.policy_version == version.version,
                         AuthorityApprovalRequest.settings_version == settings.version,
                         AuthorityApprovalRequest.status == "APPROVED",
-                    ).order_by(AuthorityApprovalRequest.approved_at.desc()).with_for_update()
+                    )
+                if action_request_id is not None:
+                    approval_query = approval_query.where(
+                        AuthorityApprovalRequest.action_request_id == action_request_id
+                    )
+                approved = await session.scalar(
+                    approval_query.order_by(
+                        AuthorityApprovalRequest.approved_at.desc()
+                    ).with_for_update()
                 )
                 if approved is not None and (
                     approved.expires_at is None or approved.expires_at > now
@@ -708,18 +720,21 @@ class AuthorityService:
                 session, business_id=business_id, principal_id=principal_id,
                 result=result, facts_hash=facts_hash,
                 tool_execution_id=tool_execution_id,
+                action_request_id=action_request_id,
                 create_approval=create_approval,
             )
 
     async def _persist_decision(
         self, session, *, business_id: str, principal_id: str,
         result: AuthorityDecisionResult, facts_hash: str,
-        tool_execution_id: str | None, create_approval: bool,
+        tool_execution_id: str | None, action_request_id: str | None,
+        create_approval: bool,
     ) -> AuthorityDecisionResult:
         facts = result.evaluated_facts
         row = AuthorityDecision(
             business_id=business_id,
             principal_id=principal_id,
+            action_request_id=action_request_id,
             action_type=result.action_type,
             entity_type=facts.get("entity_type"),
             entity_id=facts.get("entity_id"),
@@ -747,6 +762,7 @@ class AuthorityService:
             approval = AuthorityApprovalRequest(
                 business_id=business_id,
                 authority_decision_id=row.id,
+                action_request_id=action_request_id,
                 action_type=result.action_type,
                 entity_type=row.entity_type,
                 entity_id=row.entity_id,
@@ -810,6 +826,7 @@ class AuthorityService:
     def decision_payload(row: AuthorityDecision) -> dict:
         return {
             "id": row.id, "business_id": row.business_id,
+            "action_request_id": row.action_request_id,
             "principal_id": row.principal_id, "action_type": row.action_type,
             "decision": row.decision, "risk_level": row.risk_level,
             "policy_code": row.policy_code, "policy_id": row.policy_id,
@@ -844,6 +861,7 @@ class AuthorityService:
         return {
             "id": row.id, "business_id": row.business_id,
             "authority_decision_id": row.authority_decision_id,
+            "action_request_id": row.action_request_id,
             "action_type": row.action_type, "entity_type": row.entity_type,
             "entity_id": row.entity_id, "thread_id": row.thread_id,
             "required_role": row.required_role, "status": row.status,
@@ -877,6 +895,12 @@ class AuthorityService:
             now = utc_now()
             if row.expires_at and row.expires_at <= now:
                 row.status = "EXPIRED"
+                if row.action_request_id:
+                    action = await session.get(AIActionRequest, row.action_request_id)
+                    if action and action.status == AIActionStatus.AWAITING_APPROVAL:
+                        assert_transition(action.status, AIActionStatus.EXPIRED)
+                        action.status = AIActionStatus.EXPIRED
+                        action.completed_at = now
                 await session.commit()
                 raise HTTPException(status_code=409, detail="Approval request has expired.")
             row.status = "APPROVED" if approve else "REJECTED"
@@ -887,6 +911,33 @@ class AuthorityService:
             else:
                 row.rejected_by_user_id = user.user_id
                 row.rejected_at = now
+            session.add(ApprovalDecision(
+                business_id=user.business_id,
+                action_request_id=row.action_request_id,
+                approval_request_id=row.id,
+                authority_decision_id=row.authority_decision_id,
+                decision=row.status,
+                decided_by_user_id=user.user_id,
+                decided_by_role=user.role,
+                reason=reason,
+                policy_id=row.policy_id,
+                policy_version=row.policy_version,
+                settings_version=row.settings_version,
+                facts_hash=row.facts_hash,
+                decided_at=now,
+            ))
+            if row.action_request_id:
+                action = await session.scalar(select(AIActionRequest).where(
+                    AIActionRequest.id == row.action_request_id,
+                    AIActionRequest.business_id == user.business_id,
+                ).with_for_update())
+                if action is None:
+                    raise HTTPException(status_code=409, detail="Approval action ledger is missing.")
+                target = AIActionStatus.APPROVED if approve else AIActionStatus.REJECTED
+                assert_transition(action.status, target)
+                action.status = target
+                action.approved_at = now if approve else None
+                action.completed_at = None if approve else now
             await record_business_event(
                 session, business_id=user.business_id,
                 event_type="authority.approval_resolved", source="crm",

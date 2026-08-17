@@ -38,6 +38,9 @@ class AIToolExecution(Base):
     principal_id: Mapped[str] = mapped_column(
         String(36), ForeignKey("ai_service_principals.id"), nullable=False
     )
+    action_request_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("ai_action_requests.id"), nullable=True
+    )
     tool_name: Mapped[str] = mapped_column(String(100), nullable=False)
     risk_level: Mapped[str] = mapped_column(String(20), nullable=False)
     required_scope: Mapped[str] = mapped_column(String(100), nullable=False)

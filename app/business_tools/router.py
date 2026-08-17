@@ -37,4 +37,26 @@ async def execute_controlled_tool(
         principal=principal, tool_name=tool_name,
         raw_arguments=body.arguments,
         idempotency_key=idempotency_key,
+        reason=body.reason,
+    )
+
+
+@router.post("/actions/{action_id}/execute")
+async def resume_approved_action(
+    action_id: str,
+    body: ExecuteToolRequest,
+    request: Request,
+    idempotency_key: str = Header(
+        ..., alias="Idempotency-Key", min_length=8, max_length=200
+    ),
+    principal: AuthenticatedAIPrincipal = Depends(require_ai_principal),
+):
+    if body.arguments:
+        raise HTTPException(
+            status_code=422,
+            detail="Approved actions resume from their immutable stored arguments.",
+        )
+    return await _executor(request).resume(
+        principal=principal, action_id=action_id,
+        idempotency_key=idempotency_key,
     )

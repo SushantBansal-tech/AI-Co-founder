@@ -254,6 +254,9 @@ class AuthorityDecision(Base):
     principal_id: Mapped[str] = mapped_column(
         String(36), ForeignKey("ai_service_principals.id"), nullable=False
     )
+    action_request_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("ai_action_requests.id"), nullable=True
+    )
     action_type: Mapped[str] = mapped_column(String(80), nullable=False)
     entity_type: Mapped[Optional[str]] = mapped_column(String(60), nullable=True)
     entity_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
@@ -301,6 +304,9 @@ class AuthorityApprovalRequest(Base):
     business_id: Mapped[str] = mapped_column(String(100), nullable=False)
     authority_decision_id: Mapped[str] = mapped_column(
         String(36), ForeignKey("authority_decisions.id"), nullable=False
+    )
+    action_request_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("ai_action_requests.id"), nullable=True
     )
     action_type: Mapped[str] = mapped_column(String(80), nullable=False)
     entity_type: Mapped[Optional[str]] = mapped_column(String(60), nullable=True)

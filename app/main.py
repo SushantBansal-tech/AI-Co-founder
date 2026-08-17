@@ -55,6 +55,14 @@ from app.authority.router import (
 from app.authority.service import AuthorityService
 from app.business_tools.executor import BusinessToolExecutor
 from app.business_tools.router import router as business_tools_router
+from app.ai_actions.service import AIActionService
+from app.ai_actions.router import (
+    execution_router as ai_action_execution_router,
+    router as ai_action_router,
+)
+from app.jarvis.planner import GeminiJarvisPlanner
+from app.jarvis.router import router as jarvis_router
+from app.jarvis.service import JarvisService
 from app.channels.service import ChannelIngestionService
 from app.channels.configuration import channel_configuration_errors
 from app.channels.email_adapter import EmailPollingService
@@ -314,8 +322,10 @@ async def lifespan(app: FastAPI):
     )
     app.state.crm_service = CRMService(SessionFactory)
     app.state.authority_service = AuthorityService(SessionFactory)
+    app.state.ai_action_service = AIActionService(SessionFactory)
     app.state.business_tool_executor = BusinessToolExecutor(
-        SessionFactory, app.state.authority_service
+        SessionFactory, app.state.authority_service,
+        sales_context_service=sales_context_service,
     )
 
     # ------------------------------------------------------------------
@@ -330,6 +340,11 @@ async def lifespan(app: FastAPI):
         genai.Client(api_key=gemini_api_key)
         if gemini_api_key
         else None
+    )
+    app.state.jarvis_service = JarvisService(
+        SessionFactory,
+        app.state.business_tool_executor,
+        GeminiJarvisPlanner(gemini_client),
     )
 
     # ------------------------------------------------------------------
@@ -581,6 +596,9 @@ app.include_router(crm_router)
 app.include_router(authority_router)
 app.include_router(authority_execution_router)
 app.include_router(business_tools_router)
+app.include_router(ai_action_router)
+app.include_router(ai_action_execution_router)
+app.include_router(jarvis_router)
 
 
 # ---------------------------------------------------------------------------

@@ -7,10 +7,12 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 class ExecuteToolRequest(BaseModel):
     arguments: dict[str, Any] = Field(default_factory=dict)
+    reason: str | None = Field(default=None, max_length=2000)
 
 
 class ToolExecutionResponse(BaseModel):
     execution_id: str
+    action_request_id: str
     tool_name: str
     status: Literal[
         "completed", "denied", "pending_approval",
@@ -42,6 +44,22 @@ class Customer360Output(BaseModel):
     identities: list[dict[str, Any]]
     summary: dict[str, Any]
     preferences: dict[str, Any]
+
+
+class CustomerSalesContextInput(BaseModel):
+    customer_id: str = Field(min_length=1, max_length=100)
+    query: str | None = Field(default=None, max_length=2000)
+    top_k: int = Field(default=5, ge=1, le=20)
+
+
+class CustomerSalesContextOutput(BaseModel):
+    model_config = ConfigDict(extra="allow")
+    business_id: str
+    customer_id: str
+    customer_360: dict[str, Any]
+    semantic_memories: list[dict[str, Any]]
+    semantic_memory_available: bool
+    warnings: list[str]
 
 
 class LeadIdInput(BaseModel):

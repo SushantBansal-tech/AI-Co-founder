@@ -19,6 +19,8 @@ from app.crm.auth import AuthenticatedUser, hash_password
 from app.database import Base
 from app.database.models.activity import BusinessEvent
 from app.database.models.business_tool import AIToolExecution
+from app.database.models.ai_action import AIActionRequest, ApprovalDecision
+from app.database.models.authority import AuthorityApprovalRequest
 from app.database.models.crm import BusinessMembership, CRMActivity, CRMTask, User
 from app.database.models.customer import Customer
 from app.database.models.lead import InquirySource, Lead, LeadStatus
@@ -186,6 +188,7 @@ async def test_catalog_contains_only_fixed_requested_tools(tool_factory):
     names = {item["name"] for item in response.json()["items"]}
     assert names == {
         "search_customers", "get_customer_360", "get_lead", "get_pipeline",
+        "get_customer_sales_context",
         "get_pending_approvals", "get_inventory", "get_pricing_inputs",
         "get_open_tasks", "add_customer_note", "create_task",
         "record_activity", "schedule_followup", "prepare_quotation",
@@ -449,3 +452,150 @@ async def test_recommend_only_mode_denies_low_risk_mutation(tool_factory):
             AIToolExecution.tool_name == "add_customer_note"
         ))
         assert execution.status == "denied"
+
+
+@pytest.mark.asyncio
+async def test_batch4_tool_call_creates_one_durable_action_ledger(tool_factory):
+    env = await seed_environment(tool_factory)
+    app = application(tool_factory, env["authority"])
+    request_headers = headers(env["principal"], "batch4-note-once")
+    body = {"reason": "Remember a customer communication preference", "arguments": {
+        "customer_id": env["customer"].id,
+        "content": "Customer prefers concise email quotations.",
+    }}
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://test"
+    ) as client:
+        first = await client.post(
+            "/ai/tools/add_customer_note/execute", headers=request_headers, json=body
+        )
+        replay = await client.post(
+            "/ai/tools/add_customer_note/execute", headers=request_headers, json=body
+        )
+    assert first.status_code == replay.status_code == 200
+    assert first.json()["action_request_id"] == replay.json()["action_request_id"]
+    async with tool_factory() as session:
+        actions = (await session.scalars(select(AIActionRequest))).all()
+        executions = (await session.scalars(select(AIToolExecution))).all()
+        assert len(actions) == len(executions) == 1
+        assert actions[0].status == "SUCCEEDED"
+        assert actions[0].reason == "Remember a customer communication preference"
+        assert actions[0].latest_tool_execution_id == executions[0].id
+        assert executions[0].action_request_id == actions[0].id
+
+
+@pytest.mark.asyncio
+async def test_batch4_approval_survives_restart_and_is_consumed_once(tool_factory):
+    env = await seed_environment(tool_factory)
+    body = {"reason": "Prepare a negotiated draft", "arguments": {
+        "lead_id": env["lead"].id, "product_code": "MSB-001",
+        "quantity": "10", "requested_discount_pct": "10",
+        "validity_days": 15,
+    }}
+    app1 = application(tool_factory, env["authority"])
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app1), base_url="http://test"
+    ) as client:
+        proposed = await client.post(
+            "/ai/tools/prepare_quotation/execute",
+            headers=headers(env["principal"], "batch4-proposal-001"), json=body,
+        )
+    assert proposed.status_code == 200
+    assert proposed.json()["status"] == "pending_approval"
+    action_id = proposed.json()["action_request_id"]
+    approval_id = proposed.json()["authority"]["approval_request_id"]
+
+    owner = AuthenticatedUser(
+        user_id=env["founder"].id, business_id="tenant-a", membership_id="restart",
+        role="admin", email=env["founder"].email,
+        display_name=env["founder"].display_name,
+    )
+    restarted_authority = AuthorityService(tool_factory)
+    resolved = await restarted_authority.resolve_approval(
+        owner, approval_id, approve=True,
+        reason="Founder approved this exact low-margin draft",
+    )
+    assert resolved["status"] == "APPROVED"
+
+    # A fresh executor simulates an application restart. The action and
+    # approval live in PostgreSQL/SQLAlchemy, not in process memory.
+    app2 = application(tool_factory, restarted_authority)
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app2), base_url="http://test"
+    ) as client:
+        resumed = await client.post(
+            f"/ai/tools/actions/{action_id}/execute",
+            headers=headers(env["principal"], "batch4-resume-001"),
+            json={"arguments": {}},
+        )
+    assert resumed.status_code == 200
+    assert resumed.json()["status"] == "completed"
+    assert resumed.json()["authority"]["policy_code"] == "APPROVED_POLICY_EXCEPTION"
+    async with tool_factory() as session:
+        action = await session.get(AIActionRequest, action_id)
+        approval = await session.get(AuthorityApprovalRequest, approval_id)
+        decisions = (await session.scalars(select(ApprovalDecision))).all()
+        assert action.status == "SUCCEEDED"
+        assert action.execution_attempt_count == 1
+        assert approval.status == "CONSUMED"
+        assert len(decisions) == 1
+        assert decisions[0].decision == "APPROVED"
+
+    with pytest.raises(Exception) as second_resolution:
+        await restarted_authority.resolve_approval(
+            owner, approval_id, approve=True, reason="Must not approve twice",
+        )
+    assert getattr(second_resolution.value, "status_code", None) == 409
+
+
+@pytest.mark.asyncio
+async def test_batch4_changed_price_requires_fresh_approval(tool_factory):
+    env = await seed_environment(tool_factory)
+    app = application(tool_factory, env["authority"])
+    body = {"arguments": {
+        "lead_id": env["lead"].id, "product_code": "MSB-001",
+        "quantity": "10", "requested_discount_pct": "10",
+        "validity_days": 15,
+    }}
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://test"
+    ) as client:
+        proposed = await client.post(
+            "/ai/tools/prepare_quotation/execute",
+            headers=headers(env["principal"], "batch4-change-001"), json=body,
+        )
+    action_id = proposed.json()["action_request_id"]
+    first_approval_id = proposed.json()["authority"]["approval_request_id"]
+    owner = AuthenticatedUser(
+        user_id=env["founder"].id, business_id="tenant-a", membership_id="change",
+        role="admin", email=env["founder"].email,
+        display_name=env["founder"].display_name,
+    )
+    await env["authority"].resolve_approval(
+        owner, first_approval_id, approve=True, reason="Approved original price snapshot",
+    )
+    async with tool_factory() as session:
+        price = await session.scalar(select(ProductPriceRecord).where(
+            ProductPriceRecord.business_id == "tenant-a",
+            ProductPriceRecord.product_code == "MSB-001",
+        ))
+        price.base_price_inr = Decimal("75000")
+        await session.commit()
+
+    restarted = application(tool_factory, AuthorityService(tool_factory))
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=restarted), base_url="http://test"
+    ) as client:
+        revalidated = await client.post(
+            f"/ai/tools/actions/{action_id}/execute",
+            headers=headers(env["principal"], "batch4-change-resume"),
+            json={"arguments": {}},
+        )
+    assert revalidated.status_code == 200
+    assert revalidated.json()["status"] == "pending_approval"
+    assert revalidated.json()["authority"]["approval_request_id"] != first_approval_id
+    async with tool_factory() as session:
+        action = await session.get(AIActionRequest, action_id)
+        assert action.status == "AWAITING_APPROVAL"
+        assert action.execution_result_json is None
+        assert await session.scalar(select(func.count()).select_from(QuotationRecord)) == 0
